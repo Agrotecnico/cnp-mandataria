@@ -1,0 +1,37 @@
+# Copy from .env.local on the Vercel dashboard
+# https://nextjs.org/learn/dashboard-app/setting-up-your-database#create-a-postgres-database
+
+
+POSTGRES_URL="postgres://default:PrZy1jTze8mI@ep-weathered-pine-64714706-pooler.us-east-1.postgres.vercel-storage.com:5432/verceldb"
+POSTGRES_PRISMA_URL="postgres://default:PrZy1jTze8mI@ep-weathered-pine-64714706-pooler.us-east-1.postgres.vercel-storage.com:5432/verceldb?pgbouncer=true&connect_timeout=15"
+POSTGRES_URL_NON_POOLING="postgres://default:PrZy1jTze8mI@ep-weathered-pine-64714706.us-east-1.postgres.vercel-storage.com:5432/verceldb"
+POSTGRES_USER="default"
+POSTGRES_HOST="ep-weathered-pine-64714706-pooler.us-east-1.postgres.vercel-storage.com"
+POSTGRES_PASSWORD="PrZy1jTze8mI"
+POSTGRES_DATABASE="verceldb"
+
+# `openssl rand -base64 32`
+# AUTH_SECRET=UimIY3mu1BEzX0fkeaH+ja3rnZMqXe2odpUaCNU/JGU
+AUTH_SECRET="Q6Nw/guY34Ctj68eiSDu3Ey5iOjU11xpG7OGhukECWg"
+# AUTH_URL="http://localhost:3000"
+AUTH_URL="http://localhost:3000/api/auth"
+# AUTH_URL=https://cnp-mandataria.vercel.app/
+
+
+# Preyecto Agro Auth Google
+AUTH_GOOGLE_ID="999924310464-0pu1mh11ans2qcr2br7851lmvns0ed52.apps.googleusercontent.com"
+AUTH_GOOGLE_SECRET="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"
+
+# Preyecto next-auth-agro
+AUTH_FACEBOOK_ID="2232363760445713"
+AUTH_FACEBOOK_SECRET="1fb35b80067b365e10e29c4eca4266a2"
+
+ADMIN="agrotecnicog@gmail.com"
+
+CLAUDINARY_NAME="dchmrl6fc"
+CLAUDINARY_KEY="582311814716175"
+CLAUDINARY_SECRET="egxKqBsor7mvNbgV3JCOvwfdVvE"
+
+RESEND_API_KEY="re_ZuvLF8Yd_D97uW8Qzu63kDgysQ7KFTekh"
+
+BREVO_API_KEY="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"
