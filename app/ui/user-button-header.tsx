@@ -12,7 +12,7 @@ import Link from 'next/link';
 import { signOut } from 'next-auth/react';
 import { usePathname } from 'next/navigation';
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/app/ui/uiRadix/avatar';
+// import { Avatar, AvatarFallback, AvatarImage } from '@/app/ui/uiRadix/avatar';
 import { Button } from '@/app/ui/uiRadix/button';
 import { User } from '@/app/lib/definitions';
 

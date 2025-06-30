@@ -71,8 +71,8 @@ export default async function Header( ) {
           </div>
         ) : ( */}
           <Link
-            href=/* "/login" */"#"
-            className="flex flex-col items-center opacity-40 duration-200 cursor-default"/* hover:opacity-95 */
+            href="/login"
+            className="flex flex-col items-center opacity-70 duration-200 hover:opacity-95"
           >
             <div className="max-w-max ">
               <IconCuenta
