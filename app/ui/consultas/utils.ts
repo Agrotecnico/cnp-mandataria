@@ -1,6 +1,7 @@
 import { ImageListType } from './typings';
+import { RefObject } from "react";
 
-export const openFileDialog = (inputRef): void => {
+export const openFileDialog = (inputRef: RefObject<HTMLDivElement | null>): void => {
   if (inputRef.current) inputRef.current.click();
 };
 
