@@ -7,7 +7,7 @@ import {
   ImageUploadingPropsType,
   ErrorsType,
   ResolutionType,
-} from './typings';
+} from '@/app/ui/consultas/typings';
 import {
   DEFAULT_NULL_INDEX,
   INIT_MAX_NUMBER,
@@ -69,14 +69,15 @@ const ReactImageUploading: React.FC<ImageUploadingPropsType> = ({
   const validate = async (fileList: ImageListType): Promise<boolean> => {
     const errorsValidation = await getErrorValidation({
       fileList,
-      maxFileSize,
+      // value,
+      inValue,
       maxNumber,
       acceptType,
       keyUpdate,
+      maxFileSize,
       resolutionType,
       resolutionWidth,
       resolutionHeight,
-      value: inValue,
       allowNonImageType,
     });
     if (errorsValidation) {

@@ -50,3 +50,16 @@ export type ErrorsType = {
 } | null;
 
 export type ResolutionType = 'absolute' | 'less' | 'more' | 'ratio';
+
+export interface ErrorValidation {
+  fileList: ImageListType;
+  inValue: ImageListType;
+  maxNumber: number;
+  keyUpdate: number;
+  acceptType?: Array<string>;
+  maxFileSize?: number;
+  resolutionType?: ResolutionType;
+  resolutionWidth?: number;
+  resolutionHeight?: number;
+  allowNonImageType: boolean;
+}
