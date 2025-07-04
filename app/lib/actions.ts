@@ -8,9 +8,9 @@ import { signIn } from '@/auth';
 import { AuthError } from 'next-auth';
 import bcrypt from "bcrypt";
 // import { emailPresupuesto } from "@/app/lib/brevo/email-presupuesto";
-// import { emailRespuesta } from "@/app/lib/brevo/email-respuesta";
-// import { emailConfirmRegistro } from "@/app/lib/brevo/email-confirm-registro";
-// import { emailConfirmPedido } from "@/app/lib/brevo/email-confirm-pedido";
+import { emailRespuesta } from "@/app/lib/brevo/email-respuesta";
+import { emailConfirmRegistro } from "@/app/lib/brevo/email-confirm-registro";
+import { emailConfirmPedido } from "@/app/lib/brevo/email-confirm-pedido";
 
 const FormSchema = z.object({
   id: z.string(),
@@ -85,7 +85,7 @@ const FormSchemaComment = z.object({
 
 const CreateInvoice = FormSchema.omit({ id: true, date: true });
 const CreateCustomer = FormSchemaCustomer.omit({ id: true });
-const CreateUser = FormSchemaUser.omit({ id: true, image: true, role: true  });
+const CreateUser = FormSchemaUser.omit({ id: true, image: true, role: true, password: true, confirmPassword: true });
 const CreateConsulta = FormSchemaConsulta.omit({ created_at: true, respuesta: true,  id: true,  updated_at: true });
 const CreateTramite = FormSchemaTramite.omit({ id: true, presupuesto: true, created_at: true, budgeted_at: true, started_at: true, canceled_at: true, finished_at: true, estado: true });
 const CreateComment = FormSchemaComment.omit({ id: true, created_at: true });
@@ -123,8 +123,8 @@ export type StateUser = {
   errors?: {
     name?: string[];
     email?: string[];
-    password?: string[];
-    confirmPassword?: string[];
+    // password?: string[];
+    // confirmPassword?: string[];
     // role?: string[] | undefined;
     // image?: string[] | undefined;
   };
@@ -566,12 +566,13 @@ export async function deleteTramite(id: string) {
 
 
 export async function createUser(prevStateUser: StateUser, formData: FormData) {
+  console.log("formData:", formData)
   // Validate form fields using Zod
   const validatedFields = CreateUser.safeParse({
     name: formData.get('name'),
     email: formData.get('email'),
-    password: formData.get('password'),
-    confirmPassword: formData.get('confirmPassword'),
+    // password: formData.get('password'),
+    // confirmPassword: formData.get('confirmPassword'),
     // role: formData.get('role'),
     /* image: formData.get('image'), */
   });
@@ -594,17 +595,20 @@ export async function createUser(prevStateUser: StateUser, formData: FormData) {
   }
   
   // Prepare data for insertion into the database
-  const { name, email, password  } = validatedFields.data;
-  const hashedPassword = await bcrypt.hash(password, 10); 
+  const { name, email, /* password */  } = validatedFields.data;
+  let passwordMember= "xxxxxx"
+  // password === "" ? passwordMember = "xxxxxx" : passwordMember = password
+  const hashedPassword = await bcrypt.hash(passwordMember, 10); 
   
-  let rol= ""
-  password === "xxxxxx" ? rol = "member" : rol = "memberAccount"
+  let role= "member"
+  // password === "xxxxxx" ? rol = "member" : rol = "memberAccount"
+  // password === "" ? rol = "member" : rol = "memberAccount"
 
   // Insert data into the database
   try {
     await sql`
       INSERT INTO users (name, email, password, role )
-      VALUES (${name}, ${email}, ${hashedPassword}, ${rol} )
+      VALUES (${name}, ${email}, ${hashedPassword}, ${role} )
       ON CONFLICT(email)
       DO UPDATE SET
       name = EXCLUDED.name,
@@ -854,64 +858,66 @@ export async function authenticate(
 //   })
 // }
 
-// export async function handleFormRespuesta(formData: FormData) {
-//   const title= formData.get("title")
-//   const to_name= formData.get("to_name")
-//   const to_email= formData.get("to_email")
-//   const content= formData.get("content")
-//   const consulta= formData.get("consulta")
+export async function handleFormRespuesta(formData: FormData) {
+  const title= formData.get("title")
+  const to_name= formData.get("to_name")
+  const to_email= formData.get("to_email")
+  const content= formData.get("content")
+  const consulta= formData.get("consulta")
 
-//   if (!title || !to_name || !to_email || !content || !consulta ) {
-//     return console.log("Por favoe llene todos los campos")
-//   }
+  if (!title || !to_name || !to_email || !content || !consulta ) {
+    return console.log("Por favoe llene todos los campos")
+  }
   
-//   await emailRespuesta({
-//     subject: title as string,
-//     to: [{
-//       name: to_name as string,
-//       email: to_email as string
-//       }],
-//     htmlContent: content as string,
-//     consulta: consulta as string
-//   })
-// }
+  await emailRespuesta({
+    subject: title as string,
+    to: [{
+      name: to_name as string,
+      email: to_email as string
+      }],
+    htmlContent: content as string,
+    consulta: consulta as string
+  })
+}
 
-// export async function handleFormRegistro(formData: FormData) {
-//   const title= formData.get("title")
-//   const to_name= formData.get("to_name")
-//   const to_email= formData.get("to_email")
-//   const content= formData.get("content")
+export async function handleFormRegistro(formData: FormData) {
+  const title= formData.get("title")
+  const to_name= formData.get("to_name")
+  const to_email= formData.get("to_email")
+  const content= formData.get("content")
 
-//   if (!title || !to_name || !to_email || !content ) {
-//     return console.log("Por favoe llene todos los campos")
-//   }
+  if (!title || !to_name || !to_email || !content ) {
+    return console.log("Por favoe llene todos los campos")
+  }
+
+  console.log({title, to_name, to_email, content})
   
-//   await emailConfirmRegistro({
-//     subject: title as string,
-//     to: [{
-//       name: to_name as string,
-//       email: to_email as string
-//       }],
-//     htmlContent: content as string
-//   })
-// }
+  await emailConfirmRegistro({
+    subject: title as string,
+    to: [{
+      name: to_name as string,
+      email: to_email as string
+      }],
+    htmlContent: content as string
+  })
+}
 
-// export async function handleFormPedido(formData: FormData) {
-//   const title= formData.get("title")
-//   const to_name= formData.get("to_name")
-//   const to_email= formData.get("to_email")
-//   const content= formData.get("content")
+export async function handleFormPedido(formData: FormData) {
+  const title= formData.get("title")
+  const to_name= formData.get("to_name")
+  const to_email= formData.get("to_email")
+  const content= formData.get("content")
 
-//   if (!title || !to_name || !to_email || !content ) {
-//     return console.log("Por favoe llene todos los campos")
-//   }
+  if (!title || !to_name || !to_email || !content ) {
+    return console.log("Por favoe llene todos los campos")
+  }
   
-//   await emailConfirmPedido({
-//     subject: title as string,
-//     to: [{
-//       name: to_name as string,
-//       email: to_email as string
-//       }],
-//     htmlContent: content as string
-//   })
-// }
+  await emailConfirmPedido({
+    subject: title as string,
+    to: [{
+      name: to_name as string,
+      email: to_email as string
+      }],
+    htmlContent: content as string
+  })
+}

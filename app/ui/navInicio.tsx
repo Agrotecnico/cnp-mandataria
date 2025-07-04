@@ -35,8 +35,8 @@ export default function NavInicio(/* { user }: { user: User | undefined } */) {
               </div>
             )} */}
             <Link
-              href="/login" 
-              className="flex flex-col items-center opacity-70 duration-200 hover:opacity-100"/*  */
+              href= "/login"
+              className="flex flex-col items-center opacity-70 duration-200 hover:opacity-100"
             >
               <div className="max-w-max ">
                 <IconCuenta className="w-6 sm:w-7" color={'#fffc'} />

@@ -25,8 +25,8 @@ import { TextareaCnp } from "@/app/ui/uiRadix/textarea-cnp";
 import IconRegistro from "@/app/ui/logosIconos/icon-registro"
 import { createUser, StateUser } from '@/app/lib/actions';
 import IconEnvioEmail from '../logosIconos/icon-envio-email';
-// import { handleFormRegistro } from '@/app/lib/actions';
-// import { handleFormPedido } from '@/app/lib/actions';
+import { handleFormRegistro } from '@/app/lib/actions';
+import { handleFormPedido } from '@/app/lib/actions';
 
 
 export default function RealizarConsulta( { user }: { user: User | undefined } ) {
@@ -177,12 +177,12 @@ export default function RealizarConsulta( { user }: { user: User | undefined } )
   return (
     <>
       {/* consult */}
-      <Frente className=" p-2 text-small-regular !bg-[#1d021513] sm:p-4 ">
+      <Frente className=" p-2 text-small-regular sm:p-4 !bg-[#020b1d16] ">
         <div  className="flex items-center justify-between sm:flex-row" >
           <div className="relative flex items-center">
-            <IconConsultaRight className="opacity-80 ml-1.5 h-[36px] w-[30px] stroke-1 sm:ml-3 " />
+            <IconConsultaRight className=" ml-1.5 h-[36px] w-[30px] stroke-1 sm:ml-3 " />
             <div className="absolute top-[1px] left-6 text-[#ffffff] text-xs sm:left-[30px]">?</div>
-            <p className="ml-4 text-sm text-[#50073aaa]">Consulta <span className=" text-[#d400aa]">*</span></p>
+            <p className="ml-4 text-sm text-[#39507f]">Consulta <span className=" text-[#d400aa]">*</span></p>
           </div>
           <ButtonB
             className={`h-8 text-[13px] w-max `}
@@ -224,9 +224,9 @@ export default function RealizarConsulta( { user }: { user: User | undefined } )
       </Frente>
 
       {/* adjuntar archivos */}
-      <Frente className={`flex flex-col mt-2 text-small-regular !p-2 !bg-[#1d021513] ${!state && 'pb-0'} sm:!p-4 `}>
+      <Frente className={`flex flex-col mt-2 text-small-regular !p-2 !bg-[#020b1d16] ${!state && 'pb-0'} sm:!p-4 `}>
         <div className={`flex items-center justify-between mb-0`} >
-          <IconArchivo className="opacity-80 ml-1.5 w-[26px] stroke-1 sm:ml-3 " />
+          <IconArchivo className=" ml-1.5 w-[26px] stroke-1 sm:ml-3 " />
           <ButtonB
             className={`h-8 text-[13px] w-max`}
             onClick={() => {
@@ -352,13 +352,13 @@ export default function RealizarConsulta( { user }: { user: User | undefined } )
       {/* registrar email */}
       {!user && (
         emailSession === false ? (
-          <Frente className="!p-2 mt-2 text-small-regular sm:!p-4 !bg-[#1d021513] ">
+          <Frente className="!p-2 mt-2 text-small-regular sm:!p-4 !bg-[#020b1d16] ">
             <div className="flex items-center justify-between gap-5">
               <div className="mt-1.5 ">
-                <IconRegistro className="opacity-80 w-[24px] ml-1.5 sm:ml-3" />
+                <IconRegistro className=" w-[24px] ml-1.5 sm:ml-3" />
               </div>
   
-              <div className={`w-full text-start text-[14px] text-[#50073aaa] duration-300  `}>
+              <div className={`w-full text-start text-[14px] text-[#39507f] duration-300  `}>
                 Dejá tu e-mail para mandarte la respuesta <span className=" text-[#d400aa]">*</span>
               </div>
                 
@@ -432,7 +432,7 @@ export default function RealizarConsulta( { user }: { user: User | undefined } )
                     </InputCnp>
                   </fieldset>
   
-                  <input
+                  {/* <input
                     id="password"
                     type="hidden"
                     name="password"
@@ -446,7 +446,7 @@ export default function RealizarConsulta( { user }: { user: User | undefined } )
                     name="confirmPassword"
                     defaultValue={"xxxxxx"}
                     readOnly
-                  />
+                  /> */}
   
                   {/* Massages erros */}
                   <div
@@ -550,10 +550,10 @@ export default function RealizarConsulta( { user }: { user: User | undefined } )
 
       {/* Enviar consult */}
       <div className="w-full flex justify-between items-center">
-        <p className={`text-xs ml-2 text-[#1d0215cc] ${consulta && (emailSession || user)  && "opacity-0" } sm:text-[13px]`}><span className=" text-[#d400aa]">*</span> Requeridos</p>
+        <p className={`text-xs ml-2 ${consulta && (emailSession || user)  && "opacity-0" } sm:text-[13px]`}><span className=" text-[#d400aa]">*</span> Requeridos</p>
 
         <div className="flex gap-4">
-          <div className={`text-[#1d0215bb] rounded-md ${!emailSession && "hidden"} bg-[#1d02150d] duration-150 hover:bg-[#1d021517] hover:text-[#1d0215]`} >
+          <div className={`text-[#1d0215bb] rounded-md ${ estado.message !== "consultaCreada"  &&  "hidden"} bg-[#1d02150d] duration-150 hover:bg-[#1d021517] hover:text-[#1d0215]`} >
             <button
               type="button"
               className={` py-1 px-5`}
@@ -562,7 +562,7 @@ export default function RealizarConsulta( { user }: { user: User | undefined } )
                 sessionStorage.removeItem("name")
                 location.reload()
               }}
-            >
+            >{/* !emailSession */}
               Salir
             </button> 
           </div>
@@ -646,7 +646,7 @@ export default function RealizarConsulta( { user }: { user: User | undefined } )
             }
           )}
         >
-          {/* <form action={handleFormRegistro}  className="rounded-lg w-full p-4 ">
+          <form action={handleFormRegistro}  className="rounded-lg w-full p-4 ">
             <div className="flex items-start w-full mb-4 gap-3">
               <p className="mt-2 leading-none text-[13px]">
                 Para
@@ -737,15 +737,15 @@ export default function RealizarConsulta( { user }: { user: User | undefined } )
             <button 
               type="submit" 
               ref={buttonRefRegistro}
-              className="hidden py-1">
+              className="py-1">
               Enviar
             </button>
-          </form> */}
+          </form>
         </div>
       </Frente>
 
       {/* Envio e-mail confirmar recepción consulta */}
-      {/* <form action={handleFormPedido}  className="hidden rounded-lg bg-[#50073a66] w-full border border-gray-700 m-4 p-4 ">
+      <form action={handleFormPedido}  className="hidden rounded-lg bg-[#50073a66] w-full border border-gray-700 m-4 p-4 ">
         <div className="flex items-start w-full mb-4 gap-3">
           <p className="mt-2 leading-none text-[13px]">
             Para
@@ -803,7 +803,7 @@ export default function RealizarConsulta( { user }: { user: User | undefined } )
           className="bg-slate-600 text-white p-2">
           Enviar
         </button>
-      </form> */}
+      </form>
     </>
   );
 }

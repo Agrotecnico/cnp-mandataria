@@ -1,8 +1,8 @@
 import Link from 'next/link';
-// import { auth } from 'auth';
+import { auth } from 'auth';
 
 import UserButtonHeader from '@/app/ui/user-button-header';
-// import UserButtonMenu from '@/app/ui/user-button-menu';
+import UserButtonMenu from '@/app/ui/user-button-menu';
 // import UserButtonMenuMember from '@/app/ui/user-button-menu-member';
 import UserButtonMenuFaq from '@/app/ui/user-button-menu-faq';
 // import UserButtonMenuIni from '@/app/ui/user-button-menu-ini';
@@ -15,11 +15,11 @@ import { getAllPosts } from '@/app/lib/getPost';
 
 export default async function Header( ) {
 
-  // const session = await auth()
-  // const user = await fetchUserById(session?.user?.email)
-  const user= {
-    email: "mario@gmail.com"
-  }
+  const session = await auth()
+  const user = await fetchUserById(session?.user?.email)
+  // const user= {
+  //   email: "mario@gmail.com"
+  // }
 
   const allPosts = getAllPosts();
 
@@ -72,7 +72,7 @@ export default async function Header( ) {
         ) : ( */}
           <Link
             href="/login"
-            className="flex flex-col items-center opacity-70 duration-200 hover:opacity-95"
+            className="flex flex-col items-center opacity-70 duration-200 hover:opacity-95 "
           >
             <div className="max-w-max ">
               <IconCuenta

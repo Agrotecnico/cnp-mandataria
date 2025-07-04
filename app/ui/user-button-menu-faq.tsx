@@ -18,7 +18,10 @@ export default  function UserButtonMenuFaq({allPosts}:{allPosts:Post}) {
   const pathname = usePathname();
 
   return (
-    <div className={`block  min-[1024px]:hidden`}>
+    <div 
+      // className={`block  min-[1024px]:hidden`}
+      className={`${pathname.startsWith('/faq') ? "block" : "hidden" }  min-[1024px]:hidden`}
+      >
       <Dropdown>
         <Dropdown.Button>
           <div className="flex items-center gap-2  duration-200 opacity-75 hover:opacity-[0.9]">
