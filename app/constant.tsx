@@ -252,10 +252,9 @@ export const linkMembers = [
 
 export const links = [
   { name: 'Resumen', href: '/dashboard', icon: HomeIcon, },
-  { name: 'Facturas', href: '/dashboard/invoices', icon: InboxIcon, },
-  { name: 'Clientes', href: '/dashboard/customers', icon: UserGroupIcon },
+  // { name: 'Facturas', href: '/dashboard/invoices', icon: InboxIcon, },
+  // { name: 'Clientes', href: '/dashboard/customers', icon: UserGroupIcon },
   { name: 'Consultas', href: '/dashboard/consultas', icon: QueueListIcon },
-  // { name: 'Trámites', href: '/dashboard/inicioTramite', icon: ClipboardDocumentListIcon, },
   { name: 'Trámites', href: '/dashboard/tramites', icon: ClipboardDocumentListIcon, },
-  { name: 'Editar Perfil', href: '/dashboard/perfil', icon: UserCircleIcon },
+  // { name: 'Editar Perfil', href: '/dashboard/perfil', icon: UserCircleIcon },
 ];
