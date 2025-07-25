@@ -523,7 +523,6 @@ export async function updateTramite(
   prevStateUpdateTramite: StateUpdateTramite,
   formData: FormData,
 ) {
-  // console.log("formData:", formData)
   const validatedFields = UpdateTramite.safeParse({
     estado: formData.get('estado'),
     presupuesto: formData.get('presupuesto'),
@@ -548,8 +547,6 @@ export async function updateTramite(
   const started =  started_at ? started_at : estado === "iniciado" ? newDate : null;
   const canceled =  canceled_at ? canceled_at : estado === "cancelado" ? newDate : null;
   const finished =  finished_at ? finished_at : estado === "terminado" ? newDate : null;
-
-  // console.log( estado, presupuestoInCents, budgeted, started, canceled, finished)
 
   try {
     await sql`

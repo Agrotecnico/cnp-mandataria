@@ -9,7 +9,7 @@ import markdownToHtml from '@/app/lib/markdownToHtml';
 
 export const metadata: Metadata = {
   title: 'Iniciar Trámites',
-  description: "Iniciar trámites con opción de envío archivos adjuntos "
+  description: "Formulario inicio trámites con opción de envío archivos adjuntos"
 };
 
 type Params = {

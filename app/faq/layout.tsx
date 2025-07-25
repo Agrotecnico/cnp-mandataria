@@ -8,7 +8,7 @@ import { Providers } from '@/app/dashboard/providers'
 
 export const metadata: Metadata = {
   title: 'Consultas Frecuentes',
-  description:'En esta página listamos y detallamos las consultas más frecuentes ',
+  description:'Listado y detalles de las consultas más frecuentes ',
 };
 
 export default async function Layout({        
