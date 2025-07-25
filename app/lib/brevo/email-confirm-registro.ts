@@ -27,7 +27,7 @@ export async function emailConfirmRegistro( {subject, to, htmlContent }: Params 
         `<html>
             <body>
                 <br>
-                <img src="https://res.cloudinary.com/dchmrl6fc/image/upload/v1746567883/logo-cnp-horizontal_c0bn3p.png" alt="Logo" width="160" height="46">
+                <img src="https://res.cloudinary.com/dchmrl6fc/image/upload/v1753280842/logo-cnp-horizontal_yxoecb.png" alt="Logo" width="160" height="46">
                 <br>
                 <br>
                 <p>${htmlContent}</p>

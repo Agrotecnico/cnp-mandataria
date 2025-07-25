@@ -65,6 +65,14 @@ export async function fetchCardData() {
          FROM invoices`;
     const consultaCountPromise = sql`SELECT COUNT(*) FROM consultas`;
     const tramiteCountPromise = sql`SELECT COUNT(*) FROM tramites`;
+    const respondidaCountPromise = sql`SELECT COUNT(*) FROM consultas WHERE respuesta != 'null'`;
+    const terminadoCountPromise = sql`
+      SELECT COUNT(*) 
+      FROM tramites 
+      WHERE 
+        estado = 'terminado' OR
+        estado = 'cancelado'
+    `;
 
     const data = await Promise.all([
       invoiceCountPromise,
@@ -72,6 +80,8 @@ export async function fetchCardData() {
       invoiceStatusPromise,
       consultaCountPromise,
       tramiteCountPromise,
+      respondidaCountPromise,
+      terminadoCountPromise,
     ]);
 
     const numberOfInvoices = Number(data[0].rows[0].count ?? '0');
@@ -80,6 +90,8 @@ export async function fetchCardData() {
     const totalPendingInvoices = formatCurrency(data[2].rows[0].pending ?? '0');
     const numberOfConsultas = Number(data[3].rows[0].count ?? '0');
     const numberOfTramites = Number(data[4].rows[0].count ?? '0');
+    const numberOfRespondidas = Number(data[5].rows[0].count ?? '0');
+    const numberOfTerminados = Number(data[6].rows[0].count ?? '0');
 
     return {
       numberOfCustomers,
@@ -87,7 +99,9 @@ export async function fetchCardData() {
       totalPaidInvoices,
       totalPendingInvoices,
       numberOfConsultas,
-      numberOfTramites
+      numberOfTramites,
+      numberOfRespondidas,
+      numberOfTerminados,
     };
   } catch (error) {
     console.error('Database Error:', error);
@@ -586,6 +600,7 @@ export async function fetchFilteredComments(id: string/* query: string, currentP
     comments.post_slug,
     comments.comment,
     comments.created_at,
+    comments.nombre,
     users.name,
     users.image
     FROM comments

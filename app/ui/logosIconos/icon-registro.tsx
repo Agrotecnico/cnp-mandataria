@@ -8,7 +8,7 @@ export type IconProps = {
 
 const IconRegistro: React.FC<IconProps> = ({
   size=40,
-  fill= "#b2439acc",
+  fill= "#548eff",
   fill2= "#39507fdd",
   ...attributes
 }) => {

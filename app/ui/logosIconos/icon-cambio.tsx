@@ -8,8 +8,8 @@ export type IconProps = {
 
 const IconCambio: React.FC<IconProps> = ({
   size=40,
-  fill= "#bf12bf",
-  fill2= "50073aaa",
+  fill= "#fffd",
+  fill2= "#548eff",
   ...attributes
 }) => {
   return (

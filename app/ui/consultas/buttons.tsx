@@ -10,7 +10,7 @@ export function UpdateConsulta({ id }: { id: string }) {
       href={`/dashboard/consultas/${id}/edit`}
       className="rounded-md w-[38px] duration-150 p-2 opacity-70 bg-[#ffffff99] hover:opacity-100 hover:bg-[#ffffffbb] "
     >
-      <PencilIcon className="w-5 text-[#2c3c8a]" />
+      <PencilIcon className="w-5 text-[#020b1ddd]" />
     </Link>
   );
 }

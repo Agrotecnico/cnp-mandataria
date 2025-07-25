@@ -8,7 +8,7 @@ export type IconProps = {
 
 const IconInfo: React.FC<IconProps> = ({
   size=40,
-  color= "#1d021544",
+  color= "#020b1d44",
   color2= "#ffffff",
   ...attributes
 }) => {

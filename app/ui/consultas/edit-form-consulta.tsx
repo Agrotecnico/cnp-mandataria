@@ -36,6 +36,8 @@ export default function EditConsultaForm({
   const [consultaAsunto, setConsultaAsunto] = useState("")
   const [respuesta, setRespuesta] = useState("")
 
+  const consultaA:string[] | undefined= consulta.consulta.split(": ")
+
   const consultaEmail= `${consultaAsunto}:  ${consulta.consulta}`
   const extrConsulta= consultaEmail.slice(0, 150)
 
@@ -48,7 +50,7 @@ export default function EditConsultaForm({
 
   const initialState: StateUpdateConsulta = { message: null, errors: {} };
   const updateConsultaWithId = updateConsulta.bind(null, id);
-  const [state, formAction] = useActionState(updateConsultaWithId, initialState);
+  const [state, formAction, isPending] = useActionState(updateConsultaWithId, initialState);
 
 
   return (
@@ -79,15 +81,15 @@ export default function EditConsultaForm({
         <Frente className="py-4 mb-4 px-4 text-sm sm:px-4" >
           <div className="w-full items-center flex gap-3 justify-end sm:mb-0">
             <div className={`flex gap-4 w-full text-[15px] sm:text-base`}>
-              <IconConsulta  className="w-6 h-6" color="#ffffff" color2="#50073aaa" />
-              <p className={`font-medium text-[14px] text-[#50073a88]`}>
+              <IconConsulta  className="w-5 h-5" color="#ffffff" color2="#39507fcc" />
+              <p className={`font-medium text-[14px] text-[#39507fdd]`}>
                 CONSULTA 
                 <span className="text-[13px]" > - {formatDateToLocal(consulta.created_at)}</span>
               </p>
             </div>
 
             <Button
-              className="relative h-[30px] rounded-md border border-[#e9dae9] min-h-[24px] w-[72px] justify-center bg-[#ffffffaa] !px-2.5 py-1 text-[13px] !font-normal text-[#1d0215aa] hover:bg-[#ffffff] hover:text-[#1d0215dd] hover:border-[#d8c0d7] active:!bg-[#eee]"
+              className="relative h-[30px] rounded-md border border-[#e9dae9] min-h-[24px] w-[72px] justify-center bg-[#ffffffaa] !px-2.5 py-1 text-[13px] !font-normal text-[#020b1daa] hover:bg-[#ffffff] hover:text-[#020b1ddd] hover:border-[#d8c0d7] active:!bg-[#eee]"
               onClick={() => { setEstado(!estado)}}
               data-testid="edit-button"
               data-active={estado}
@@ -108,13 +110,21 @@ export default function EditConsultaForm({
             )}
           >
             <div className={`px-10 mb-6 ${estado && "mt-4"} `}>
-              {consulta.consulta}
+              {!consulta.respuesta ? (
+                consulta.consulta
+              ) : (
+                <>
+                <p className="font-semibold">Asunto: <span className="font-normal">{consultaA[0]}</span></p>
+                <p className="font-semibold">Consulta: <span className="font-normal">{consultaA[1]}</span></p>
+                </>
+              ) }
+              
             </div>
             {!consulta.respuesta && (
               <div className="">
                 <label
                   htmlFor="consulta"
-                  className="mb-1 ml-3 block text-[#50073a88] text-sm font-medium"
+                  className="mb-1 ml-3 block text-[#39507fdd] text-sm font-medium"
                 >
                   ASUNTO
                 </label>
@@ -138,15 +148,15 @@ export default function EditConsultaForm({
           <div className="w-full items-center flex gap-3 justify-end sm:mb-0">
             <div className={`flex gap-4 w-full text-[15px] sm:text-base`}>
                {!consulta.updated_at ? (
-                  <p className={`flex items-center font-medium text-[14px] text-[#50073a88]`}>
-                    <IconRespuesta color="#ffffff" color2="#b2439acc" size="24"  className="mr-4 scale-x-[-1]"/>
+                  <p className={`flex items-center font-medium text-[14px] text-[#39507fdd]`}>
+                    <IconRespuesta color="#ffffff" color2="#80a2e5" size="20"  className="mr-4 scale-x-[-1]"/>
                     ENVIAR RESPUESTA
                   </p>
                 ): (
                   <div className="flex items-center">
-                    <IconRespuesta color="#ffffff" color2="#50073aaa" size="24"  className=" mr-4"/>
-                    <p className={`font-medium text-[14px] text-[#50073a88]`}>
-                      CONSULTA 
+                    <IconRespuesta color="#ffffff" color2="#39507fcc" size="20"  className=" mr-4"/>
+                    <p className={`font-medium text-[14px] text-[#39507fdd]`}>
+                      RESPUESTA 
                       <span className="text-[13px]" > - {formatDateToLocal(consulta.created_at)}</span>
                     </p>
                   </div>
@@ -154,7 +164,7 @@ export default function EditConsultaForm({
             </div>
 
             <Button
-              className="relative h-[30px] rounded-md border border-[#e9dae9] min-h-[24px] w-[72px] justify-center bg-[#ffffffaa] !px-2.5 py-1 text-[13px] !font-normal text-[#1d0215aa] hover:bg-[#ffffff] hover:text-[#1d0215dd] hover:border-[#d8c0d7] active:!bg-[#eee]"
+              className="relative h-[30px] rounded-md border border-[#e9dae9] min-h-[24px] w-[72px] justify-center bg-[#ffffffaa] !px-2.5 py-1 text-[13px] !font-normal text-[#020b1daa] hover:bg-[#ffffff] hover:text-[#1d0215dd] hover:border-[#d8c0d7] active:!bg-[#eee]"
               onClick={() => { setEstadoRespuesta(!estadoRespuesta)}}
               data-testid="edit-button"
               data-active={estadoRespuesta}
@@ -181,7 +191,7 @@ export default function EditConsultaForm({
               <div className="relative ">
                 <label
                   htmlFor="respuesta"
-                  className="mb-1 ml-3 block text-[#50073a88] text-sm  font-medium"
+                  className="mb-1 ml-3 block text-[#39507fdd] text-sm  font-medium"
                 >
                   EDITAR 
                 </label>
@@ -203,7 +213,7 @@ export default function EditConsultaForm({
 
         {/* Email Consulta */}
         {!consulta.respuesta && (
-          <Frente className={` py-4 mb-4 px-4 text-sm sm:px-4 `} >
+          <Frente className={`hidden py-4 mb-4 px-4 text-sm sm:px-4 `} >
             <div className="w-full items-start flex gap-3 justify-end sm:items-center sm:mb-0">
               <div className={`flex items-center gap-4 w-full text-[15px] sm:text-base`}>
                 <IconEnvioEmail  className="w-9 h-4 fill-[#50073aaa]" size={32} />
@@ -403,6 +413,7 @@ export default function EditConsultaForm({
               handleClickButton()
               }}
               disabled= {!respuesta || !consultaAsunto ? true : false}
+              className={`${isPending && "before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_1s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/30 before:to-transparent"}  relative overflow-hidden `}
               >
               Enviar respuesta</ButtonA>
           )}

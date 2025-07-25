@@ -5,7 +5,7 @@ import UserButtonHeader from '@/app/ui/user-button-header';
 import UserButtonMenu from '@/app/ui/user-button-menu';
 // import UserButtonMenuMember from '@/app/ui/user-button-menu-member';
 import UserButtonMenuFaq from '@/app/ui/user-button-menu-faq';
-// import UserButtonMenuIni from '@/app/ui/user-button-menu-ini';
+import UserButtonMenuIni from '@/app/ui/user-button-menu-ini';
 import LogoCnpColor from '@/app/ui/logosIconos/logo-cnp-color';
 import LogoCnpColorV from '@/app/ui/logosIconos/logo-cnp-color-v';
 import IconCuenta from '@/app/ui/logosIconos/icon-cuenta';
@@ -41,7 +41,7 @@ export default async function Header( ) {
 
         <div className="flex flex-col text-center text-[18px] leading-6 text-[#ffffffd4] [text-shadow:_1px_1px_0_#00000082] md:flex-row md:leading-7">
 
-          {user?.email === process.env.ADMIN ? (
+          {user?.role === "admin" ? (
             <>
               <UserButtonMenuFaq  allPosts={allPosts} />
               {/* <UserButtonMenu /> */}
@@ -50,26 +50,26 @@ export default async function Header( ) {
             <>
               {/* <UserButtonMenuMember /> */}
               <UserButtonMenuFaq  allPosts={allPosts} />
-              {/* <UserButtonMenuIni /> */}
+              <UserButtonMenuIni />
             </>
             ) : (
             <>
               <UserButtonMenuFaq  allPosts={allPosts} />
-              {/* <UserButtonMenuIni /> */}
+              <UserButtonMenuIni />
             </>
             )
           }
 
         </div>
 
-        {/* {user ? (
+        {user ? (
           <div className="flex items-center gap-2 ">
             <span className="hidden text-sm text-[#fffffff2] [text-shadow:_1px_1px_0px_#000000c9] md:inline-flex ">
               {user?.email}
             </span>
             <UserButtonHeader user={user} />
           </div>
-        ) : ( */}
+        ) : (
           <Link
             href="/login"
             className="flex flex-col items-center opacity-70 duration-200 hover:opacity-95 "
@@ -85,7 +85,7 @@ export default async function Header( ) {
               Acceso
             </div>
           </Link>
-        {/* )} */}
+         )} 
       </div>
     </header>
   );

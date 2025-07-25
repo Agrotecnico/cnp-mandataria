@@ -37,5 +37,3 @@ next-env.d.ts
 
 # para test
 /app/pruebas
-/app/login
-/app/query

@@ -7,7 +7,7 @@ export type IconProps = {
 
 const IconSeguridad: React.FC<IconProps> = ({
   size=50,
-  fill= "#39507f",
+  fill= "#548eff",
   ...attributes
 }) => {
   return (

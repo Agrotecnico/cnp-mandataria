@@ -7,7 +7,7 @@ export type IconProps = {
 
 const IconAdjunto: React.FC<IconProps> = ({
   size=40,
-  color= "#50073aaa",
+  color= "#39507fcc",
   ...attributes
 }) => {
   return (

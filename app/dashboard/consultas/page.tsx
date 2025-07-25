@@ -23,8 +23,8 @@ export default async function Page({
   };
 }) {
   const session = await auth();
-  const user = await fetchUserById(session?.user?.email);
-  const id= user?.email
+  // const user = await fetchUserById(session?.user?.email);
+  const id= session?.user?.email
 
   const query = searchParams?.query || '';
   const currentPage = Number(searchParams?.page) || 1;
@@ -36,16 +36,16 @@ export default async function Page({
   const consultas = await fetchFilteredConsultasM( id, currentPage );
 
 
-  if (user?.email === process.env.ADMIN)
+  if (session?.user.role === "admin")
     return (
       <main>
         <h1 className={` mb-4 text-xl lg:text-2xl`}>
           Consultas
         </h1>
 
-        <TableConsultaAdmin query={query} currentPage={currentPage}   />
+        <TableConsultaAdmin query={query} currentPage={currentPage} />
 
-        <div className="mt-5 flex w-full justify-center">
+        <div className="mt-2 mb-4 flex w-full justify-center">
           <Pagination totalPages={totalPages} />
         </div>
       </main>
@@ -53,14 +53,12 @@ export default async function Page({
 
     return (
       <main>
-        <div className=" mb-8">
-          <h1 className={` text-xl lg:text-2xl`}>
-            Tus Consultas
-          </h1>
-        </div>
+        {/* <h1 className={`mb-4 text-xl lg:text-2xl`}>
+          Tus Consultas
+        </h1>
         
         {consultas.length ? (
-          <div className="text-[#1d0215dd] flex flex-col gap-2 ">
+          <div className=" flex flex-col gap-2 ">
             {consultas?.map((consulta, idx) => (
               <div key={idx } className=" text-[13px] leading-[18px] ">
                 <TableConsultaMember consulta={consulta} />
@@ -72,7 +70,10 @@ export default async function Page({
           </div>
         ) : (
           <div>Todavía no realizaste una consulta</div>
-        )}
+        )} */}
+        <div className="h-[50%] flex items-center justify-center ">
+          Página no disponble
+        </div>
       </main>
   );
 }

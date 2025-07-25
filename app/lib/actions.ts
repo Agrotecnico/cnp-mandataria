@@ -7,7 +7,7 @@ import { redirect, useRouter } from 'next/navigation';
 import { signIn } from '@/auth';
 import { AuthError } from 'next-auth';
 import bcrypt from "bcrypt";
-// import { emailPresupuesto } from "@/app/lib/brevo/email-presupuesto";
+import { emailPresupuesto } from "@/app/lib/brevo/email-presupuesto";
 import { emailRespuesta } from "@/app/lib/brevo/email-respuesta";
 import { emailConfirmRegistro } from "@/app/lib/brevo/email-confirm-registro";
 import { emailConfirmPedido } from "@/app/lib/brevo/email-confirm-pedido";
@@ -80,6 +80,7 @@ const FormSchemaComment = z.object({
   post_slug: z.string().max(1024, { message: "Must be 1024 or fewer characters long" }),
   comment: z.string().max(1024, { message: "Must be 1024 or fewer characters long" }),
   created_at: z.string(),
+  nombre: z.string().min(2, { message: "Must be 2 or more characters long" }),
 });
 
 
@@ -197,9 +198,19 @@ export type StateComment = {
     email_id?: string[];
     post_slug?: string[];
     comment?: string[];
+    nombre?: string[] | undefined;
   };
   message?: string | null;
 };
+
+// export type StateUpdateComment = {
+//   errors?: {
+//     email_id?: string[];
+//     respuesta?: string[];
+//     updated_at?: string[];
+//   };
+//   message?: string | null;
+// };
 
 
 export async function createInvoice(prevState: State, formData: FormData) {
@@ -512,7 +523,6 @@ export async function updateTramite(
   prevStateUpdateTramite: StateUpdateTramite,
   formData: FormData,
 ) {
-  // console.log("formData:", formData)
   const validatedFields = UpdateTramite.safeParse({
     estado: formData.get('estado'),
     presupuesto: formData.get('presupuesto'),
@@ -537,8 +547,6 @@ export async function updateTramite(
   const started =  started_at ? started_at : estado === "iniciado" ? newDate : null;
   const canceled =  canceled_at ? canceled_at : estado === "cancelado" ? newDate : null;
   const finished =  finished_at ? finished_at : estado === "terminado" ? newDate : null;
-
-  // console.log( estado, presupuestoInCents, budgeted, started, canceled, finished)
 
   try {
     await sql`
@@ -766,6 +774,7 @@ export async function createComment(prevStateComment: StateComment, formData: Fo
     email_id: formData.get('email_id'),
     post_slug: formData.get('post_slug'),
     comment: formData.get('comment'),
+    nombre: formData.get('nombre'),
   });
 
   // If form validation fails, return errors early. Otherwise, continue.
@@ -777,14 +786,17 @@ export async function createComment(prevStateComment: StateComment, formData: Fo
   }
 
   // Prepare data for insertion into the database
-  const { email_id, post_slug, comment } = validatedFields.data;
+  const { email_id, post_slug, comment, nombre } = validatedFields.data;
 
   // Insert data into the database 
   try {
     await sql`
-      INSERT INTO comments ( email_id, post_slug, comment )
-      VALUES ( ${email_id}, ${post_slug}, ${comment})
+      INSERT INTO comments ( email_id, post_slug, comment, nombre )
+      VALUES ( ${email_id}, ${post_slug}, ${comment}, ${nombre})
     `;
+    // return {
+    //   message: 'ok',
+    // };
   } catch (error) {
     // If a database error occurs, return a more specific error.
     return {
@@ -800,6 +812,41 @@ export async function createComment(prevStateComment: StateComment, formData: Fo
   // redirect('/dashboard/tusConsultas');
 
 }
+// export async function updateComment(
+//   id: string,
+//   prevStateUpdateComment: StateUpdateComment,
+//   formData: FormData,
+// ) {
+//   const validatedFields = UpdateConsulta.safeParse({
+//     // name: formData.get('name'),
+//     // email: formData.get('email'),
+//     consulta: formData.get('consulta'),
+//     respuesta: formData.get('respuesta'),
+//     updated_at: formData.get('updated_at'),
+//   });
+
+//   if (!validatedFields.success) {
+//     return {
+//       errors: validatedFields.error.flatten().fieldErrors,
+//       message: 'Missing Fields. Failed to Update Consulta.',
+//     };
+//   }
+
+//   const { consulta, respuesta, updated_at } = validatedFields.data;
+
+//   try {
+//     await sql`
+//       UPDATE consultas
+//       SET consulta = ${consulta}, respuesta = ${respuesta}, updated_at = ${updated_at}
+//       WHERE id = ${id}
+//     `;
+//   } catch (error) {
+//     return { message: 'Database Error: Failed to Update Consulta.' };
+//   }
+
+//   revalidatePath('/dashboard/consultas');
+//   redirect('/dashboard/consultas');
+// }
 export async function deleteComment(id: string) {
   // throw new Error('Failed to Delete Comment');
   try {
@@ -834,29 +881,29 @@ export async function authenticate(
 
 
 
-// export async function handleFormPresupuesto(formData: FormData) {
-//   const title= formData.get("title")
-//   const to_name= formData.get("to_name")
-//   const to_email= formData.get("to_email")
-//   const content= formData.get("content")
-//   const validez= formData.get("validez")
-//   const tramite= formData.get("tramite")
+export async function handleFormPresupuesto(formData: FormData) {
+  const title= formData.get("title")
+  const to_name= formData.get("to_name")
+  const to_email= formData.get("to_email")
+  const content= formData.get("content")
+  const validez= formData.get("validez")
+  const tramite= formData.get("tramite")
 
-//   if (!title || !to_name || !to_email || !content || !validez || !tramite ) {
-//     return console.log("Por favor llene todos los campos")
-//   }
+  if (!title || !to_name || !to_email || !content || !validez || !tramite ) {
+    return console.log("Por favor llene todos los campos")
+  }
   
-//   await emailPresupuesto({
-//     subject: title as string,
-//     to: [{
-//       name: to_name as string,
-//       email: to_email as string
-//       }],
-//     htmlContent: content as string,
-//     validez: validez as string,
-//     tramite: tramite as string
-//   })
-// }
+  await emailPresupuesto({
+    subject: title as string,
+    to: [{
+      name: to_name as string,
+      email: to_email as string
+      }],
+    htmlContent: content as string,
+    validez: validez as string,
+    tramite: tramite as string
+  })
+}
 
 export async function handleFormRespuesta(formData: FormData) {
   const title= formData.get("title")
