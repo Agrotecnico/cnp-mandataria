@@ -59,25 +59,25 @@ export default function TableConsultaMember( {
           </div>
 
           <div className="w-full mt-12 -ml-7 -mr-20 sm:px-1 sm:m-0 ">
-            <div className="text-[#50073a7d] w-full mb-2 font-medium text-[13.5px] sm:text-[14.5px] ">
+            <div className="text-[#39507f] w-full mb-2 font-medium text-[13.5px] sm:text-[14.5px] ">
               CONSULTA
               <span className={`ml-1 ${!consulta.respuesta && "hidden"}`}>
                 respondida el
-                <span className="text-[#1d0215aa] text-[13px] bg-[#22ff0014] ml-1  px-1.5 py-0.5 rounded-lg "  >
+                <span className="text-[#020b1dcc] text-[13px] bg-[#22ff0014] ml-1  px-1.5 py-0.5 rounded-lg "  >
                   {formatDateToLocal(consulta.updated_at)}
                 </span>
               </span>
 
               <span className={`ml-1 ${consulta.respuesta && "hidden"}`}>
                 realizada
-                <span className={` text-[#1d0215aa] text-[13px] bg-[#ff000014] ml-1 px-1.5 py-0.5 rounded-lg ${consulta.respuesta && "hidden"}`}>
+                <span className={` text-[13px] bg-[#ff000014] ml-1 px-1.5 py-0.5 rounded-lg ${consulta.respuesta && "hidden"}`}>
                   {distanceToNow(new Date(consulta.created_at))}
                 </span> 
               </span>
             </div>
 
             <div className={`mb-2`}>
-              <span className={` decoration-[#1d021544] underline underline-offset-[3px] ${state && "underline-offset-0 no-underline"}`}>
+              <span className={` decoration-[#020b1d44] underline underline-offset-[3px] ${state && "underline-offset-0 no-underline"}`}>
                 {tituloConsulta.join(" ") }
               </span>
               <span className=" ">
@@ -90,7 +90,7 @@ export default function TableConsultaMember( {
           </div>
 
           <Button
-            className="relative h-[30px] rounded-md border border-[#e9dae9] min-h-[24px] w-[72px] justify-center bg-[#ffffffaa] !px-2.5 py-1 text-[13px] !font-normal text-[#1d0215aa] hover:bg-[#ffffff] hover:text-[#1d0215dd] hover:border-[#d8c0d7] active:!bg-[#eee]"
+            className="relative h-[30px] rounded-md border border-[#e9dae9] min-h-[24px] w-[72px] justify-center bg-[#ffffffaa] !px-2.5 py-1 text-[13px] !font-normal hover:bg-[#ffffff] hover:text-[#020b1ddd] hover:border-[#d8c0d7] active:!bg-[#eee]"
             onClick={() => { handleToggle()}}
             data-testid="edit-button"
             data-active={state}
@@ -112,7 +112,7 @@ export default function TableConsultaMember( {
         >
           <div className={`flex flex-col gap-4 mb-4 text-sm cursor-default transition-[visibility] duration-300 ease-in-out ${!state && "invisible"}`}>
             <div className="mt-4 text-[14.5px]">
-              <div className="text-[#50073a7d] mb-0.5 font-medium text-[13.5px] sm:text-[14.5px] ">
+              <div className="text-[#39507f] mb-0.5 font-medium text-[13.5px] sm:text-[14.5px] ">
                 RESPUESTA
               </div>
 
@@ -120,9 +120,9 @@ export default function TableConsultaMember( {
                 { consulta.respuesta ? (
                   <p className="p-1 border border-[#50073a22] bg-[#ffffffdd] rounded-[2px] sm:p-4">{ consulta.respuesta } </p>
                 ) : (
-                  <p className="p-2  border border-[#50073a22] bg-[#ffffffdd] rounded-[2px] sm:p-4">
-                    Recibimos la consulta.<br></br>
-                    Te enviaremos la respuesta en la mayor brevedad.
+                  <p className="p-2 border text-[#39507fcc] border-[#50073a22] bg-[#ffffffdd] rounded-[2px] sm:p-4">
+                    <i>Recibimos la consulta.</i><br></br>
+                    <i>Te enviaremos la respuesta en la mayor brevedad.</i>
                   </p>
                 )}
               </div>
@@ -131,12 +131,12 @@ export default function TableConsultaMember( {
 
           <div className={`flex flex-col items-center transition-[visibility] duration-300 ease-in-out ${!state && "invisible"} `}>
             <div className="mb-1.5 text-base">Archivos Adjuntos</div>
-            <div className="w-full bg-[#1d0215] pt-6 pb-4 px-3 rounded-lg flex gap-6 flex-wrap justify-center">
+            <div className="w-full bg-[#020b1d] pt-6 pb-4 px-3 rounded-lg flex gap-6 flex-wrap justify-center">
 
 
               <div className="">
                 {archivos ? (
-                  <div className="text-[#1d0215dd] flex gap-5 items-baseline ">
+                  <div className=" flex gap-5 items-baseline ">
                     {archivos?.map((archivo, index) => (
                       <div key={index } className=" text-[13px] leading-[18px] opacity-80 hover:opacity-100 ">
                         
@@ -156,7 +156,7 @@ export default function TableConsultaMember( {
                             alt="imagen archivo"
                             width={96}
                             height={96}
-                            className="rounded border border-[#777] " />
+                            className="rounded w-16 border border-[#777] " />
                         </Link>
                       </div> 
                     ))}

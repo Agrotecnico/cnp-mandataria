@@ -7,7 +7,7 @@ avatar: "/customers/carina-blog.jpg"
 autor: "Carina Noemi Pacheco"
 ---
 
-Tienes que realizar la **Denuncia de Venta**.
+Tenés que realizar **Denuncia de Venta**.
 
 Para quedar eximido de la responsabilidad civil de tu vehículo debes hacer la denuncia de venta en el Registro (DNRPA) donde se encuentra radicado el vehículo. 
 

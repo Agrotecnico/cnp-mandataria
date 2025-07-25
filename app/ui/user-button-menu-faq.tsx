@@ -47,9 +47,9 @@ export default  function UserButtonMenuFaq({allPosts}:{allPosts:Post}) {
                   href="/faq/[slug]"
                   key={post.slug}
                   className={clsx(
-                    'flex items-center justify-start pl-2 pr-4  text-sm text-[#020b1dcc] duration-200 rounded-lg hover:text-[#020b1d] hover:bg-[#39507f18]',
+                    'flex items-center justify-start pl-2 pr-4  text-sm text-[#020b1dcc] duration-200 rounded-lg hover:text-[#020b1d] hover:bg-[#39507f10]',
                     {
-                      'bg-[#39507f19] text-[#020b1e]': pathname === `/faq/${post.slug}`,
+                      'bg-[#39507f11] text-[#020b1e]': pathname === `/faq/${post.slug}`,
                     },
                   )}
                 >

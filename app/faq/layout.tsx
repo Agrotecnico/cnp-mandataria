@@ -7,7 +7,8 @@ import { Providers } from '@/app/dashboard/providers'
 
 
 export const metadata: Metadata = {
-  title: 'Consultas',
+  title: 'Consultas Frecuentes',
+  description:'En esta página listamos y detallamos las consultas más frecuentes ',
 };
 
 export default async function Layout({        
@@ -21,7 +22,7 @@ export default async function Layout({
       {/* <Providers> */}
         <Header />
       {/* </Providers> */}
-      <main className=" mx-auto w-full max-w-[64rem] flex-auto px-2 pb-4 md:px-6 md:pb-6 lg:px-2">
+      <main className=" mx-auto w-full max-w-[66rem] flex-auto px-3 pb-4 md:px-6 md:pb-6 lg:px-2">
         <div className="mx-auto flex flex-col pb-12 md:px-6 ">
           <div className="mt-[90px] flex flex-col-reverse gap-8 sm:mt-[104px] min-[1024px]:flex-row md:gap-4 md:overflow-hidden ">
             <SideNavConsultas />

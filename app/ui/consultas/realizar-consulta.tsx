@@ -9,6 +9,7 @@ import { User } from '@/app/lib/definitions';
 import Link from 'next/link';
 
 import IconConsultaRight from "@/app/ui/logosIconos/icon-consulta-right"
+import IconConsulta from "@/app/ui/logosIconos/icon-consulta"
 import { createConsulta, StateConsulta } from '@/app/lib/actions';
 import { Frente } from '@/app/ui/marcos';
 import useToggleState from "@/app/lib/hooks/use-toggle-state";
@@ -38,8 +39,11 @@ export default function RealizarConsulta( { user }: { user: User | undefined } )
   const [spin, setSpin] = useState(false);
   const [images, setImages] = useState<ImageListType>([]);
 
-  const [name, setName] = useState(`${user?.name}`);
-  const [email, setEmail] = useState(`${user?.email}`);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+
+  // const [name, setName] = useState(`${user?.name}`);
+  // const [email, setEmail] = useState(`${user?.email}`);
 
   const [open, setOpen] = useState(false);
   const [openConsulta, setOpenConsulta] = useState(true);
@@ -157,6 +161,8 @@ export default function RealizarConsulta( { user }: { user: User | undefined } )
       close()
     }
     sessionStorage.getItem('name') && setName(`${sessionStorage.getItem('name')}`)
+    // sessionStorage.getItem('nombre') && setName(`${sessionStorage.getItem('nombre')}`)
+
     sessionStorage.getItem('email') && setEmail(`${sessionStorage.getItem('email')}`)
     if (sessionStorage.getItem('email')) {
       setEmailSession(true);
@@ -178,11 +184,15 @@ export default function RealizarConsulta( { user }: { user: User | undefined } )
     <>
       {/* consult */}
       <Frente className=" p-2 text-small-regular sm:p-4 !bg-[#020b1d16] ">
-        <div  className="flex items-center justify-between sm:flex-row" >
+        <div className="flex items-center justify-between sm:flex-row" >
           <div className="relative flex items-center">
-            <IconConsultaRight className=" ml-1.5 h-[36px] w-[30px] stroke-1 sm:ml-3 " />
-            <div className="absolute top-[1px] left-6 text-[#ffffff] text-xs sm:left-[30px]">?</div>
-            <p className="ml-4 text-sm text-[#39507f]">Consulta <span className=" text-[#d400aa]">*</span></p>
+            {/* <IconConsultaRight className=" ml-1.5 h-[36px] w-[30px] sm:ml-3 " /> */}
+            <IconConsulta 
+                className=" ml-1.5 w-[22px] sm:ml-3 " 
+                color="#fffc" color2="#39507fcc"
+                />
+            {/* <div className="absolute top-[1px] left-6 text-[#ffffff] text-xs sm:left-[30px]">?</div> */}
+            <p className="ml-4 text-sm text-[#39507f]">Consulta <span className=" text-[#ff0000]">*</span></p>
           </div>
           <ButtonB
             className={`h-8 text-[13px] w-max `}
@@ -224,9 +234,17 @@ export default function RealizarConsulta( { user }: { user: User | undefined } )
       </Frente>
 
       {/* adjuntar archivos */}
-      <Frente className={`flex flex-col mt-2 text-small-regular !p-2 !bg-[#020b1d16] ${!state && 'pb-0'} sm:!p-4 `}>
-        <div className={`flex items-center justify-between mb-0`} >
-          <IconArchivo className=" ml-1.5 w-[26px] stroke-1 sm:ml-3 " />
+      <Frente 
+        // className={`flex flex-col mt-2 text-small-regular !p-2 !bg-[#020b1d16] ${!state && 'pb-0'} sm:!p-4 `}
+       className=" p-2 mt-2 text-small-regular sm:p-4 !bg-[#020b1d16] "
+      >
+        <div className="flex items-center justify-between sm:flex-row" >
+          <div className="relative flex items-center gap-5">
+            <IconArchivo className=" ml-1.5 w-8 sm:ml-3 " />
+            <div className={`w-full text-start text-[14px] text-[#39507f] `}>
+              Adjuntar archivos <span className="text-xs opacity-80">(Opcional)</span>
+            </div>
+          </div>
           <ButtonB
             className={`h-8 text-[13px] w-max`}
             onClick={() => {
@@ -237,7 +255,7 @@ export default function RealizarConsulta( { user }: { user: User | undefined } )
             data-testid="edit-button"
             data-active={state}
           >
-            {state ? ( 'Cancelar' ) : ( <div> {' '} Adjuntar <span className="text-xs uppercase">Archivos</span>
+            {state ? ( 'Cancelar' ) : ( <div> {' '} Adjuntar {/* <span className="text-xs uppercase">Archivos</span> */}
               </div> )}
           </ButtonB>
         </div>
@@ -272,7 +290,7 @@ export default function RealizarConsulta( { user }: { user: User | undefined } )
                 dragProps,
                 errors,
               }) => (
-                <div className={`flex flex-col bg-[#4f2642] rounded-lg ${!images.length ? 'gap-0' : 'gap-0.5'} ${!state && "invisible"} `} >
+                <div className={`flex flex-col bg-[#020b1db8] rounded-lg ${!images.length ? 'gap-0' : 'gap-0.5'} ${!state && "invisible"} `} >
                   <button
                     type="button"
                     onClick={onImageUpload}
@@ -280,8 +298,8 @@ export default function RealizarConsulta( { user }: { user: User | undefined } )
                     className={`group rounded-lg w-full disabled:!cursor-default `}
                     disabled= {!state}
                   >
-                    <div className={`relative label-dnd  ${!images.length ? 'rounded-lg' : 'rounded-t-lg'} bg-[#1d0215] text-[#ffffffdd] w-full p-2 duration-150 text-sm flex flex-col justify-center items-center active:opacity-80 sm:p-4 `}>
-                      <div className="flex flex-col items-center duration-150 opacity-80 group-hover:opacity-100 min-[512px]:flex-row ">
+                    <div className={`relative label-dnd  ${!images.length ? 'rounded-lg' : 'rounded-t-lg'} bg-[#020b1d] text-[#ffffffdd] w-full p-2 duration-150 text-sm flex flex-col justify-center items-center active:opacity-80 sm:p-4 `}>
+                      <div className="flex flex-col items-center duration-150 opacity-90 group-hover:opacity-100 min-[512px]:flex-row ">
                         <IconDragDrop className= "w-9 opacity-80  min-[512px]:mr-7" />
                         <div>
                           Click y elegí un archivo o arrastralo y sueltá aquí <br />
@@ -312,7 +330,8 @@ export default function RealizarConsulta( { user }: { user: User | undefined } )
                       </div>
                     </div>
                   </button>
-                  <div className= "flex flex-col rounded-b-lg bg-[#1d0215] ">
+
+                  <div className= "flex flex-col rounded-b-lg bg-[#020b1d] ">
                     <div className= {`flex items-baseline justify-start px-3 gap-x-2 flex-wrap text-sm w-full cursor-default max-[512px]:justify-center sm:px-9 sm:gap-x-4 `}>
                       { images.map((image, index) => (
                         <div key={index} className="flex flex-col items-start pb-4 pt-5">
@@ -353,13 +372,13 @@ export default function RealizarConsulta( { user }: { user: User | undefined } )
       {!user && (
         emailSession === false ? (
           <Frente className="!p-2 mt-2 text-small-regular sm:!p-4 !bg-[#020b1d16] ">
-            <div className="flex items-center justify-between gap-5">
+            <div className="flex items-center justify-between gap-5 ">
               <div className="mt-1.5 ">
                 <IconRegistro className=" w-[24px] ml-1.5 sm:ml-3" />
               </div>
   
-              <div className={`w-full text-start text-[14px] text-[#39507f] duration-300  `}>
-                Dejá tu e-mail para mandarte la respuesta <span className=" text-[#d400aa]">*</span>
+              <div className={`w-full text-start text-[14px] text-[#39507f] `}>
+                Registrá tu e-mail para mandarte la respuesta <span className=" text-[#ff0000]">*</span>
               </div>
                 
               <ButtonB
@@ -375,7 +394,7 @@ export default function RealizarConsulta( { user }: { user: User | undefined } )
                 data-testid="edit-button"
                 data-active={open}
               >
-                {open ? "Cancelar" :  <div className="text-[13px] overflow-auto whitespace-nowrap">Anotar</div>  }
+                {open ? "Cancelar" :  <div className="text-[13px] overflow-auto whitespace-nowrap">Registrar</div>  }
               </ButtonB>
             </div>
             
@@ -406,9 +425,9 @@ export default function RealizarConsulta( { user }: { user: User | undefined } )
                       onChange={(e) => {
                         setName(e.target.value);
                       }} >
-                      <div className="absolute rounded-l-[4px] h-[32px] w-[32px] left-0 top-0 bg-[#1d02150b]" >
+                      <div className="absolute rounded-l-[4px] h-[32px] w-[32px] left-0 top-0 bg-[#020b1d0b]" >
                       </div>
-                      <IconCuenta  className="absolute w-[14px] left-[9px] top-[9px] " color="#50073a66" />
+                      <IconCuenta  className="absolute w-[14px] left-[9px] top-[9px] " color="#39507faa" />
                     </InputCnp>
   
                     <InputCnp
@@ -426,27 +445,11 @@ export default function RealizarConsulta( { user }: { user: User | undefined } )
                         setEmail(e.target.value);
                       }} 
                       >
-                      <div className="absolute rounded-l-[4px] h-[32px] w-[32px] left-0 top-0 bg-[#1d02150b]" >
+                      <div className="absolute rounded-l-[4px] h-[32px] w-[32px] left-0 top-0 bg-[#020b1d0b]" >
                       </div>
-                      <IconEmail2  className="absolute w-[14px] left-[9px] top-[9px] " color="#50073a66" />
+                      <IconEmail2  className="absolute w-[14px] left-[9px] top-[9px] " color="#39507faa" />
                     </InputCnp>
                   </fieldset>
-  
-                  {/* <input
-                    id="password"
-                    type="hidden"
-                    name="password"
-                    defaultValue={"xxxxxx"}
-                    readOnly
-                  />
-  
-                  <input
-                    id="confirmPassword"
-                    type="hidden"
-                    name="confirmPassword"
-                    defaultValue={"xxxxxx"}
-                    readOnly
-                  /> */}
   
                   {/* Massages erros */}
                   <div
@@ -482,7 +485,7 @@ export default function RealizarConsulta( { user }: { user: User | undefined } )
           ) : (
             <Frente className="p-2 mt-2 text-small-regular sm:p-4 !bg-[#e0e6e1]">
               <div className={`w-full text-start text-[13px] text-[#1d0215dd] transition-[opacity] duration-300 sm:text-sm `}>
-                <span className="font-semibold text-sm sm:text-[15px]">{ !estadox.message ? "" : name }</span> Para mandarte la respuesta se registró el e-mail <span className="font-semibold mx-1 text-sm sm:text-[15px] ">{email}</span>
+                <span className="font-semibold text-sm sm:text-[15px]">{ /* !estadox.message ? "" : */ name }</span> Para enviarte la respuesta se registró el e-mail <span className="font-semibold mx-1 text-sm sm:text-[15px] ">{email}</span>
               </div>
             </Frente> 
           )
@@ -550,7 +553,7 @@ export default function RealizarConsulta( { user }: { user: User | undefined } )
 
       {/* Enviar consult */}
       <div className="w-full flex justify-between items-center">
-        <p className={`text-xs ml-2 ${consulta && (emailSession || user)  && "opacity-0" } sm:text-[13px]`}><span className=" text-[#d400aa]">*</span> Requeridos</p>
+        <p className={`text-xs ml-2 ${consulta && (emailSession || user)  && "opacity-0" } sm:text-[13px]`}><span className=" text-[#ff0000]">*</span> Requeridos</p>
 
         <div className="flex gap-4">
           <div className={`text-[#1d0215bb] rounded-md ${ estado.message !== "consultaCreada"  &&  "hidden"} bg-[#1d02150d] duration-150 hover:bg-[#1d021517] hover:text-[#1d0215]`} >
@@ -584,8 +587,8 @@ export default function RealizarConsulta( { user }: { user: User | undefined } )
                 >
                   <IconCambio
                     className={`${spin && "animate-spin"} mr-2 w-[22px] h-[22px] `}
-                    fill2="#fffc"
-                    fill="#ff00ff"
+                    // fill2="#fffc"
+                    // fill="#ff00ff"
                   />
                   <div className="w-full">
                     Enviar consulta
@@ -706,7 +709,7 @@ export default function RealizarConsulta( { user }: { user: User | undefined } )
                   name="title" 
                   className="!pl-4 !text-sm"
                   rows={1}
-                  value="Confirmación registro e-mail"
+                  value="Registro e-mail"
                   required
                   readOnly
                   >
@@ -778,7 +781,7 @@ export default function RealizarConsulta( { user }: { user: User | undefined } )
             <textarea
               name="title" 
               rows={1}
-              value="Confirmación recepción Consulta"
+              value="Recepción Consulta"
               required
               readOnly
               />

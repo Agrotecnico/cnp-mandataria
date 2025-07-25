@@ -8,11 +8,8 @@ export type IconProps = {
 
 const IconWhatsApp2: React.FC<IconProps> = ({
   size= 40,
-  color= "white",
-  colorFondo="#57c061",
-  // sombraX= "1",
-  // sombraY= "1",
-  // filter="filter1",
+  color= "#49a352",
+  colorFondo="#fff0",
   ...attributes
 }) => {
   return (

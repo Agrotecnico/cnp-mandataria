@@ -49,7 +49,7 @@ export default async function TableConsultaAdmin({
                             
                           </Image>
                         ) : (
-                          <div className="flex w-12 h-12 text-2xl items-center justify-center rounded-full bg-[#1d021511] text-[#666] ">
+                          <div className="flex w-12 h-12 text-2xl items-center justify-center rounded-full bg-[#020b1d11] text-[#39507fdd] ">
                           {AllConsulta?.email_id?.substring(0, 1).toUpperCase()}
                         </div>
                         )} 
@@ -58,14 +58,14 @@ export default async function TableConsultaAdmin({
                       <h2 className="text-md font-semibold m-0" data-testid="username-test">
                         {AllConsulta?.name}
                       </h2>
-                      <p className="text-[#1d0215aa] ">{AllConsulta?.email_id}</p>
+                      <p className="text-[#020b1daa] ">{AllConsulta?.email_id}</p>
                     </div>
                   </div>
 
-                  <div className="flex flex-col w-full text-[#1d0215] py-2 gap-2 border-y border-[#1d021514]">
+                  <div className="flex flex-col w-full  py-2 gap-2 border-y border-[#020b1d14]">
                     <div className={`flex items-center `}>
                       {/* <div className="mr-2 px-[5px] bg-[#dd00dd00] rounded-[4px]">&#10003;</div> */}
-                      <IconConsulta color="#ffffff" color2="#50073a88" size="17"  className="mr-2"/>
+                      <IconConsulta color="#ffffff"  color2="#39507fdd" size="17"  className="mr-2"/>
                       <div className={``}>
                         Consulta realizada 
 
@@ -81,7 +81,7 @@ export default async function TableConsultaAdmin({
                     <div className={`flex items-center `}>
                       {/* <div className={`mr-2 px-[5px] rounded-[4px]  ${!AllConsulta.respuesta && "text-[#ffffff] bg-[#e580d0]"}`}>&#10003;</div> */}
 
-                      {AllConsulta.respuesta ? <IconRespuesta color="#ffffff" color2="#50073a88" size="17"  className="mr-2"/> : <IconRespuesta color="#ffffff" color2="#b2439a" size="18"  className="mr-2 scale-x-[-1]"/>}
+                      {AllConsulta.respuesta ? <IconRespuesta color="#ffffff" color2="#39507fdd" size="17"  className="mr-2"/> : <IconRespuesta color="#ffffff" color2="#548eff" size="18"  className="mr-2 scale-x-[-1]"/>}
 
                       { AllConsulta.respuesta  ? (
                         <div className={``}>

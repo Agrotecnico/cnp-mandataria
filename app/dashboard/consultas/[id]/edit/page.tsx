@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 
 export default async function Page({ params }: { params: { id: string } }) {
   const session = await auth();
-  const user = await fetchUserById(session?.user?.email);
+  // const user = await fetchUserById(session?.user?.email);
   const id = params.id;
   const consulta = await fetchConsultaById(id);
   const pilo= consulta.email_id
@@ -25,7 +25,7 @@ export default async function Page({ params }: { params: { id: string } }) {
     notFound();
   }
 
-  if (user?.email === process.env.ADMIN)
+  if (session?.user.role === "admin")
     return (
       <main>
         <Breadcrumbs

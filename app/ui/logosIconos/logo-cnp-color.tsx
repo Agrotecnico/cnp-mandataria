@@ -10,9 +10,9 @@ export type IconProps = {
 
 const LogoCnpColor: React.FC<IconProps> = ({
   size=160,
-  fillc= "#e7b3d8",
-  filln= "#e7b3d8",
-  fillp= "#e7b3d8",
+  fillc= "#e5a1d2",
+  filln= "#e5a1d2",
+  fillp= "#e5a1d2",
   fillm= "#b3b3b3",
   ...attributes
 }) => {

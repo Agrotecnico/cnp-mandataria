@@ -1,10 +1,22 @@
 // import AcmeLogo from '@/app/ui/acme-logo';
 import LoginForm from '@/app/ui/login-form';
 import { Suspense } from 'react';
+import { auth } from 'auth';
+import { redirect } from 'next/navigation';
+import type { Metadata } from "next"
 
 import Header from '@/app/ui/header';
 
-export default function LoginPage() {
+export const metadata: Metadata = {
+  title: 'Acceso',
+}
+
+export default async function LoginPage() {
+
+  const session = await auth();
+  if (session )
+    return redirect('/dashboard');
+
   return (
     <>
       <Header />

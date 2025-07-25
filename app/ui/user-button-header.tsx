@@ -11,27 +11,40 @@ import {
 import Link from 'next/link';
 import { signOut } from 'next-auth/react';
 import { usePathname } from 'next/navigation';
+import { PowerIcon } from '@heroicons/react/24/outline';
 
 // import { Avatar, AvatarFallback, AvatarImage } from '@/app/ui/uiRadix/avatar';
 import { Button } from '@/app/ui/uiRadix/button';
 import { User } from '@/app/lib/definitions';
+import Image from 'next/image'
 
 
-export default function UserButtonHeader( /* { user }: { user: User | undefined } */ ) {
+export default function UserButtonHeader( { user }: { user: User | undefined } ) {
   
   const pathname = usePathname();
 
 
   return (
     <>
-      {/* <DropdownMenu>
+      <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
             variant="ghost"
             className="relative gap-4 h-8 w-full max-w-max rounded-full px-0"
           >
             {user?.image ? (
-              <Avatar className="h-10 w-10 sm:w-11 sm:h-11">
+              <>
+              <Image
+                  src={user?.image}
+                  alt={user?.name ?? ''}
+                  width={40}
+                  height={40}
+                  // priority
+                  // objectFit={"container"}
+                  className="rounded-full"
+                >
+                </Image>
+              {/* <Avatar className="h-10 w-10 sm:w-11 sm:h-11">
                 {user?.image && (
                   <AvatarImage
                     src={user?.image}
@@ -39,7 +52,8 @@ export default function UserButtonHeader( /* { user }: { user: User | undefined 
                   />
                 )}
                 <AvatarFallback>{user?.email}</AvatarFallback>
-              </Avatar>
+              </Avatar> */}
+              </>
             ) : (
               <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#eee] text-[#374151] ">
                 {user?.email?.substring(0, 1).toUpperCase()}
@@ -147,7 +161,7 @@ export default function UserButtonHeader( /* { user }: { user: User | undefined 
               href={'#'}
             >
               {user?.role === "admin"
-                ? (<div className="w-full px-2 py-1 text-sm  cursor-default rounded-md text-[#37415188] ">Panel Admin</div>)
+                ? (<div className="w-full px-2 py-1 text-sm  cursor-default rounded-md text-[#37415188] ">Panel ADMIN</div>)
                 : ''}
               
             </Link>
@@ -157,7 +171,7 @@ export default function UserButtonHeader( /* { user }: { user: User | undefined 
             >
               <DropdownMenuItem>
                 {user?.role === "admin"
-                  ? (<div className="w-full px-2 py-1 rounded-md text-[#374151] opacity-[0.85] hover:bg-[#0000000a] hover:opacity-100 ">Panel Admin</div>)
+                  ? (<div className="w-full px-2 py-1 rounded-md text-[#374151] opacity-[0.85] hover:bg-[#0000000a] hover:opacity-100 ">Panel ADMIN</div>)
                   : ''}
               </DropdownMenuItem>
             </Link>
@@ -165,17 +179,19 @@ export default function UserButtonHeader( /* { user }: { user: User | undefined 
           
           <Button
             variant={'ghost'}
-            className=" mt-3 file:ml-auto h-auto w-full bg-[#3741511c] text-[#020817] opacity-[0.85] hover:opacity-100 active:bg-transparent"
+            className="!justify-start mt-3 file:ml-auto h-auto w-full bg-[#3741511c] text-[#374151] opacity-[0.80] hover:opacity-100 active:opacity-70"
             onClick={async () => {
               await signOut({ callbackUrl: '/' });
             }}
           >
             <DropdownMenuItem>
+              {/* <div className="w-full flex justify-start"></div> */}
+              <PowerIcon className="w-5 mr-4 text-red-500"/>
               <p>Salir</p>
             </DropdownMenuItem>
           </Button>
         </DropdownMenuContent>
-      </DropdownMenu> */}
+      </DropdownMenu>
     </>
   );
 }

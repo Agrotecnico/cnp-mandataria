@@ -1,0 +1,118 @@
+/* .markdown {
+    @apply text-base leading-relaxed;
+  } */
+  
+  /* .markdown p, */
+  .markdown ul,
+  .markdown ol,
+  .markdown blockquote {
+    @apply my-4;
+  }
+
+  .markdown p {
+    @apply mb-1.5;
+  }
+  
+  .markdown h2 {
+    @apply text-3xl mt-12 mb-4 leading-snug;
+  }
+  
+  .markdown h3 {
+    @apply text-2xl mt-8 mb-4 leading-snug;
+  }
+
+  .markdown h4 {
+    @apply text-xl mt-6 mb-2 leading-snug;
+  }
+
+  .markdown h5 {
+    @apply text-lg mt-4 mb-2 leading-snug text-[#1f2632];
+  }
+
+  .markdown ul {
+    @apply  mt-4 mb-2 pl-4 leading-snug;
+  }
+
+  .markdown ol {
+    @apply text-base mt-4 mb-2 ;
+  }
+
+  .markdown ul li {
+    @apply  mt-4 mb-2 leading-snug list-disc marker:text-[#d477e7];
+  }
+
+  .markdown ol li {
+    @apply text-base mt-4 mb-2 ml-4 leading-snug list-decimal;
+  }
+
+  .markdown li {
+    @apply text-base mt-4 mb-2;
+  }
+
+  /* .markdown p {
+    @apply text-xs md:text-sm ;
+  } */
+  
+
+
+
+
+  /* html {
+    font-family: sans-serif;
+  } */
+  
+  #pol {
+    background: #ccc;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid black;
+  }
+  
+  #pol ol {
+    padding-left: 0;
+  }
+  
+  #pol li,
+  div > #pol2 {
+    background: #eee;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    list-style-type: none;
+    border: 1px solid black;
+  }
+  
+  #pol img {
+    height: 64px;
+    order: 1;
+  }
+  
+  #pol #pol2 {
+    line-height: 32px;
+    padding-left: 10px;
+  }
+  
+  #pol label,
+  #pol button {
+    background-color: #7f9ccb;
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: 1px ridge black;
+    font-size: 0.8rem;
+    height: auto;
+  }
+  
+  #pol label:hover,
+  #pol button:hover {
+    background-color: #2d5ba3;
+    color: white;
+  }
+  
+  #pol label:active,
+  #pol button:active {
+    background-color: #0d3f8f;
+    color: white;
+  }
+
+
+

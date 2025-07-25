@@ -30,33 +30,29 @@ import {
   Parallax,
 } from 'swiper/modules';
 import { Frente, Fondo } from '@/app/ui/marcos';
-// import { useSession } from "next-auth/react"
+import { useSession } from "next-auth/react"
 import { User } from '@/app/lib/definitions';
-import  IconWhatsApp  from "@/app/ui/logosIconos/icon-whatsApp2";
+import  IconWhatsApp2  from "@/app/ui/logosIconos/icon-whatsApp2";
 import { ChevronRightIcon, } from '@heroicons/react/24/outline';
 import { ButtonA } from '@/app/ui/button';
-import { Metadata } from 'next';
 import IconPresupuesto from './ui/logosIconos/icon-presupuesto';
 import IconConsulta from './ui/logosIconos/icon-consulta';
 import IconLink from './ui/logosIconos/icon-link';
 
 
-export const metadata: Metadata = {
-    title: 'CNP Mandataria',
-  };
 
 
 export default function CNPMandataria({
-  // user,
+  user,
   linkDatos,
 }: {
-  // user: User | undefined 
+  user: User | undefined 
   linkDatos: {
     slug: string;
     excerpt: string;
   }[];
 }) {
-  // const { data: session, update } = useSession()
+  const { data: session, update } = useSession()
   
   return (
     <Swiper
@@ -106,19 +102,21 @@ export default function CNPMandataria({
         },
       }}
     >
-      <NavInicio /* user={user} */ />
+      <NavInicio  user={user}  />
       
-      <div className= "fixed z-20 flex justify-end bottom-[24px] right-[8px] rounded-xl lg:max-w-5xl lg:mx-[calc((100vw_-_64rem)_/_2)] shadow-[0_20px_25px_-5px_rgb(0_0_0_/_0.2),_0_8px_10px_-6px_rgb(0_0_0_/_0.2)]">
+      <div className= "group fixed z-20 flex justify-end bottom-12 right-[8px] rounded-xl bg-[linear-gradient(#fff0,_#fff0,_#fff)] shadow-[0_20px_25px_-5px_rgb(0_0_0_/_0.2),_0_8px_10px_-6px_rgb(0_0_0_/_0.2)] lg:max-w-5xl lg:mx-[calc((100vw_-_64rem)_/_2)] ">
         
         <Link 
           href= "https://api.whatsapp.com/send?phone=543476606595"
           // href= "https://wa.me/543476606595?text=CNPmandataria"  
           target="_blank"  
-          className="flex items-end duration-150 opacity-80 hover:opacity-100" >
-          <p className="pr-2 pl-3 pb-0.5 text-[13px]">Pedí presupuesto</p>
-          <div className="bg-[#49a352] rounded-lg">
-            <IconWhatsApp size="36" colorFondo="#0000"  className="sm:w-[40px] " />
+          className="flex flex-col items-center" 
+        >
+          {/* <p className="px-2 pb-0.5 leading-[0.5] text-[13px] rounded-b-xl opacity-80 group-hover:opacity-100">msj</p> */}
+          <div className=" w-11 flex items-end justify-center">
+            <IconWhatsApp2 className=" w-9 opacity-80 duration-150 sm:w-10 group-hover:opacity-100 " />
           </div>
+          
         </Link>
       </div>
 
@@ -192,7 +190,7 @@ export default function CNPMandataria({
                 >
                 <Image
                   src='https://res.cloudinary.com/dchmrl6fc/image/upload/v1740689220/mano-b_dq8ctv.jpg'
-                  alt="Reempadronamiento"
+                  alt="imagen estrechar la mano"
                   width={960}
                   height={720}
                   priority
@@ -209,18 +207,18 @@ export default function CNPMandataria({
                     <div className="flex flex-col items-center text-sm min-[376px]:text-base sm:mx-10">
                       <p className="flex justify-center mb-1 w-full text-center">
                         Podés
-                        <Link href="/realizar-consulta" /* href={session ? '/dashboard/consultas' : '/realizar-consulta'} */  className="flex px-1.5 rounded-md duration-200 underline decoration-[#1d021581] underline-offset-2 hover:decoration-[#1d0215] hover:underline-offset-[3px] hover:text-[#020b1d] ">
-                          {/* {session ? "Ver las consultas" : "Realizar consultas" } */}Realizar consultas
+                        <Link href={session ? '/dashboard/consultas' : '/realizar-consulta'}  className="flex px-1.5 rounded-md duration-200 underline decoration-[#1d021581] underline-offset-2 hover:decoration-[#1d0215] hover:underline-offset-[3px] hover:text-[#020b1d] ">
+                          {session ? "ver las consultas" : "realizá una consulta" }
                           {/* <IconLink size="13px" className="ml-1"/> */}
                         </Link>
                       </p>
                       <div className="flex w-full text-center">
                         o
-                        <p /* href={session ? '/dashboard/tramites' : '/iniciar-tramite/baja-de-vehiculo'} */  className="flex px-1.5 ">{/* duration-200 underline decoration-[#1d021581] underline-offset-2 rounded-md hover:decoration-[#1d0215] hover:underline-offset-[3px] hover:text-[#020b1d] */}
-                          {/* {session ? "Ver los trámites" : ""} */}Pedí presupuesto
+                        <Link href={session ? '/dashboard/tramites' : '/iniciar-tramite/cambio-de-radicacion'}  className="flex px-1.5 duration-200 underline decoration-[#1d021581] underline-offset-2 rounded-md hover:decoration-[#1d0215] hover:underline-offset-[3px] hover:text-[#020b1d] ">
+                          {session ? "ver los trámites" : "pedí presupuesto"}
                           {/* <IconLink size="13px" className='ml-1'/> */}
-                        </p> 
-                        <span >por tu trámite.</span>{/* className={`${user && "hidden" }`} */}
+                        </Link> 
+                        <span className={`${user && "hidden" }`} >por tu trámite.</span>
                       </div>
                     </div>
                   </div>
@@ -372,7 +370,7 @@ export default function CNPMandataria({
                   ></Image>
                 </SwiperSlide>  
               </Swiper>
-              <div className="flex flex-col justify-start absolute z-10 top-[70%] items-center sm:top-[55%] sm:pt-[4vh]">
+              <div className="flex flex-col justify-start absolute z-10 top-[70%] items-center sm:top-[55%] sm:mt-[2vh] sm:pt-[4vh]">
                 <div className="mb-[5px] flex items-center w-full justify-center">
                   <IconConocimiento size="33" className="h-9 sm:h-10" />
                 </div>
@@ -430,7 +428,7 @@ export default function CNPMandataria({
                   <Image
                     src='/tramite5.jpg'
                     alt="Informe de Estado de Dominio"
-                    width={660}
+                    width={653}
                     height={490}
                     className="absolute object-cover h-[28vh] top-[0px] flex w-full items-center justify-center sm:h-[30vh]"
                   ></Image>
@@ -441,15 +439,15 @@ export default function CNPMandataria({
                   <Image
                     src='/tramite6.png'
                     alt="Inscripción inicial"
-                    width={660}
+                    width={653}
                     height={490}
-                    className="absolute object-cover h-[28vh] top-[0px] flex w-full items-center justify-cente sm:h-[30vh]r"
+                    className="absolute object-cover h-[28vh] top-[0px] flex w-full items-center justify-cente sm:h-[30vh]"
                   ></Image>
                     
                 </SwiperSlide>  
 
               </Swiper>
-              <div className="flex flex-col justify-start absolute z-10 top-[70%] items-center sm:top-[55%] sm:pt-[4vh]">
+              <div className="flex flex-col justify-start absolute z-10 top-[70%] items-center sm:top-[55%] sm:mt-[2vh] sm:pt-[4vh]">
                 <div className="mb-[5px] flex items-center w-full justify-center">
                   <IconTiempo  className="h-9 sm:h-10"/>
                 </div>
@@ -486,9 +484,9 @@ export default function CNPMandataria({
                 }}
                 modules={[EffectFade, Navigation, Pagination, Autoplay]}
                 autoplay={{
-                    delay: 2500,
-                    disableOnInteraction: false,
-                  }}
+                  delay: 2500,
+                  disableOnInteraction: false,
+                }}
               >
                 <h2 className="text-lg absolute z-10 left-3 top-[23vh] text-[#ffffff96] [text-shadow:_1px_1px_0_#00000082] font-extrabold md:top-[25vh]">TRÁMITES</h2>
                 <SwiperSlide>
@@ -523,7 +521,7 @@ export default function CNPMandataria({
                   ></Image>
                 </SwiperSlide>      
               </Swiper>
-              <div className="flex flex-col justify-start absolute z-10 top-[70%] items-center sm:top-[55%] sm:pt-[4vh]">
+              <div className="flex flex-col justify-start absolute z-10 top-[70%] items-center sm:top-[55%] sm:mt-[2vh] sm:pt-[4vh]">
                 <div className="mb-[5px] flex items-center w-full justify-center">
                   <IconSeguridad size="33"  className="h-9 sm:h-10"/>
                 </div>
@@ -537,17 +535,19 @@ export default function CNPMandataria({
             </SwiperSlide>
           </Swiper>
 
-          <div className="flex flex-col gap-0 py-1 px-3 bg-[#fff] rounded-[10px] text-sm shadow-[0_10px_20px_#020b1d33] sm:text-[15px] sm:mt-12 sm:gap-4 sm:flex-row">
-            {/* <Link href={"#"} className="group h-6 flex items-center justify-start sm:h-[26px] active:opacity-80">
+          <div className="flex flex-col gap-0.5 text-sm rounded-lg shadow-[0_10px_20px_#020b1d33] sm:text-[15px] sm:flex-row">
+            <Link 
+              href={"/iniciar-tramite/cambio-de-radicacion"} 
+              className="group h-7 flex items-center rounded-t-lg px-3 bg-[#ffffffaa] duration-150 justify-start sm:rounded-tr-none sm:rounded-l-lg sm:h-8 hover:bg-white active:opacity-80">
               <IconPresupuesto 
                 className="mr-2 w-[15px] h-[15px] duration-150 opacity-70 group-hover:opacity-100 sm:w-[16px] sm:h-[16px]"
                 color="#ffffffdd" color2="#020b1d"
                 />
               <p className="text-[#020b1dcc] duration-150 group-hover:text-[#020b1d]">Pedí presupuesto</p>
-            </Link> */}
+            </Link>
             <Link 
               href={"/realizar-consulta"} 
-              className="group h-6 flex items-center justify-start sm:h-[26px] active:opacity-80">
+              className="group h-7 flex items-center rounded-b-lg px-3 bg-[#ffffffaa] duration-150 justify-start sm:rounded-bl-none sm:rounded-r-lg sm:h-8 hover:bg-white active:opacity-80">
               <IconConsulta 
                 className="mr-2 w-[15px] h-[15px] duration-150 opacity-70 group-hover:opacity-100 sm:w-[16px] sm:h-[16px]"
                 color="#ffffffdd" color2="#020b1d"
@@ -591,17 +591,19 @@ export default function CNPMandataria({
             </div>
           </div>
 
-          <div className="flex flex-col gap-0 py-1 px-3 bg-[#fff] rounded-[10px] text-sm shadow-[0_10px_20px_#020b1d33] sm:text-[15px] sm:mt-12 sm:gap-4 sm:flex-row">
-            {/* <Link href={"#"} className="group h-6 flex items-center justify-start sm:h-[26px] active:opacity-80">
+          <div className="flex flex-col gap-0.5 text-sm rounded-lg shadow-[0_10px_20px_#020b1d33] sm:text-[15px] sm:mt-12 sm:flex-row">
+            <Link 
+              href={"/iniciar-tramite/cambio-de-radicacion"} 
+              className="group h-7 flex items-center rounded-t-lg px-3 bg-[#ffffffaa] duration-150 justify-start sm:rounded-tr-none sm:rounded-l-lg sm:h-8 hover:bg-white active:opacity-80">
               <IconPresupuesto 
                 className="mr-2 w-[15px] h-[15px] duration-150 opacity-70 group-hover:opacity-100 sm:w-[16px] sm:h-[16px]"
                 color="#ffffffdd" color2="#020b1d"
                 />
               <p className="text-[#020b1dcc] duration-150 group-hover:text-[#020b1d]">Pedí presupuesto</p>
-            </Link> */}
+            </Link>
             <Link 
               href={"/realizar-consulta"} 
-              className="group h-6 flex items-center justify-start sm:h-[26px] active:opacity-80">
+              className="group h-7 flex items-center rounded-b-lg px-3 bg-[#ffffffaa] duration-150 justify-start sm:rounded-bl-none sm:rounded-r-lg sm:h-8 hover:bg-white active:opacity-80">
               <IconConsulta 
                 className="mr-2 w-[15px] h-[15px] duration-150 opacity-70 group-hover:opacity-100 sm:w-[16px] sm:h-[16px]"
                 color="#ffffffdd" color2="#020b1d"

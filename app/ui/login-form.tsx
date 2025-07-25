@@ -11,8 +11,9 @@ import { Button } from '@/app/ui/button';
 import { useActionState } from 'react';
 import { authenticate } from '@/app/lib/actions';
 import { useSearchParams } from 'next/navigation';
-
 import { Fondo, Frente } from '@/app/ui/marcos';
+import { InputCnp } from "@/app/ui/uiRadix/input-cnp";
+
 
 export default function LoginForm() {
   const searchParams = useSearchParams();
@@ -76,7 +77,7 @@ export default function LoginForm() {
             <Frente>
               <div className="relative">
                 <input
-                  className="!hover:bg-transparent rounded-md peer block w-full border border-transparent bg-transparent py-[9px] duration-150 pl-10 text-sm outline-2 placeholder:text-[#1d021599] hover:bg-[#ffffff3d] hover:[box-shadow:_0_0_0_1px_#c737c739] focus:[box-shadow:_0_0_0_1px_#c737c7ee] focus:bg-[#ffffffbb] focus:border-[#2f6feb00] focus:outline-1 focus:outline-[#c37bc336] "
+                  className="!hover:bg-transparent rounded-md peer block w-full border border-transparent bg-transparent py-[9px] duration-150 pl-10 text-sm outline-2 placeholder:text-[#1d021599] hover:bg-[#ffffff3d] hover:[box-shadow:_0_0_0_1px_#3767c847] focus:[box-shadow:_0_0_0_1px_#548eff] focus:bg-[#ffffffbb] focus:border-transparent focus:outline-1 focus:outline-[#548eff66] "
                   id="email"
                   type="email"
                   name="email"
@@ -89,12 +90,12 @@ export default function LoginForm() {
             <Frente>
               <div className="relative">
                 <input
-                  className="!hover:bg-transparent rounded-md peer block w-full border border-transparent bg-transparent py-[9px] duration-150 pl-10 text-sm outline-2 placeholder:text-[#1d021599] hover:bg-[#ffffff3d] hover:[box-shadow:_0_0_0_1px_#c737c739] focus:[box-shadow:_0_0_0_1px_#c737c7ee] focus:bg-[#ffffffbb] focus:border-[#2f6feb00] focus:outline-1 focus:outline-[#c37bc336]  "
+                  className="!hover:bg-transparent rounded-md peer block w-full border border-transparent bg-transparent py-[9px] duration-150 pl-10 text-sm outline-2 placeholder:text-[#1d021599] hover:bg-[#ffffff3d] hover:[box-shadow:_0_0_0_1px_#3767c847] focus:[box-shadow:_0_0_0_1px_#548eff] focus:bg-[#ffffffbb] focus:border-transparent focus:outline-1 focus:outline-[#548eff66] "
                   id="password"
                   type="password"
                   name="password"
                   placeholder="Contraseña"
-                  autoComplete="new password"
+                  autoComplete="off"
                   required
                   minLength={6}
                 />
@@ -108,9 +109,12 @@ export default function LoginForm() {
         <input type="hidden" name="redirectTo" value={callbackUrl} />
 
         <Button 
-          // className="mt-4 w-full" 
-          className="mt-4 w-full justify-center bg-[#39507f] text-base  text-[#ffffffcc] duration-150 hover:bg-[#071f50dd] hover:text-[#fff] active:!bg-[#39507fcc] "
-          aria-disabled={isPending}>
+          className={`${isPending && "before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_1s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/30 before:to-transparent"}  relative overflow-hidden mt-4 w-full justify-center bg-[#39507f] text-base  text-[#ffffffcc] duration-150 hover:bg-[#071f50dd] hover:text-[#fff] active:!bg-[#39507fcc] `}
+          aria-disabled={isPending}
+          onClick={() => {
+            sessionStorage.removeItem("nombre")
+          }}
+        >
           Continuar <ArrowRightIcon className="ml-auto h-5 w-5 text-gray-50" />
         </Button>
 

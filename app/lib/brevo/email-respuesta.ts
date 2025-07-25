@@ -15,6 +15,17 @@ interface Params {
 }
 
 export async function emailRespuesta( {subject, to, htmlContent, consulta }: Params ) {
+
+    const consultaA:string[] | undefined= consulta.split(": ")
+    const consultaB= [""]
+    if (consultaA.length > 1) { 
+    consultaB.push(consultaA[1])
+    } else {
+        consultaB == consultaA
+    }
+
+
+
     try {
         const smtpEmail = new brevo.SendSmtpEmail()
 
@@ -28,10 +39,10 @@ export async function emailRespuesta( {subject, to, htmlContent, consulta }: Par
         `<html>
             <body>
                 <br>
-                <img src="https://res.cloudinary.com/dchmrl6fc/image/upload/v1746567883/logo-cnp-horizontal_c0bn3p.png" alt="Logo" width="160" height="46">
+                <img src="https://res.cloudinary.com/dchmrl6fc/image/upload/v1753280842/logo-cnp-horizontal_yxoecb.png" alt="Logo" width="160" height="46">
                 <br>
                 <br>
-                <p><b>Tu consulta</b>  ${consulta}...</p>
+                <p><b>Tu consulta:</b> ${consultaB[1]}</p>
                 <p><b>Respuesta:</b>  ${htmlContent}</p>
             </body>
         </html>

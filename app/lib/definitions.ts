@@ -2,12 +2,20 @@
 // It describes the shape of the data, and what data type each property should accept.
 // For simplicity of teaching, we're manually defining these types.
 // However, these types are generated automatically if you're using an ORM such as Prisma.
+
+// export enum Role {
+//   admin = 'admin',
+//   memberAccount = "memberAccount",
+//   member = "member",
+// }
+
 export type User = {
   id: string;
   name: string;
   email: string;
   password: string | undefined;
   role: 'admin' | 'member' | 'memberAccount';
+  // role: Role;
   image: string | undefined;
 };
 
@@ -172,6 +180,7 @@ export type Comment = {
   post_slug: string;
   comment: string;
   email_id: string;
+  nombre: string | undefined;
 };
 
 export type CommentsPost = {
@@ -180,6 +189,7 @@ export type CommentsPost = {
   post_slug: string;
   comment: string;
   created_at: string;
-  name: string;
+  name: string | undefined;
   image: string | undefined;
+  nombre: string | undefined;
 };
