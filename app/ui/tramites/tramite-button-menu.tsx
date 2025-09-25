@@ -20,7 +20,7 @@ export default  function TramiteButtonMenu({allTramites }:{allTramites:TramiteMd
       <DropdownMenu.Root>
         <DropdownMenu.Trigger asChild >
           <button
-            className="inline-flex h-[22px] text-sm opacity-80 px-2 items-center justify-center rounded-md bg-[#39507f] text-[#ffffff] duration-150 outline-none hover:opacity-100 sm:h-[26px] sm:text-[15px] sm:px-3"
+            className="inline-flex h-[28px] text-sm opacity-80 px-2 items-center justify-center rounded-md bg-[#39507f] text-[#ffffff] duration-150 outline-none hover:opacity-100 sm:text-[15px] sm:px-3"
           >
             Seleccioná un trámite
             <ChevronRightIcon className="w-4 ml-2 rotate-90 stroke-2" />
@@ -29,14 +29,14 @@ export default  function TramiteButtonMenu({allTramites }:{allTramites:TramiteMd
 
         <DropdownMenu.Portal>
           <DropdownMenu.Content
-            className="min-w-[220px] ml-2 rounded-lg bg-[#ffffff] p-[1px] shadow-[0px_10px_38px_-10px_rgba(22,_23,_24,_0.35),_0px_10px_20px_-15px_rgba(22,_23,_24,_0.2),_inset_0_0_4px_1px_#ffffff] will-change-[opacity,transform] data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade data-[side=right]:animate-slideLeftAndFade data-[side=top]:animate-slideDownAndFade md:ml-12"
+            className="min-w-[220px] ml-2 rounded-lg bg-[#ffffff] p-2 shadow-[0px_10px_38px_-10px_rgba(22,_23,_24,_0.35),_0px_10px_20px_-15px_rgba(22,_23,_24,_0.2),_inset_0_0_4px_1px_#ffffff] will-change-[opacity,transform] data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade data-[side=right]:animate-slideLeftAndFade data-[side=top]:animate-slideDownAndFade md:ml-12"
             sideOffset={5}
           >
             {allTramites.map((tramite:TramiteMd) => (
               <Link
                   as={`/iniciar-tramite/${tramite.slug}`}
                   href="/iniciar-tramite/[slug]"
-                  className={clsx(`group py-[3px] px-2 mb-[1px] bg-[#020b1d0c] first:rounded-t-md first:mt-0 last:rounded-b-md last:mb-0 flex justify-between text-[#020b1dbb] items-center duration-200 hover:bg-[#020b1d1c] hover:text-[#020b1d] `,
+                  className={clsx(`group py-[4px] px-2 mb-[1px] bg-[#020b1d0c] first:rounded-t-md first:mt-0 last:rounded-b-md last:mb-0 flex justify-between text-[#020b1dbb] items-center duration-200 hover:bg-[#020b1d1c] hover:text-[#020b1d] `,
                       {
                         'text-[#020b1e] bg-[#020b1d1b] ': pathname === `/iniciar-tramite/${tramite.slug}`
                       }

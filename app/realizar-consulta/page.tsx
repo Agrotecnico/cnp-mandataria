@@ -1,10 +1,11 @@
 import { Metadata } from 'next';
-// import { auth } from 'auth';
+import { auth } from 'auth';
+import { SessionProvider } from "next-auth/react"
 
 import FooterConsultas from '@/app/ui/footerConsultas';
 import Header from '@/app/ui/header';
 import { Providers } from '@/app/dashboard/providers'
-// import { fetchUserById } from '@/app/lib/data';
+import { fetchUserByEmail, fetchCommentLast } from '@/app/lib/data';
 import RealizarConsulta from '@/app/ui/consultas/realizar-consulta';
 
 
@@ -14,16 +15,16 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  // const session = await auth();
-  // const user = await fetchUserById(session?.user?.email)
-  const user = undefined
+  const session = await auth();
+  const user = await fetchUserByEmail(session?.user?.email)
 
+  const commentLast = await fetchCommentLast()
 
   return (
     <div className="mx-auto flex min-h-screen w-full flex-col justify-between ">
-      {/* <Providers> */}
+      <Providers>
         <Header />
-      {/* </Providers> */}
+      </Providers>
       <main className="min-h-[93vh] mx-auto w-full max-w-[64rem] flex-auto px-2 pt-[68px] sm:pt-20 sm:px-4 md:px-6 lg:px-2">
         <div className="mx-auto flex flex-col pb-16 md:px-6 ">
           <div className=" flex flex-col-reverse min-h-screen min-[1024px]:flex-row md:gap-4 md:overflow-hidden ">
@@ -31,7 +32,9 @@ export default async function Page() {
                 <h1  className={`my-2 text-[18px] sm:text-2xl sm:my-4`}>
                     Realizá la consulta
                 </h1>
-                <RealizarConsulta user= {user} />
+                  <SessionProvider  session={session}>
+                    <RealizarConsulta user= {user} commentLast={commentLast} />
+                  </SessionProvider>
             </div>
           </div>
         </div>

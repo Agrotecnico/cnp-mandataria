@@ -65,9 +65,9 @@ export default function LoginForm() {
         <Button 
           className={`${isPending && "before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_1s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/30 before:to-transparent"}  relative overflow-hidden mt-4 w-full justify-center bg-[#39507f] text-base  text-[#ffffffcc] duration-150 hover:bg-[#071f50dd] hover:text-[#fff] active:!bg-[#39507fcc] `}
           aria-disabled={isPending}
-          onClick={() => {
-            sessionStorage.removeItem("nombre")
-          }}
+          // onClick={() => {
+          //   sessionStorage.removeItem("nombre")
+          // }}
         >
           Continuar <ArrowRightIcon className="ml-auto h-5 w-5 text-gray-50" />
         </Button>

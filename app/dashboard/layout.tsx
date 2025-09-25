@@ -12,7 +12,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <div className="w-full flex-none mb-4 mt-[92px] static h-max min-h-auto md:h-[50%] md:min-h-[calc(100vh_-_116px)] md:fixed md:mt-[104px] md:w-64">
             <SideNav />
           </div>
-          <Fondo className="flex-grow mb-3 ml-0 p-4  md:ml-[274px] md:mt-[104px] md:min-h-screen">{/* md:overflow-y-auto */}
+          <Fondo className="flex-grow mb-3 ml-0 p-3 sm:p-4 md:ml-[274px] md:mt-[104px] md:min-h-screen">{/* md:overflow-y-auto */}
             {children}
           </Fondo>
         </div>

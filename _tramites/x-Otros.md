@@ -1,5 +1,5 @@
 ---
-tramite: "Otros Trámites"
+tramite: "Otro Trámite"
 resumen: ""
 date: "actual"
 image: "/hero.png"

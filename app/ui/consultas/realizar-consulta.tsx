@@ -1,16 +1,15 @@
 'use client';
 
-import { useFormState } from 'react-dom';
-import { FormEvent, useState, useEffect, useMemo, useRef } from 'react';
+import { useActionState } from 'react';
+import { FormEvent, useState, useEffect, useRef } from 'react';
 import { ExclamationCircleIcon } from '@heroicons/react/24/outline'
 import { Disclosure, DisclosurePanel } from '@headlessui/react';
 import clsx from 'clsx';
-import { User } from '@/app/lib/definitions';
-import Link from 'next/link';
+import { useSearchParams, redirect, usePathname } from 'next/navigation';
+import { useSession } from "next-auth/react"
 
-import IconConsultaRight from "@/app/ui/logosIconos/icon-consulta-right"
 import IconConsulta from "@/app/ui/logosIconos/icon-consulta"
-import { createConsulta, StateConsulta } from '@/app/lib/actions';
+import { createConsulta, createVerificationToken, StateConsulta, StateVerificationToken, updateUserEmail, StateUserEmail, updateCommentEmail, StateUpdateCommentEmail } from '@/app/lib/actions';
 import { Frente } from '@/app/ui/marcos';
 import useToggleState from "@/app/lib/hooks/use-toggle-state";
 import IconCambio from '@/app/ui/logosIconos/icon-cambio';
@@ -18,39 +17,79 @@ import IconArchivo from '@/app/ui/logosIconos/icon-archivo';
 import { ImageListType } from "@/app/ui/consultas/typings";
 import ImageUploading from "@/app/ui/consultas/ImageUploading"
 import IconDragDrop from '@/app/ui/logosIconos/icon-drag-drop';
-import { ButtonB, ButtonA, Button } from '@/app/ui/button';
+import { ButtonB, ButtonA } from '@/app/ui/button';
 import IconCuenta from "@/app/ui/logosIconos/icon-cuenta"
 import IconEmail2 from "@/app/ui/logosIconos/icon-email2"
 import { InputCnp } from "@/app/ui/uiRadix/input-cnp";
 import { TextareaCnp } from "@/app/ui/uiRadix/textarea-cnp";
 import IconRegistro from "@/app/ui/logosIconos/icon-registro"
 import { createUser, StateUser } from '@/app/lib/actions';
-import IconEnvioEmail from '../logosIconos/icon-envio-email';
-import { handleFormRegistro } from '@/app/lib/actions';
 import { handleFormPedido } from '@/app/lib/actions';
+import { nanoid } from "nanoid";
+import { authenticate, authenticate2 } from '@/app/lib/actions';
+import { updateUserEmailVerifiedx, deleteVerification } from "@/app/lib/actions"
+import { User, CommentLast } from '@/app/lib/definitions';
 
 
-export default function RealizarConsulta( { user }: { user: User | undefined } ) {
+
+const wait = () => new Promise((resolve) => setTimeout(resolve, 2000));
+
+
+export default function RealizarConsulta({ 
+  user,
+  commentLast
+}: { 
+  user: User | undefined 
+  commentLast: CommentLast
+}) {
+
+  const { data: session, update } = useSession()
   
   const [consulta, setConsulta] = useState('');
   const [successState, setSuccessState] = useState(false)
 
+  // Archivos adjuntos a consulta (imageUrl y images)
   const [imageUrl, setImageUrl] = useState<string>("");
-  const [spin, setSpin] = useState(false);
   const [images, setImages] = useState<ImageListType>([]);
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [spin, setSpin] = useState(false);
 
-  // const [name, setName] = useState(`${user?.name}`);
-  // const [email, setEmail] = useState(`${user?.email}`);
+  const [name, setName] = useState("");
+  const [nombre, setNombre] = useState<string | null>(null)
+  const [nameVisitor, setNameVisitor] = useState("");
+
+  const [email, setEmail] = useState("");
+  const [imageUser, setImageUser] = useState("");
+
+  const [emailx, setEmailx] = useState("");
+  const [emailxx, setEmailxx] = useState("");
 
   const [open, setOpen] = useState(false);
   const [openConsulta, setOpenConsulta] = useState(true);
-  const [emailSession, setEmailSession] = useState(false);
 
-  const [estadoRegistrar, setEstadoRegistrar] = useState(false)
+  const [imgUserSession, setImgUserSession ] = useState<string | null>(null)
+  const [imgUrlSessionx, setImgUrlSessionx] = useState("");
 
+  // const [emailSession, setEmailSession] = useState(false);
+
+
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get('/realizar-consulta') || '/realizar-consulta';
+
+  const pathname = usePathname();
+
+  const token= nanoid()
+  const imagen= user?.image
+
+  const isEmailVisitor= user?.email.slice(16) === "@cnpmandataria.com"
+
+  const id= user?.email!
+  // const id2= "MPwV86bCspGRBGv_@cnpmandataria.com"
+
+  const isEmailValid= (email: string) => {
+    const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(?:\.[a-zA-Z]{2,})?$/;
+    return regex.test(email);
+  }
 
   const { state, close, toggle } = useToggleState()
   const maxNumber = 2;
@@ -75,9 +114,34 @@ export default function RealizarConsulta( { user }: { user: User | undefined } )
     if (buttonyRef.current) buttonyRef.current.click()
   };
 
+  const buttonRefVerification = useRef<HTMLButtonElement>(null);
+  const handleClickButtonVerification= () => {
+    if (buttonRefVerification.current) buttonRefVerification.current.click()
+  };
+
+  const buttonRefAuth = useRef<HTMLButtonElement>(null);
+  const handleClickButtonAuth= () => {
+    if (buttonRefAuth.current) buttonRefAuth.current.click()
+  };
+
+  const buttonRefxxxx = useRef<HTMLButtonElement>(null);
+  const handleClickButtonxxxx= () => {
+    if (buttonRefxxxx.current) buttonRefxxxx.current.click()
+  }; // update comment email
+
+  const buttonRefxxx = useRef<HTMLButtonElement>(null);
+  const handleClickButtonxxx= () => {
+    if (buttonRefxxx.current) buttonRefxxx.current.click()
+  }; // update user email
+
   const enviarConsulta= () => {
     setTimeout(handleClickButton, 200) 
-    setTimeout(() => setSpin(false), 200) 
+    console.log("Consulta creada")
+  }
+  const enviarConsultaxxxx= () => {
+    setTimeout( () => handleClickButtonxxxx(), 200) // update comment email
+    setTimeout( () => handleClickButtonxxx(), 200) // update user email
+    console.log("Consulta creada")
   }
 
   const handleToggle = () => {
@@ -85,7 +149,6 @@ export default function RealizarConsulta( { user }: { user: User | undefined } )
     setTimeout(() => toggle(), 100);
   };
   
-
   const clearState = () => {
     setSuccessState(false)
   }
@@ -93,17 +156,20 @@ export default function RealizarConsulta( { user }: { user: User | undefined } )
   const uploadToServer1 = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
+      setSpin(true)
       enviarConsulta();
     } catch (error) {
       console.error(error);
     }
+    setSpin(false)
   };
-
+  ///////////////////////////////////////////////////////////////
   const uploadToServer2 = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (files.length === 0) return;
 
     try {
+      setSpin(true)
       const data = new FormData();
 
       {files.map((file, index) => {
@@ -121,11 +187,21 @@ export default function RealizarConsulta( { user }: { user: User | undefined } )
 
       setImageUrl(respon);
       if (response.ok) {
-        console.log('File uploaded successfully');
+        console.log('Ok imagen subida');
       }
 
       enviarConsulta();
 
+    } catch (error) {
+      console.error(error);
+    }
+    setSpin(false)
+  };
+  const uploadToServer3 = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      setSpin(true)
+      enviarConsultaxxxx();
     } catch (error) {
       console.error(error);
     }
@@ -139,7 +215,7 @@ export default function RealizarConsulta( { user }: { user: User | undefined } )
         <img 
           src={URL.createObjectURL(file)} 
           alt={file.name} 
-          className="min-h-[80px] object-contain bg-[#ffffffaa] w-20 border border-[#1d021544] [border-radius:_6px_6px_0_6px] " />
+          className="min-h-[64px] object-contain bg-[#ffffffaa] w-16 border border-[#1d021544] [border-radius:_6px_6px_0_6px] " />
       ); 
       } else if ( fileType === 'application/pdf' ) { 
         return ( 
@@ -157,41 +233,75 @@ export default function RealizarConsulta( { user }: { user: User | undefined } )
   }
 
   useEffect(() => {
+    // if (sessionStorage.getItem('email')) {
+    //   setEmailSession(true);
+    // }
+    // user?.email && setEmail(`${user.email}`)
+
     if (successState) {
       close()
     }
-    sessionStorage.getItem('name') && setName(`${sessionStorage.getItem('name')}`)
-    // sessionStorage.getItem('nombre') && setName(`${sessionStorage.getItem('nombre')}`)
 
-    sessionStorage.getItem('email') && setEmail(`${sessionStorage.getItem('email')}`)
-    if (sessionStorage.getItem('email')) {
-      setEmailSession(true);
-    }
-  }, [successState, close, name, email ])
+    // user?.name ? setName(`${user.name}`) : setName(`${sessionStorage.getItem('nameVisitor')}`)
+
+    // sessionStorage.getItem('nameVisitor') && setNameVisitor(`${sessionStorage.getItem('nameVisitor')}`)
+
+    // user?.image ? setImageUrl(`${user.image}`) : sessionStorage.getItem('imgUrlSession') && setImageUrl(`${sessionStorage.getItem('imgUrlSession')}`)
+
+    // const data= sessionStorage.getItem('imgUrlSession')
+    // setImgUserSession(data)
+
+    // sessionStorage.getItem('emailx') && setEmailx(`${sessionStorage.getItem('emailx')}`)
+    // sessionStorage.removeItem("emailxx")
+
+    // sessionStorage.getItem('imgUrlSessionx') && setImgUrlSessionx(`${sessionStorage.getItem('imgUrlSessionx')}`) 
+  }, [])
 
   const onChange = (imageList: ImageListType, addUpdateIndex: Array<number> | undefined) => {
     setImages(imageList);
   };
 
   const initialStatex: StateUser = { message: null, errors: {} };
-  const [estadox, dispatchx] = useFormState(createUser, initialStatex);
+  const [estadox, formActionx, isPendingx] = useActionState(createUser, initialStatex);
 
   const initialState: StateConsulta = { message: null, errors: {} };
-  const [estado, dispatch] = useFormState(createConsulta, initialState);
+  const [estado, formAction, isPending] = useActionState(createConsulta, initialState);
+  const polo= estado.message === "consultaCreada"
+
+  const initialStatexx: StateVerificationToken  = { message: null, errors: {} };
+  const [estadoxx, formActionxx, isPendingxx] = useActionState(createVerificationToken, initialStatexx);
+
+  const [errorMessage, formActionAuth, isPendingAuth] = useActionState(authenticate2, undefined, );
+
+  const initialStatexxx: StateUserEmail = { message: null, errors: {} };
+  const updateUserEmailWithId = updateUserEmail.bind(null, id);
+  const [estadoxxx, formActionxxx, isPendingxxx] = useActionState(updateUserEmailWithId, initialStatexxx);
+
+  const initialStatexxxx: StateUpdateCommentEmail = { message: null, errors: {} };
+  const updateCommentEmailWithId = updateCommentEmail.bind(null, id);
+  const [estadoxxxx, formActionxxxx, isPendingxxxx] = useActionState(updateCommentEmailWithId, initialStatexxxx);
+
+
+
+  // console.log("commentLast: ", commentLast.avatar ) 
+  console.log("name: ", name ) 
+  console.log("email: ", email ) 
+  console.log("imageUrl: ", imageUrl ) 
+  console.log("id: ", id ) 
+  // console.log("id2: ", id2 ) 
+
+
 
 
   return (
     <>
-      {/* consult */}
       <Frente className=" p-2 text-small-regular sm:p-4 !bg-[#020b1d16] ">
         <div className="flex items-center justify-between sm:flex-row" >
           <div className="relative flex items-center">
-            {/* <IconConsultaRight className=" ml-1.5 h-[36px] w-[30px] sm:ml-3 " /> */}
             <IconConsulta 
-                className=" ml-1.5 w-[22px] sm:ml-3 " 
-                color="#fffc" color2="#39507fcc"
-                />
-            {/* <div className="absolute top-[1px] left-6 text-[#ffffff] text-xs sm:left-[30px]">?</div> */}
+              className=" ml-1.5 w-[22px] sm:ml-3 " 
+              color="#fffc" color2="#39507fcc"
+            />
             <p className="ml-4 text-sm text-[#39507f]">Consulta <span className=" text-[#ff0000]">*</span></p>
           </div>
           <ButtonB
@@ -211,7 +321,7 @@ export default function RealizarConsulta( { user }: { user: User | undefined } )
         <div 
           className={clsx('mt-0 overflow-visible transition-[max-height,opacity] duration-300 ease-in-out',
             {
-              'max-h-[1000px] opacity-100 mt-4': openConsulta,
+              'max-h-[1000px] opacity-100 mt-2 sm:mt-4': openConsulta,
               'max-h-0 opacity-0 invisible': !openConsulta,
             },
           )}>
@@ -221,7 +331,7 @@ export default function RealizarConsulta( { user }: { user: User | undefined } )
             name="consulta"
             placeholder= "..."
             required
-            rows={4}
+            rows={2}
             maxLength={1024}
             wrap="hard"
             value={consulta}
@@ -229,13 +339,13 @@ export default function RealizarConsulta( { user }: { user: User | undefined } )
               setConsulta(e.target.value);
             }}
             autoFocus
+            // disabled={emailxx || emailx  ? true : false}
           />
         </div>
       </Frente>
 
       {/* adjuntar archivos */}
       <Frente 
-        // className={`flex flex-col mt-2 text-small-regular !p-2 !bg-[#020b1d16] ${!state && 'pb-0'} sm:!p-4 `}
        className=" p-2 mt-2 text-small-regular sm:p-4 !bg-[#020b1d16] "
       >
         <div className="flex items-center justify-between sm:flex-row" >
@@ -255,7 +365,7 @@ export default function RealizarConsulta( { user }: { user: User | undefined } )
             data-testid="edit-button"
             data-active={state}
           >
-            {state ? ( 'Cancelar' ) : ( <div> {' '} Adjuntar {/* <span className="text-xs uppercase">Archivos</span> */}
+            {state ? ( 'Cancelar' ) : ( <div> {' '} Adjuntar
               </div> )}
           </ButtonB>
         </div>
@@ -290,7 +400,7 @@ export default function RealizarConsulta( { user }: { user: User | undefined } )
                 dragProps,
                 errors,
               }) => (
-                <div className={`flex flex-col bg-[#020b1db8] rounded-lg ${!images.length ? 'gap-0' : 'gap-0.5'} ${!state && "invisible"} `} >
+                <div className={`flex flex-col bg-[#020b1db8] rounded-lg ${!images.length ? 'gap-0' : 'gap-0.5'} ${!state && "invisible"}`} >
                   <button
                     type="button"
                     onClick={onImageUpload}
@@ -298,7 +408,7 @@ export default function RealizarConsulta( { user }: { user: User | undefined } )
                     className={`group rounded-lg w-full disabled:!cursor-default `}
                     disabled= {!state}
                   >
-                    <div className={`relative label-dnd  ${!images.length ? 'rounded-lg' : 'rounded-t-lg'} bg-[#020b1d] text-[#ffffffdd] w-full p-2 duration-150 text-sm flex flex-col justify-center items-center active:opacity-80 sm:p-4 `}>
+                    <div className={`relative label-dnd  ${!images.length ? 'rounded-lg' : 'rounded-t-lg'} bg-[#020b1d] text-[#ffffffdd] w-full p-2 duration-150 text-sm flex flex-col justify-center items-center active:opacity-80 `}>
                       <div className="flex flex-col items-center duration-150 opacity-90 group-hover:opacity-100 min-[512px]:flex-row ">
                         <IconDragDrop className= "w-9 opacity-80  min-[512px]:mr-7" />
                         <div>
@@ -334,7 +444,7 @@ export default function RealizarConsulta( { user }: { user: User | undefined } )
                   <div className= "flex flex-col rounded-b-lg bg-[#020b1d] ">
                     <div className= {`flex items-baseline justify-start px-3 gap-x-2 flex-wrap text-sm w-full cursor-default max-[512px]:justify-center sm:px-9 sm:gap-x-4 `}>
                       { images.map((image, index) => (
-                        <div key={index} className="flex flex-col items-start pb-4 pt-5">
+                        <div key={index} className="flex flex-col items-start pb-2 pt-2.5">
                           <div className="image-item flex justify-start">
 
                             {renderFilePreview( image.file! )} 
@@ -368,17 +478,22 @@ export default function RealizarConsulta( { user }: { user: User | undefined } )
         </Disclosure>
       </Frente>
 
-      {/* registrar email */}
-      {!user && (
-        emailSession === false ? (
-          <Frente className="!p-2 mt-2 text-small-regular sm:!p-4 !bg-[#020b1d16] ">
-            <div className="flex items-center justify-between gap-5 ">
+
+      {/* registrar email consulta */}
+      { !user ? (
+          <Frente className={`!p-2 mt-2 text-small-regular sm:!p-4 !bg-[#020b1d16] `}>
+            <div className="flex items-center justify-between gap-2 sm:gap-5 ">{/*  ${!consulta && "hiddden"} */}
               <div className="mt-1.5 ">
-                <IconRegistro className=" w-[24px] ml-1.5 sm:ml-3" />
+                <IconRegistro className="w-[20px] sm:w-6 sm:ml-3 md:ml-1.5 " />{/* w-[20px] ml-1.5 sm:ml-3 */}
               </div>
-  
-              <div className={`w-full text-start text-[14px] text-[#39507f] `}>
-                Registrá tu e-mail para mandarte la respuesta <span className=" text-[#ff0000]">*</span>
+
+              <div className={`w-full text-start text-[#39507f] `}>
+                <div className={` text-[13px] sm:text-[15px] `}>
+                  {/* {  user ? (
+                    <p><b>{ user.name}</b>, enviame un e-mail para mandarte la respuesta<span className=" text-[#ff0000] ml-0.5">*</span></p>
+                  ) : <p>Enviame un e-mail para mandarte la respuesta<span className=" text-[#ff0000] ml-0.5">*</span></p> }  */}
+                  <p>Enviame un e-mail para mandarte la respuesta<span className=" text-[#ff0000] ml-0.5">*</span></p> 
+                </div>
               </div>
                 
               <ButtonB
@@ -387,14 +502,12 @@ export default function RealizarConsulta( { user }: { user: User | undefined } )
                   setOpen(!open); 
                   setEmail(""); 
                   setName("");
-                  sessionStorage.removeItem("email")
-                  sessionStorage.removeItem("name")
                 }}
 
                 data-testid="edit-button"
                 data-active={open}
               >
-                {open ? "Cancelar" :  <div className="text-[13px] overflow-auto whitespace-nowrap">Registrar</div>  }
+                {open ? "Cancelar" :  <div className="text-[13px] overflow-auto whitespace-nowrap">Email</div>  }
               </ButtonB>
             </div>
             
@@ -408,28 +521,9 @@ export default function RealizarConsulta( { user }: { user: User | undefined } )
               )}
             >
               {/* create user */}
-              <div className={`pt-2 sm:pt-4`}> 
-                <form action={dispatchx}>
-                  <fieldset className={`flex flex-col items-center gap-2 md:flex-row md:gap-4`}>
-                    <InputCnp
-                      className="text-sm h-8"
-                      id="name"
-                      type="text"
-                      name="name"
-                      minLength={3}
-                      maxLength={100}
-                      value={name}
-                      placeholder= "Nombre"
-                      required
-                      disabled={ !open  }
-                      onChange={(e) => {
-                        setName(e.target.value);
-                      }} >
-                      <div className="absolute rounded-l-[4px] h-[32px] w-[32px] left-0 top-0 bg-[#020b1d0b]" >
-                      </div>
-                      <IconCuenta  className="absolute w-[14px] left-[9px] top-[9px] " color="#39507faa" />
-                    </InputCnp>
-  
+              <div className={`pt-2 sm:pt-4 ${!open && "invisible"} `}> 
+                <form action={formActionx}>
+                  <fieldset className={`mb-2 grid grid-cols-1 items-center gap-2 md:grid-cols-2 md:mb-4 md:flex-row md:gap-4`}>
                     <InputCnp
                       className={`text-sm h-8 `}
                       id="email"
@@ -440,7 +534,7 @@ export default function RealizarConsulta( { user }: { user: User | undefined } )
                       value={email}
                       placeholder= "Email"
                       required
-                      disabled={ !open  }
+                      disabled={ !open }
                       onChange={(e) => {
                         setEmail(e.target.value);
                       }} 
@@ -449,56 +543,213 @@ export default function RealizarConsulta( { user }: { user: User | undefined } )
                       </div>
                       <IconEmail2  className="absolute w-[14px] left-[9px] top-[9px] " color="#39507faa" />
                     </InputCnp>
+                    
+                    <div /* className={` ${ user?.name && "hidden"}`} */>
+                      <InputCnp
+                        className={`text-sm h-8`}
+                        id="name"
+                        type="text"
+                        name="name"
+                        minLength={3}
+                        maxLength={100}
+                        value={ name /*? name :  nameVisitor ? nameVisitor : ""*/  }
+                        placeholder= "Nombre"
+                        required
+                        disabled={ !open }
+                        onChange={(e) => {
+                          setName(e.target.value);
+                        }} >
+                        <div className="absolute rounded-l-[4px] h-[32px] w-[32px] left-0 top-0 bg-[#020b1d0b]" >
+                        </div>
+                        <IconCuenta  className="absolute w-[14px] left-[9px] top-[9px] " color="#39507faa" />
+                      </InputCnp>
+                    </div>
+
+                    <input
+                      type="hidden"
+                      id="image"
+                      name="image"
+                      // value={ imagen ? imagen : imageUrl ? imageUrl : "" }
+                      value={ /*imagen ? imagen :  imgUrlSessionx ? imgUrlSessionx :  imageUrl ? imageUrl :*/ "" }
+                      readOnly
+                    />
                   </fieldset>
-  
+
                   {/* Massages erros */}
                   <div
                     className="flex items-end relative space-x-8"
                     aria-live="polite"
                     aria-atomic="true"
                   >
-                    {estadox?.message && estadox?.message !== "usuario" && estadox?.message === "Database Error: Error al crear consulta." && (
+                    {estadox?.message && (
                       <>
                         <ExclamationCircleIcon className="absolute top-4 h-5 w-5 text-red-500" />
                         <p className="pt-4 text-sm text-red-500">{estadox?.message}</p>
                       </>
                     )}
                   </div>
-  
+
                   {/* button submit */}
-                  <div className="mt-2 text-sm sm:mt-4">
-                    <ButtonA
-                      className={`h-8 text-[13px] w-max ml-auto ${!open && "hidden"}`}
-                      onClick={() => { 
-                        email && name && sessionStorage.setItem('name', `${name}`);
-                        email && name && sessionStorage.setItem('email', `${email}`);
-                        handleClickButtonRegistro()
-                      }}
-                    >
-                      Registrar
-                    </ButtonA>
-                  </div>
+                  <ButtonA
+                    className={`${(isPendingx || isPendingAuth) && "before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_1s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/30 before:to-transparent"}  relative overflow-hidden  h-8 text-[13px] w-max ml-auto ${!open && "hidden"} disabled:!opacity-60`}
+                    onClick={() => { 
+                      setTimeout(handleClickButtonAuth, 200) 
+                      // sessionStorage.clear()
+                    }}
+                    disabled= {(/* nameVisitor ||  user?.name ||*/ name) && email && isEmailValid(`${email}`) ? false : true}
+                  >
+                    Enviar
+                  </ButtonA>
                 </form>
               </div>
             </div>
           </Frente>
-          ) : (
-            <Frente className="p-2 mt-2 text-small-regular sm:p-4 !bg-[#e0e6e1]">
-              <div className={`w-full text-start text-[13px] text-[#1d0215dd] transition-[opacity] duration-300 sm:text-sm `}>
-                <span className="font-semibold text-sm sm:text-[15px]">{ /* !estadox.message ? "" : */ name }</span> Para enviarte la respuesta se registró el e-mail <span className="font-semibold mx-1 text-sm sm:text-[15px] ">{email}</span>
+        ) : isEmailVisitor ? (
+          <Frente className={`!p-2 mt-2 text-small-regular sm:!p-4 !bg-[#020b1d16] `}>
+            <div className="flex items-center justify-between gap-2 sm:gap-5 ">{/*  ${!consulta && "hiddden"} */}
+              <div className="mt-1.5 ">
+                <IconRegistro className="w-[20px] sm:w-6 sm:ml-3 md:ml-1.5 " />{/* w-[20px] ml-1.5 sm:ml-3 */}
               </div>
-            </Frente> 
-          )
+
+              <div className={`w-full text-start text-[#39507f] `}>
+                <div className={` text-[13px] sm:text-[15px] `}>
+                  {/* {  user ? (
+                    <p><b>{ user.name}</b>, enviame un e-mail para mandarte la respuesta<span className=" text-[#ff0000] ml-0.5">*</span></p>
+                  ) : <p>Enviame un e-mail para mandarte la respuesta<span className=" text-[#ff0000] ml-0.5">*</span></p> }  */}
+                  <p><b>{ user.name}</b>, enviame un e-mail para mandarte la respuesta<span className=" text-[#ff0000] ml-0.5">*</span></p>
+                </div>
+              </div>
+                
+              <ButtonB
+                className={`h-8 text-[13px]  w-max`}
+                onClick={() => { 
+                  setOpen(!open); 
+                  setEmail(""); 
+                  setName("");
+                }}
+
+                data-testid="edit-button"
+                data-active={open}
+              >
+                {open ? "Cancelar" :  <div className="text-[13px] overflow-auto whitespace-nowrap">Email</div>  }
+              </ButtonB>
+            </div>
+            
+            <div
+              className={clsx(
+                "transition-[max-height,opacity] duration-300 ease-in-out overflow-visible",
+                {
+                  "max-h-[1000px] opacity-100": open,
+                  "max-h-0 opacity-0": !open,
+                }
+              )}
+            >
+              {/* update email user */}
+              <div className={`pt-2 sm:pt-4 ${!open && "invisible"} `}> 
+                <fieldset className={`mb-2 grid grid-cols-1 items-center gap-2 md:grid-cols-2 md:mb-4 md:flex-row md:gap-4`}>
+                  <InputCnp
+                    className={`text-sm h-8 `}
+                    id="email"
+                    type="email"
+                    name="email"
+                    minLength={3}
+                    maxLength={100}
+                    value={email}
+                    placeholder= "Email"
+                    required
+                    disabled={ !open }
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                    }} 
+                    >
+                    <div className="absolute rounded-l-[4px] h-[32px] w-[32px] left-0 top-0 bg-[#020b1d0b]" >
+                    </div>
+                    <IconEmail2  className="absolute w-[14px] left-[9px] top-[9px] " color="#39507faa" />
+                  </InputCnp>
+                  
+                  {/* <div className={` ${ user?.name && "hidden"}`}>
+                    <InputCnp
+                      className={`text-sm h-8`}
+                      id="name"
+                      type="text"
+                      name="name"
+                      minLength={3}
+                      maxLength={100}
+                      value={ user.name ? user.name : "" }
+                      placeholder= "Nombre"
+                      required
+                      disabled={ !open }
+                      onChange={(e) => {
+                        setName(e.target.value);
+                      }} >
+                      <div className="absolute rounded-l-[4px] h-[32px] w-[32px] left-0 top-0 bg-[#020b1d0b]" >
+                      </div>
+                      <IconCuenta  className="absolute w-[14px] left-[9px] top-[9px] " color="#39507faa" />
+                    </InputCnp>
+                  </div> */}
+
+                  {/* <input
+                    type="hidden"
+                    id="image"
+                    name="image"
+                    value={ "" }
+                    readOnly
+                  /> */}
+                </fieldset>
+
+                {/* Massages erros */}
+                <div
+                  className="flex items-end relative space-x-8"
+                  aria-live="polite"
+                  aria-atomic="true"
+                >
+                  {estadox?.message && (
+                    <>
+                      <ExclamationCircleIcon className="absolute top-4 h-5 w-5 text-red-500" />
+                      <p className="pt-4 text-sm text-red-500">{estadox?.message}</p>
+                    </>
+                  )}
+                </div>
+
+                <form onSubmit={   uploadToServer3  /* formActionxxx */ }>
+                  {/* button submit */}
+                  <ButtonA
+                    type="submit"
+                    className={`${(isPendingx || isPendingAuth) && "before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_1s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/30 before:to-transparent"}  relative overflow-hidden  h-8 text-[13px] w-max ml-auto ${!open && "hidden"} disabled:!opacity-60`}
+                    onClick={() => { 
+                      // handleClickButtonxxxx()
+                      // setTimeout(handleClickButtonxxxx, 200)
+                      setTimeout(handleClickButtonAuth, 2000) 
+                      // sessionStorage.clear()
+                    }}
+                    disabled= {(/* nameVisitor || */ user?.name || name) && email && isEmailValid(`${email}`) ? false : true}
+                  >
+                    Enviar
+                  </ButtonA>
+                </form>
+              </div>
+            </div>
+          </Frente>
+        ) : (
+          <Frente className={`flex items-center gap-2.5 py-1 px-2 mt-2 !bg-[#020b1d16] text-small-regular ${user && "!bg-[#d7e5d9]"} ${estado?.message === "consultaCreada" && "hidden"} sm:py-2 sm:px4 sm:gap-5`}>
+            <IconRegistro className=" w-[24px] mt-1.5 sm:mt-2 sm:ml-3" />
+            <div className={`w-full font-medium text-start text-[13px] text-[#39507f] transition-[opacity] duration-300 sm:text-sm `}>
+              <p>Te enviaré la <b>respuesta</b> por email a<span className= "underline decoration-[#020b1d81] underline-offset-2 ml-2 ">{user?.email}. </span></p>
+            </div>
+          </Frente>
         )
       }
 
       {estado?.message === "consultaCreada" && (
         <Frente className="!p-2 mt-2 !bg-[#d7e5d9] sm:!p-4 ">
-          <div className={`w-full text-start text-sm text-[#1d0215dd] transition-[opacity] duration-300 sm:text-[15px] `}>
-            Recibimos la consulta. Te responderemos a la brevedad.
+          <div className={`w-full text-start font-medium text-sm text-[#39507f] transition-[opacity] duration-300 sm:text-[15px] `}>
+            <p className="sm:text-center">Recibí la <b>consulta</b>, te responderé a la mayor brevedad.</p>
+            <p className={`mt-2 font-medium ${ user?.email_verified && "hidden"} sm:text-center`}>
+              Por favor, revisá el correo electrónico <span className= "underline decoration-[#020b1d81] underline-offset-2 mx-1 ">{user?.email}</span> y enviá la verificación.
+            </p>
           </div>
         </Frente> 
-      ) }
+      )}
 
       {/* Massages error consult */}
       <div
@@ -513,9 +764,83 @@ export default function RealizarConsulta( { user }: { user: User | undefined } )
           </>
         )}
       </div>
+
+      {/* authentication */}
+      <form action={formActionAuth} className="">
+        <input
+          type="hidden"
+          name="email"
+          value={email}
+          readOnly
+        />
+        <input
+          type="hidden"
+          name="password"
+          value= "72cf0550-3f64-474d-b150-aa813c6b4b67"
+          readOnly
+        />
+        <input type="hidden" name="redirectTo" value={callbackUrl} />
+
+        <button
+          type="submit" 
+          ref={buttonRefAuth}
+          className="hidden"
+        >
+          Continuar
+        </button>
+      </form>
+
+
+      {/*Boton Enviar consult */}
+      <div className="w-full flex justify-between items-center">
+        <p className={`text-xs ml-2 ${consulta && /* user?.email */ !isEmailVisitor  && "opacity-0" } sm:text-[13px]`}><span className=" text-[#ff0000]">*</span> Requeridos</p>
+
+        <div className="flex gap-4">
+          {estado?.message !== "consultaCreada" ? (
+            <form onSubmit={ files.length === 0 ? uploadToServer1 : uploadToServer2 } >
+              <div className="group relative w-full flex justify-end items-center">
+                <div className="w-[170px] absolute bottom-8 pt-3">
+                  <span className={`opacity-0 invisible text-xs text-[#020b1d] absolute w-[170px] bottom-[12px] bg-[#ffffff] pt-[3px] pb-[5px] pl-1.5 pr-3 rounded-lg duration-150 shadow-[0_20px_25px_-5px_rgb(0_0_0_/_0.2),_0_8px_10px_-6px_rgb(0_0_0_/_0.2),_0px_-5px_10px_#00000012] ${ consulta ? "" : "group-hover:opacity-100"} sm:text-[13px] group-hover:visible`}><span className="text-base text-[#ff0000]">* </span>Completar requeridos</span>
+                </div>
+
+                <ButtonA
+                  className={`h-8 !px-4 text-sm !justify-start disabled:!opacity-60`}
+                  type="submit"
+                  disabled={ ( consulta && (!isEmailVisitor && user?.email) /* && isEmailValid(`${email}`) */) ? false : true }
+                  onClick={() => {
+                    setSpin(true);
+                    user?.role === "member" && handleClickButtonVerification()
+                    user?.role === "member" && handleClickButtonPedido()
+                  }}
+                >
+                  <IconCambio
+                    className={`${(spin || isPending || isPendingxx ) && "animate-spin"} mr-2 w-[22px] h-[22px] `}
+                  />
+                  <div className="w-full">
+                    Enviar consulta
+                  </div>
+                </ButtonA>
+              </div>
+            </form>
+          ) : (
+            <div className="flex justify-end items-center gap-4">
+              <ButtonA
+                className="h-8 text-sm !justify-start"
+                type="button"
+                onClick={() => {
+                  location.reload()
+                }}
+              >
+                Nueva consulta
+              </ButtonA>
+            </div>
+            )
+          }
+        </div>
+      </div>
       
-      {/* crear consulta */}
-      <form action={dispatch}>
+      {/*crear consulta */}
+      <form action={formAction}>
         {/* archivos Adjuntos */}
         <input
           type="hidden"
@@ -538,7 +863,7 @@ export default function RealizarConsulta( { user }: { user: User | undefined } )
           type="hidden"
           id="email_id"
           name="email_id"
-          value={email}
+          value={session?.user.email ? session?.user.email : email}
           readOnly
         />
 
@@ -551,262 +876,125 @@ export default function RealizarConsulta( { user }: { user: User | undefined } )
         </button>
       </form>
 
-      {/* Enviar consult */}
-      <div className="w-full flex justify-between items-center">
-        <p className={`text-xs ml-2 ${consulta && (emailSession || user)  && "opacity-0" } sm:text-[13px]`}><span className=" text-[#ff0000]">*</span> Requeridos</p>
 
-        <div className="flex gap-4">
-          <div className={`text-[#1d0215bb] rounded-md ${ estado.message !== "consultaCreada"  &&  "hidden"} bg-[#1d02150d] duration-150 hover:bg-[#1d021517] hover:text-[#1d0215]`} >
-            <button
-              type="button"
-              className={` py-1 px-5`}
-              onClick={() => {
-                sessionStorage.removeItem("email")
-                sessionStorage.removeItem("name")
-                location.reload()
-              }}
-            >{/* !emailSession */}
-              Salir
-            </button> 
-          </div>
-
-          {estado?.message !== "consultaCreada" ? (
-            <form onSubmit={ files.length === 0 ? uploadToServer1 : uploadToServer2 } >
-              <div className="group relative w-full flex justify-end items-center">
-                <span className={`opacity-0 invisible text-xs text-[#1d0215] absolute bottom-[150%] bg-[#ffffff] pt-[3px] pb-[5px] pl-1.5 pr-3 rounded-xl duration-150 shadow-[0_20px_25px_-5px_rgb(0_0_0_/_0.2),_0_8px_10px_-6px_rgb(0_0_0_/_0.2),_0px_-5px_10px_#00000012] ${consulta && (emailSession || user) ? "" : "group-hover:opacity-100"} sm:text-[13px] group-hover:visible`}><span className="text-base text-[#d400aa]">* </span>Completar requeridos</span>
-                <ButtonA
-                  className={`h-8 !px-4 text-sm !justify-start disabled:!opacity-60`}
-                  type="submit"
-                  disabled={ consulta && (emailSession || user) ? false : true }
-                  onClick={() => {
-                    email && name && sessionStorage.setItem('name', `${name}`);
-                    email && name && sessionStorage.setItem('email', `${email}`);
-                    setSpin(true);
-                    handleClickButtonPedido()
-                  }}
-                >
-                  <IconCambio
-                    className={`${spin && "animate-spin"} mr-2 w-[22px] h-[22px] `}
-                    // fill2="#fffc"
-                    // fill="#ff00ff"
-                  />
-                  <div className="w-full">
-                    Enviar consulta
-                  </div>
-                </ButtonA>
-              </div>
-            </form>
-          ) : (
-            <div className="flex justify-end items-center gap-4">
-              <Link href={"/dashboard/consultas"}>
-                <ButtonA
-                  className={`h-8 text-sm !justify-start ${!user && "hidden"}`}
-                >
-                  Ver Consultas
-                </ButtonA>
-              </Link>
-
-              <ButtonA
-                className="h-8 text-sm !justify-start"
-                type="button"
-                onClick={() => {
-                  location.reload()
-                }}
-              >
-                Nueva consulta
-              </ButtonA>
-            </div>
-            )
-          }
-        </div>
-      </div>
-
-      {/* Envio e-mail confirmar registro e-mail */}
-      <Frente className={`hidden !bg-[#1d021513] mt-6 py-4 mb-4 px-4 text-sm sm:px-4 `} >
-        <div className="w-full items-start flex gap-3 justify-end sm:items-center sm:mb-0">
-          <div className={`flex items-center gap-4 w-full text-[15px] sm:text-base`}>
-            <IconEnvioEmail  className="w-9 h-4 fill-[#50073aaa]" size={32} />
-            <p>Confirmacion de recepcion e-mail</p>
-          </div>
-
-          <Button
-            className="relative h-[30px] rounded-md border border-[#e9dae9] min-h-[24px] w-[72px] justify-center bg-[#ffffffaa] !px-2.5 py-1 text-[13px] !font-normal text-[#1d0215aa] hover:bg-[#ffffff] hover:text-[#1d0215dd] hover:border-[#d8c0d7] active:!bg-[#eee]"
-            onClick={() => { setEstadoRegistrar(!estadoRegistrar)}}
-            data-testid="edit-button"
-            data-active={state}
-            type='button'
-          >
-            {estadoRegistrar ? "Cerrar" :  <div><span className="text-[12px] uppercase">Ver</span></div> }
-          </Button>
-        </div>
-        <div
-          className={clsx(
-            "transition-[max-height,opacity] duration-300 ease-in-out overflow-visible",
-            {
-              "max-h-[1000px] opacity-100 pt-4": estadoRegistrar,
-              "max-h-0 opacity-0": !estadoRegistrar,
-              "invisible": !estadoRegistrar,
-            }
-          )}
+      {/* crear verificationToken */}
+      <form action={formActionxx}>
+        <input
+          type="hidden"
+          id="identifier"
+          name="identifier"
+          value={email}
+          readOnly
+        />
+        <input
+          type="hidden"
+          id="token"
+          name="token"
+          value={token}
+          readOnly
+        />
+        <input
+          type="hidden"
+          id="expires"
+          name="expires"
+          value={`${new Date(Date.now() + 1000 * 60 * 60 * 24)}`}
+          readOnly
+        />
+        <button
+          type="submit"
+          ref={buttonRefVerification }
+          className= "hidden " 
         >
-          <form action={handleFormRegistro}  className="rounded-lg w-full p-4 ">
-            <div className="flex items-start w-full mb-4 gap-3">
-              <p className="mt-2 leading-none text-[13px]">
-                Para
-              </p>
-              <div className="flex flex-col gap-1 w-full">
-                <InputCnp 
-                  type="text" 
-                  name="to_name" 
-                  placeholder="Nombre" 
-                  className="h-8 !text-sm "
-                  value={name}
-                  autoFocus
-                  required
-                  readOnly
-                  >
-                  <div className="absolute rounded-l-[4px] h-[32px] w-[28px] left-0 top-0 bg-[#00000007]" >
-                    <span className={`absolute w-3 font-semibold left-[9px] top-1.5 opacity-40 text-[#1d021599]  `}>
-                    </span>
-                    <IconCuenta 
-                      color="#50073a50"
-                      className="w-5 absolute top-[7px] left-[5px]"
-                    />
-                  </div>
-                </InputCnp>
-                
-                <InputCnp 
-                  type="email" 
-                  name="to_email" 
-                  placeholder="Email" 
-                  className="h-8 !text-sm " 
-                  defaultValue="agrotecnicog@gmail.com"
-                  // defaultValue= {email} 
-                  required
-                  readOnly
-                  >
-                  <div className="absolute rounded-l-[4px] h-[32px] w-[28px] left-0 top-0 bg-[#00000007]" >
-                    <span className={`absolute w-3 font-semibold left-[9px] top-1.5 opacity-40 text-[#1d021599] `}>
-                    </span>
-                    <IconEmail2 
-                      color="#50073a50"
-                      className="w-4 absolute top-[9px] left-1.5"
-                      />
-                  </div>
-                </InputCnp>
-              </div>
-            </div>
+          Crear VerificationToken
+        </button>
+      </form>
 
-            <div className="flex flex-col gap-1 mb-4">
-              <fieldset className="flex flex-col">
-                <label
-                  className="text-start text-[13px] "
-                  htmlFor="title"
-                >
-                  Asunto
-                </label>
-                <TextareaCnp 
-                  name="title" 
-                  className="!pl-4 !text-sm"
-                  rows={1}
-                  value="Registro e-mail"
-                  required
-                  readOnly
-                  >
-                  <div className="w-0" >
-                  </div>
-                </TextareaCnp>
-              </fieldset>
-
-              <fieldset>
-                <label
-                  className="text-start text-[13px] "
-                  htmlFor="content"
-                >
-                  Mensaje
-                </label>
-                <TextareaCnp
-                  name="content" 
-                  placeholder="Mensaje de confirmación" 
-                  className=" !pl-4 !text-sm"
-                  value={`Para mandarte una Respuesta por tu Consulta se registró el e-mail: ${email}`}
-                  rows={3}
-                  required
-                  readOnly
-                />
-              </fieldset>
-            </div>
-
-            <button 
-              type="submit" 
-              ref={buttonRefRegistro}
-              className="py-1">
-              Enviar
-            </button>
-          </form>
-        </div>
-      </Frente>
-
-      {/* Envio e-mail confirmar recepción consulta */}
-      <form action={handleFormPedido}  className="hidden rounded-lg bg-[#50073a66] w-full border border-gray-700 m-4 p-4 ">
-        <div className="flex items-start w-full mb-4 gap-3">
-          <p className="mt-2 leading-none text-[13px]">
-            Para
-          </p>
-          <div className="flex flex-col gap-1 w-full">
-            <input 
-              type="text" 
-              name="to_name" 
-              placeholder="Nombre" 
-              value={name}
-              required
-              readOnly
-              />
-            
-            <input
-              type="email" 
-              name="to_email" 
-              placeholder="Email" 
-              value= "agrotecnicog@gmail.com"
-              // value=  {email}
-              required
-              readOnly
-              />
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-1 mb-4">
-          <fieldset className="flex flex-col">
-            <label htmlFor="title">Asunto</label>
-            <textarea
-              name="title" 
-              rows={1}
-              value="Recepción Consulta"
-              required
-              readOnly
-              />
-          </fieldset> 
-
-          <fieldset className="flex flex-col">
-            <label htmlFor="content">Mensaje</label>
-            <textarea
-              name="content" 
-              placeholder="Mensaje de confirmación" 
-              value={`Recibimos tu consulta: "${consulta}"`}
-              rows={3}
-              required
-              readOnly
-            />
-          </fieldset>
-        </div>
-
+      {/* Envio e-mail verificacion email */}
+      <form action={handleFormPedido}>
+        <input 
+          type="hidden"
+          name="to_name" 
+          value={name}
+          readOnly
+        />
+        <input
+          type="hidden"
+          name="to_email" 
+          value= "agrotecnicog@gmail.com"
+          // value= {email}
+          readOnly
+        />
+        <input
+          type="hidden"
+          name="content" 
+          value="/realizar-consulta"
+          readOnly
+        />
+        <input
+          type="hidden"
+          id="token"
+          name="token"
+          value={token}
+          readOnly
+        />
         <button 
           type="submit" 
           ref={buttonRefPedido}
-          className="bg-slate-600 text-white p-2">
+          className="hidden">
           Enviar
         </button>
       </form>
+      
+      {/*update comment email */}
+      <form action={formActionxxxx}>
+        <input
+          type="hidden"
+          name="email_id"
+          value={ email }
+          readOnly
+        />
+
+        <input
+          type="hidden"
+          name="pathname"
+          value= {pathname}
+          readOnly
+        />
+
+        <button
+          type="submit"
+          ref={buttonRefxxxx}
+          className= "hidden " 
+        >
+          Enviar Consulta
+        </button>
+      </form>
+
+      {/*update user email */}
+      <form action={formActionxxx}>
+        <input
+          type="hidden"
+          name="email"
+          value={ email }
+          readOnly
+        />
+
+        <input
+          type="hidden"
+          name="pathname"
+          value= {pathname}
+          readOnly
+        />
+
+        <button
+          type="submit"
+          ref={buttonRefxxx}
+          className= "hidden " 
+        >
+          Enviar Consulta
+        </button>
+      </form>
+      
     </>
   );
 }

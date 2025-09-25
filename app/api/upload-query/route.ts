@@ -37,6 +37,7 @@ export async function POST(request: NextRequest) {
   }
 
   // console.log("bytes: ", bytes)
+  // console.log("buffers: ", buffers)
 
   // Con los datos del archivo en el buffer, puedes hacer lo que quieras con ellos.
   // Para esto, simplemente los escribiremos en el sistema de archivos en una nueva ubicación.

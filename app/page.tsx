@@ -26,10 +26,12 @@ export default async function Page() {
   const session = await auth();
   const user = await fetchUserById(session?.user?.email)
 
+  
+
 
   return (
     <div className=" w-full h-full min-h-screen">
-      <SessionProvider>
+      <SessionProvider /* basePath={"/auth"} */ session={session}>
         <CNPMandataria  user={user}  linkDatos={linkDatos} />
       </SessionProvider>
     </div>

@@ -11,17 +11,20 @@ const publicRoutes= [
   "/faq/denuncia-de-venta",
   "/faq/dif-gestor-mandatario",
   "/realizar-consulta",
-  // "/iniciar-tramite/denuncia-de-venta",
+  // "/iniciar-tramite/verificacion-policial",
+  // "/iniciar-tramite/cambio-de-radicacion",
   // "/iniciar-tramite/:path+",
   // "/^\/iniciar-tramite\/[\w-]+$/.test(pathname)",
   "/login",
   // "/register",
-  // "/api/auth/verify-email",
+  "/api/auth/signIn",
+  "/api/auth/auth",
+  "/api/verify-email",
   "/api",
   "/api/upload-query",
   // "/api/auth/providers",
-  "/query",
   // "/query",
+  "/email-verified",
   "/pruebas"
 ]
 

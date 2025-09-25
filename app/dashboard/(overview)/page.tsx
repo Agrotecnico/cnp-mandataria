@@ -1,6 +1,7 @@
 import { auth } from 'auth';
 import { Metadata } from 'next';
 import { Suspense } from 'react';
+import { notFound } from 'next/navigation';
 
 import RevenueChart from '@/app/ui/dashboard/revenue-chart';
 import LatestInvoices from '@/app/ui/dashboard/latest-invoices';
@@ -24,7 +25,6 @@ export default async function Page() {
   const session = await auth();
   // const user = await fetchUserById(session?.user?.email);
 
-  // if (session?.user?.email === process.env.ADMIN )
   if (session?.user.role === "admin" )
   return (
     <main>
@@ -50,24 +50,26 @@ export default async function Page() {
     </main>
   );
 
-  return (
-    <>
-    {/* <main>
-      <h1
-        className={` mb-4 text-xl md:mb-8 lg:text-2xl`}
-      >
-        Resumen
-      </h1>
-      <div className="grid gap-x-6 gap-y-3 grid-cols-3 sm:gap-6 lg:grid-cols-4">
-        <Suspense fallback={<CardsMemberSkeleton />}>
-          <CardWrapperMember />
-        </Suspense>
-      </div>
-    </main> */}
+  return notFound();
+  
+  // return (
+  //   <>
+  //   <main>
+  //     <h1
+  //       className={` mb-4 text-xl md:mb-8 lg:text-2xl`}
+  //     >
+  //       Resumen
+  //     </h1>
+  //     <div className="grid gap-x-6 gap-y-3 grid-cols-3 sm:gap-6 lg:grid-cols-4">
+  //       <Suspense fallback={<CardsMemberSkeleton />}>
+  //         <CardWrapperMember />
+  //       </Suspense>
+  //     </div>
+  //   </main>
 
-    <div className="h-[50%] flex items-center justify-center ">
-      Página no disponble
-    </div>
-    </>
-  );
+  //   {/* <div className="h-[50%] flex items-center justify-center ">
+  //     Página no disponble
+  //   </div> */}
+  //   </>
+  // );
 }

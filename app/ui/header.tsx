@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { auth } from 'auth';
+import { SessionProvider } from "next-auth/react"
 
 import UserButtonHeader from '@/app/ui/user-button-header';
 import UserButtonMenu from '@/app/ui/user-button-menu';
@@ -11,18 +12,14 @@ import LogoCnpColorV from '@/app/ui/logosIconos/logo-cnp-color-v';
 import IconCuenta from '@/app/ui/logosIconos/icon-cuenta';
 import { fetchUserById } from '@/app/lib/data'; 
 import { getAllPosts } from '@/app/lib/getPost';
+import VisitorButtonHeader from './visitor-button-header';
 
 
 export default async function Header( ) {
-
   const session = await auth()
+  // const user= session?.user ? await fetchUserById(session.user.email) : null;
   const user = await fetchUserById(session?.user?.email)
-  // const user= {
-  //   email: "mario@gmail.com"
-  // }
-
   const allPosts = getAllPosts();
-
 
   return (
     <header className="fixed left-0 z-10 flex h-[68px] w-[100vw] items-center justify-center bg-[#39507f]  sm:h-20 ">
@@ -40,13 +37,12 @@ export default async function Header( ) {
         </div>
 
         <div className="flex flex-col text-center text-[18px] leading-6 text-[#ffffffd4] [text-shadow:_1px_1px_0_#00000082] md:flex-row md:leading-7">
-
-          {user?.role === "admin" ? (
+          {session?.user.role === "admin" ? (
             <>
               <UserButtonMenuFaq  allPosts={allPosts} />
               {/* <UserButtonMenu /> */}
             </>
-            ) : user ? (
+            ) : session ? (
             <>
               {/* <UserButtonMenuMember /> */}
               <UserButtonMenuFaq  allPosts={allPosts} />
@@ -59,33 +55,18 @@ export default async function Header( ) {
             </>
             )
           }
-
         </div>
 
-        {user ? (
+        {/* {session ? (
           <div className="flex items-center gap-2 ">
             <span className="hidden text-sm text-[#fffffff2] [text-shadow:_1px_1px_0px_#000000c9] md:inline-flex ">
-              {user?.email}
-            </span>
+              {session.user.name}
+            </span> */}
             <UserButtonHeader user={user} />
-          </div>
+          {/* </div>
         ) : (
-          <Link
-            href="/login"
-            className="flex flex-col items-center opacity-70 duration-200 hover:opacity-95 "
-          >
-            <div className="max-w-max ">
-              <IconCuenta
-                className="w-6 sm:w-7"
-                color={'#fff'}
-              />
-            </div>
-            <div 
-              className="text-[13px] text-[#fff] leading-none sm:text-sm sm:leading-none">
-              Acceso
-            </div>
-          </Link>
-         )} 
+          <VisitorButtonHeader  />
+         )}  */}
       </div>
     </header>
   );

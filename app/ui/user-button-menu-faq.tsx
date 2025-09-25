@@ -33,13 +33,13 @@ export default  function UserButtonMenuFaq({allPosts}:{allPosts:Post}) {
         </Dropdown.Button>
 
         <Dropdown.Menu >
-          <div className="px-4 pt-8 pb-2 flex items-center flex-col space-y-1 mx-4 sm:pt-10 sm:pb-0 md:pt-8 md:pb-1">
+          {/* <div className="px-4 pt-8 pb-2 flex items-center flex-col space-y-1 mx-4 sm:pt-10 sm:pb-0 md:pt-8 md:pb-1">
             <p className="text-sm font-medium leading-none ">
               CONSULTAS FRECUENTES
             </p>
-          </div>
+          </div> */}
 
-          <div className=" w-screen p-3 pb-5 flex flex-col gap-[1px]">
+          <div className=" w-screen px-3 pt-8 pb-5 flex flex-col gap-[1px]">
             {allPosts.length ? (
               allPosts.map((post:Post) => (
                 <Link
@@ -47,9 +47,9 @@ export default  function UserButtonMenuFaq({allPosts}:{allPosts:Post}) {
                   href="/faq/[slug]"
                   key={post.slug}
                   className={clsx(
-                    'flex items-center justify-start pl-2 pr-4  text-sm text-[#020b1dcc] duration-200 rounded-lg hover:text-[#020b1d] hover:bg-[#39507f10]',
+                    'flex items-center justify-start pl-2 pr-4 text-sm text-[#020b1dbb] duration-200 rounded-lg hover:text-[#020b1dee] hover:bg-[#548eff18] sm:mx-12 ',
                     {
-                      'bg-[#39507f11] text-[#020b1e]': pathname === `/faq/${post.slug}`,
+                      'bg-[#548eff16] text-[#020b1e]': pathname === `/faq/${post.slug}`,
                     },
                   )}
                 >

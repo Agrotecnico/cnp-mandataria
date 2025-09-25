@@ -20,9 +20,9 @@ export default function NavLinksConsultas({allPosts}:{allPosts:Post}) {
             href="/faq/[slug]"
             key={post.slug}
             className={clsx(
-              'flex items-center justify-start pl-2 pr-4 text-sm text-[#020b1dbb] duration-200 rounded-lg hover:text-[#020b1d] hover:bg-[#39507f10]',
+              'flex items-center justify-start pl-2 pr-4 text-sm text-[#020b1dbb] duration-200 rounded-[4px] hover:text-[#020b1d] hover:bg-[#548eff18]',
               {
-                'bg-[#39507f11] text-[#020b1e]': pathname === `/faq/${post.slug}`,
+                'bg-[#548eff16] text-[#020b1e]': pathname === `/faq/${post.slug}`,
               },
             )}
           >

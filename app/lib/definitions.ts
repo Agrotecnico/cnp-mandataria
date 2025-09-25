@@ -15,8 +15,10 @@ export type User = {
   email: string;
   password: string | undefined;
   role: 'admin' | 'member' | 'memberAccount';
-  // role: Role;
   image: string | undefined;
+  email_verified: string | undefined;
+  created_at: string;
+  updated_at: string | undefined;
 };
 
 export type Customer = {
@@ -99,6 +101,7 @@ export type ConsultasTable = {
   updated_at: string;
   name: string;
   image: string | undefined;
+  email_verified: string | undefined;
 };
 export type TramitesTable = {
   id: string;
@@ -115,6 +118,7 @@ export type TramitesTable = {
   finished_at: string | undefined;
   name: string;
   image: string | undefined;
+  email_verified: string | undefined;
 };
 
 export type CustomersTableType = {
@@ -177,10 +181,18 @@ export type TramiteMd = {
 export type Comment = {
   id: string;
   created_at: string;
+  deleted_at: string | undefined;
   post_slug: string;
   comment: string;
   email_id: string;
   nombre: string | undefined;
+  avatar: string | undefined;
+};
+export type CommentLast = {
+  id: string;
+  nombre: string | undefined;
+  avatar: string | undefined;
+  comment: string;
 };
 
 export type CommentsPost = {
@@ -189,7 +201,15 @@ export type CommentsPost = {
   post_slug: string;
   comment: string;
   created_at: string;
+  deleted_at: string;
   name: string | undefined;
   image: string | undefined;
   nombre: string | undefined;
+  avatar: string | undefined;
+};
+
+export type VerificationToken = {
+  identifier: string;
+  token: string;
+  expires: string;
 };

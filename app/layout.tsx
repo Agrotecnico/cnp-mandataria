@@ -4,8 +4,8 @@ import type { Metadata } from "next"
 
 export const metadata: Metadata = {
   title: 'CNPmandataria',
-    description:
-      "Servicios de asesoramiento y gestión en la compra/venta de vehículos automotor y náutico, transferencia de dominio, cédula de identificación y otros trámites de registros de la propiedad automotor. Podés realizar consultas o iniciar trámites",
+  description:
+    "Servicios de asesoramiento y gestión en la compra/venta de vehículos automotor y náutico, transferencia de dominio, cédula de identificación y otros trámites de registros de la propiedad automotor. Podés realizar consultas o iniciar trámites",
   // icons: {icon:"favicon.ico"} ,
 }
 

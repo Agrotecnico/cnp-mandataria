@@ -13,7 +13,9 @@ import {
   ConsultasTable,
   TramitesTable,
   Comment,
-  CommentsPost
+  // CommentLast,
+  CommentsPost,
+  VerificationToken,
 } from './definitions'
 import { formatCurrency } from './utils'
 import { unstable_noStore as noStore } from 'next/cache'
@@ -219,6 +221,7 @@ export async function fetchFilteredConsultas(query: string, currentPage: number,
     consultas.updated_at,
     consultas.email_id,
     users.name,
+    users.email_verified,
     users.image
     FROM consultas
     JOIN users ON consultas.email_id = users.email
@@ -254,6 +257,7 @@ export async function fetchFilteredTramites(query: string, currentPage: number,)
     tramites.finished_at,
     tramites.email_id,
     users.name,
+    users.email_verified,
     users.image
     FROM tramites
     JOIN users ON tramites.email_id = users.email
@@ -570,11 +574,14 @@ export async function fetchCommentById(id: string) {
       SELECT
       id,
       email_id,
+      nombre,
       post_slug,
       comment,
+      avatar,
       created_at
       FROM comments
-      WHERE post_slug = ${id};
+      WHERE post_slug = ${id}
+      ORDER BY revenue.id DESC;
     `;
 
     // const comment = data.rows.map((comment) => ({
@@ -588,9 +595,43 @@ export async function fetchCommentById(id: string) {
     throw new Error('Failed to fetch comment.');
   }
 }
-export async function fetchFilteredComments(id: string/* query: string, currentPage: number */) {
+export async function fetchCommentLast() {
+  noStore()
+  try {
+    const ultimoCommentario = await sql<Comment>`
+      SELECT
+      id,
+      created_at,
+      nombre,
+      deleted_at,
+      post_slug,
+      email_id,
+      avatar,
+      comment
+      FROM comments
+      -- WHERE deleted_at IS NULL
+      WHERE deleted_at = '2024-01-01 00:00:00+00' OR deleted_at IS NULL 
+      ORDER BY created_at DESC
+      LIMIT 1
+    `;
+
+    // return commentLast.rows;
+
+    const commentLast = ultimoCommentario.rows[0];
+    // console.log("comm: ", commentLast)
+    return commentLast;
+    
+
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch last comment.');
+  }
+}
+export async function fetchFilteredComments(slug: string/*, query: string, currentPage: number */) {
   noStore()
   // const offset = (currentPage - 1) * ITEMS_PER_PAGE;
+
+  const date= new Date('2024-01-01 00:00:00+00').toString()
 
   try {
     const comments = await sql<CommentsPost>`
@@ -600,13 +641,16 @@ export async function fetchFilteredComments(id: string/* query: string, currentP
     comments.post_slug,
     comments.comment,
     comments.created_at,
+    comments.deleted_at,
     comments.nombre,
+    comments.avatar,
     users.name,
     users.image
     FROM comments
     JOIN users ON comments.email_id = users.email
-    WHERE comments.post_slug = ${id}
-      ORDER BY comments.created_at DESC
+    WHERE comments.post_slug = ${slug} 
+    AND (comments.deleted_at = '2024-01-01 00:00:00+00' OR comments.deleted_at IS NULL )
+    ORDER BY comments.created_at DESC
     `;
     return comments.rows;
   } catch (error) {
@@ -636,8 +680,18 @@ export async function fetchUserByEmail(id: string | null | undefined): Promise<U
     throw new Error('Failed to fetch user.');
   }
 }
+export async function fetchUserByIdentifier(identifier: string | null | undefined): Promise<User | undefined> {
+  try {
+    const user = await sql<User>`SELECT * FROM users WHERE email=${identifier}`;
+    return user.rows[0];
+  } catch (error) {
+    console.error('Failed to fetch user:', error);
+    throw new Error('Failed to fetch user.');
+  }
+}
 
- export async function fetchCustomers() {
+
+export async function fetchCustomers() {
   noStore()
   try {
     const data = await sql<CustomerField>`
@@ -650,6 +704,38 @@ export async function fetchUserByEmail(id: string | null | undefined): Promise<U
 
     const customers = data.rows;
     return customers;
+  } catch (err) {
+    console.error('Database Error:', err);
+    throw new Error('Failed to fetch all customers.');
+  }
+}
+
+
+export async function fetchVerificationToken(email: string | null | undefined) {
+  noStore()
+  try {
+    const data = await sql<VerificationToken>`
+      SELECT *
+      FROM verification_token
+      WHERE email=${email}
+    `;
+
+    return data.rows[0];
+  } catch (err) {
+    console.error('Database Error:', err);
+    throw new Error('Failed to fetch all customers.');
+  }
+}
+export async function fetchToken(token: string | null | undefined) {
+  noStore()
+  try {
+    const data = await sql<VerificationToken>`
+      SELECT *
+      FROM verification_token
+      WHERE token=${token}
+    `;
+
+    return data.rows[0];
   } catch (err) {
     console.error('Database Error:', err);
     throw new Error('Failed to fetch all customers.');

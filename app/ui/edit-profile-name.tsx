@@ -1,0 +1,100 @@
+'use client';
+
+import { useState, useEffect, useActionState } from 'react';
+
+import { User } from '@/app/lib/definitions';
+import { ExclamationCircleIcon } from '@heroicons/react/24/outline';
+import { updateUserName, StateUserName } from '@/app/lib/actions';
+import { InputCnp } from "@/app/ui/uiRadix/input-cnp";
+import { ButtonB, ButtonA } from "@/app/ui/button";
+import IconCuenta from '@/app/ui/logosIconos/icon-cuenta';
+import { useSearchParams, usePathname } from 'next/navigation';
+
+
+const wait = () => new Promise((resolve) => setTimeout(resolve, 2000));
+
+
+export default function EditPerfilName( { user}: { user: User | undefined } ) {
+
+  const pathname = usePathname();
+    const callbackUrl = pathname
+  
+  const [name, setName] = useState("");
+  const [nombre, setNombre] = useState('');
+  const [spin, setSpin] = useState(false);
+
+  useEffect(() => {
+    sessionStorage.getItem("nameVisitor") && setNombre(`${sessionStorage.getItem("nameVisitor")}`)
+  }, [])
+
+  const initialState: StateUserName = { message: null, errors: {} };
+  const updateUserWithId = updateUserName.bind(null, `${user?.id}`);
+  const [estado, formAction, isPending] = useActionState(updateUserWithId, initialState);
+
+
+  return (
+    <>
+      <form action={ user && formAction}>
+        <div className="flex flex-col items-center justify-between gap-6 text-small-regular p-2 pb-3 ">
+          <div className="mt-2 w-full text-base text-center px-4 rounded-md text-[#020b1d]">
+            { name ? name : user?.name ? user?.name : nombre }
+          </div>
+
+          {/* Name */}
+          <div className="relative mb-2 w-full">
+            <InputCnp 
+              className={`h-[30px] text-sm  `}
+              id="name"
+              type="text"
+              name="name"
+              min={2}
+              defaultValue={name}
+              placeholder= {"Cambiar Nombre"}
+              required
+              onChange={(e) => {
+                setName(e.target.value);
+              }} >
+              <div className={`absolute rounded-l-[4px] h-[30px] w-[32px] left-0 bg-[#548effcc] `}></div>
+            </InputCnp>
+            <IconCuenta className="absolute w-[16px] left-[8px] top-[7px] " color="#ffffff"  />
+          </div>
+
+          <input type="text" name="password" defaultValue={callbackUrl} className='hidden' />
+
+          {/* Massages nombre */}
+          <div
+            className={`"flex items-end relative space-x-8 ${!estado?.message && "hidden"}`}
+            aria-live="polite"
+            aria-atomic="true"
+          >
+            {estado?.message && (
+              <>
+                <ExclamationCircleIcon className="absolute top-4 h-5 w-5 text-red-500" />
+                <p className="pt-4 text-sm text-red-500">{estado?.message}</p>
+              </>
+            )}
+          </div>
+
+          {/* Guardar cambios nombre */}
+          <div className="w-full flex items-center justify-end gap-4 text-sm">
+            <ButtonA
+              type="submit"
+              className={`${ spin  && "before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_1s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/30 before:to-transparent bg-[#28395a] "}  relative overflow-hidden  h-[30px] text-[13px] w-[200px] bg-[#39507f] !rounded-md disabled:opacity-50 `}
+              onClick={ () => {
+                setSpin(true)
+                sessionStorage.setItem("nameVisitor", name)
+                wait().then(() => {
+                  setSpin(false)
+                  location.reload();
+                })
+              }}
+            >
+              Actualizar
+            </ButtonA>
+          </div>
+        </div>
+      </form>
+    </>
+  );
+}
+

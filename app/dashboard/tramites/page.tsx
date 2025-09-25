@@ -1,6 +1,7 @@
 
 import { Metadata } from 'next';
 import { auth } from '@/auth';
+import { notFound } from 'next/navigation';
 
 import Pagination from '@/app/ui/invoices/pagination';
 import { fetchTramitesPages } from '@/app/lib/data';
@@ -44,11 +45,11 @@ export default async function Page({
   if (session?.user.role === "admin")
     return (
       <main>
-        <h1 className={` mb-4 text-xl md:mb-8 lg:text-2xl`}>
+        <h1 className={` mb-4 text-xl lg:text-2xl`}>
           Trámites
         </h1>
 
-        <div className="mb-8 flex items-center justify-between gap-2 md:mb-12">
+        <div className="mb-6 flex items-center justify-between gap-2">
           <Search placeholder="Buscar trámites..." />
         </div>
 
@@ -64,32 +65,34 @@ export default async function Page({
       </main>
     );
 
-    return (
-      <main>
-        {/* <div className=" mb-8">
-          <h1 className={` text-xl lg:text-2xl`}>
-            Tus Trámites
-          </h1>
-        </div>
+    return notFound();
+    
+    // return (
+    //   <main>
+    //     {/* <div className=" mb-8">
+    //       <h1 className={` text-xl lg:text-2xl`}>
+    //         Tus Trámites
+    //       </h1>
+    //     </div>
         
-        {tramites.length ? (
-          <div className="text-[#1d0215dd] flex flex-col gap-2 ">
-            {tramites?.map((tramite, idx) => (
-              <div key={idx } className=" text-[13px] leading-[18px] ">
-                <TableTramiteMember tramite={tramite} />
-              </div>
-            ))}
+    //     {tramites.length ? (
+    //       <div className="text-[#1d0215dd] flex flex-col gap-2 ">
+    //         {tramites?.map((tramite, idx) => (
+    //           <div key={idx } className=" text-[13px] leading-[18px] ">
+    //             <TableTramiteMember tramite={tramite} />
+    //           </div>
+    //         ))}
 
-            <div className="mt-5 flex w-full justify-center">
-              <Pagination totalPages={totalPagesMember} />
-            </div>
-          </div>
-        ) : (
-          <div>Todavía no iniciaste un trámite</div>
-        )} */}
-        <div className="h-[50%] flex items-center justify-center ">
-          Página no disponble
-        </div>
-      </main>
-    );
+    //         <div className="mt-5 flex w-full justify-center">
+    //           <Pagination totalPages={totalPagesMember} />
+    //         </div>
+    //       </div>
+    //     ) : (
+    //       <div>Todavía no iniciaste un trámite</div>
+    //     )} */}
+    //     <div className="h-[50%] flex items-center justify-center ">
+    //       Página no disponble
+    //     </div>
+    //   </main>
+    // );
 }
