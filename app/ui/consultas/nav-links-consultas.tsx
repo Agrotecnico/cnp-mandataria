@@ -20,14 +20,14 @@ export default function NavLinksConsultas({allPosts}:{allPosts:Post}) {
             href="/faq/[slug]"
             key={post.slug}
             className={clsx(
-              'flex items-center justify-start pl-2 pr-4 text-sm text-[#020b1dbb] duration-200 rounded-[4px] hover:text-[#020b1d] hover:bg-[#548eff18]',
+              'flex items-center justify-start pl-2 pr-4 text-sm text-[#020b1dbb] duration-200 rounded-[4px] hover:text-[#020b1d] hover:bg-[#548eff13]',
               {
-                'bg-[#548eff16] text-[#020b1e]': pathname === `/faq/${post.slug}`,
+                'bg-[#548eff12] text-[#020b1e]': pathname === `/faq/${post.slug}`,
               },
             )}
           >
             <div className="flex items-start">
-              <div className="mt-3 mr-2 w-1.5 h-1.5 rounded-full text-transparent bg-[#548effaa]">o</div>
+              <div className="mt-3 mr-2 w-1.5 h-1.5 rounded-full text-transparent bg-[#39507f77]">o</div>
               <p className="text-sm py-1.5 text-start ">
                 {post.excerpt}
               </p>
@@ -37,28 +37,6 @@ export default function NavLinksConsultas({allPosts}:{allPosts:Post}) {
       ) : (
         <p>Aún no hay ningúna consulta publicada</p>
       )}
-
-
-      {/* {allPosts.length ? (
-        allPosts.map((post:Post) => (
-          <Link
-            as={`/faq/${post.slug}`}
-            href="/faq/[slug]"
-            key={post.slug}
-            className={clsx(`py-2 px-2.5 gap-5 flex justify-between bg-[#ffffff88]  text-[#020b1dbb] items-center duration-200 hover:bg-[#ffffffe3] hover:text-[#020b1d] text-sm first:rounded-t-xl last:rounded-b-xl [box-shadow:_inset_0_1px_#ffffff,inset_0_-1px_#0000002e]`,
-              {
-                'text-[#020b1e] bg-[#ffffffe3] ': pathname === `/faq/${post.slug}`
-              }
-            )}
-          >
-            <p className="text-sm text-start max-[512px]:text-sm ">
-              {post.excerpt}
-            </p>
-          </Link>
-        ))
-      ) : (
-        <p>Aún no se ha publicado ningún blog</p>
-      )} */}
     </div>
   );
 }

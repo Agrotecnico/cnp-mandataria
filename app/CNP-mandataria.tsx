@@ -104,7 +104,7 @@ export default function CNPMandataria({
     >
       <NavInicio user={user}  />
       
-      <div className= "group fixed z-10 flex justify-end bottom-12 right-[8px] rounded-xl bg-[linear-gradient(#fff0,_#fff0,_#fff)] shadow-[0_20px_25px_-5px_rgb(0_0_0_/_0.2),_0_8px_10px_-6px_rgb(0_0_0_/_0.2)] duration-500 hover:bg-[#fff] lg:max-w-5xl lg:mx-[calc((100vw_-_64rem)_/_2)] ">
+      <div className= "group fixed z-10 flex justify-end bottom-12 right-[8px] rounded-xl bg-[linear-gradient(#fff0,_#fff0,_#fff)] shadow-[0_20px_25px_-5px_rgb(0_0_0_/_0.2),_0_8px_10px_-6px_rgb(0_0_0_/_0.2)] duration-300 hover:bg-[#fff] lg:max-w-5xl lg:mx-[calc((100vw_-_64rem)_/_2)] ">
         
         <Link 
           href= "https://api.whatsapp.com/send?phone=543476606595"
@@ -377,7 +377,7 @@ export default function CNPMandataria({
                 <div className="px-4">
                   <h4 className="font-bold text-base m-0">Conocimiento Especializado</h4>
                   <p className="hidden mt-[1vh] mx-0 mb-0 font-normal text-sm text-center lg:block sm:text-[15px] sm:mt-[2vh] ">
-                    Profesional matriculada  por la <dfn title="Dirección Nacional de Registros y Propiedad del Automotor" className="text-[#246dfb] font-medium ">DNRPA</dfn>.
+                    Profesional matriculada  por la <dfn title="Dirección Nacional de Registros y Propiedad del Automotor" className="text-[#39507f] font-medium ">DNRPA</dfn>.
                     Capacitada para realizar los trámites de la manera más eficiente en los Registros Seccionales.
                   </p>
                 </div>
@@ -538,19 +538,19 @@ export default function CNPMandataria({
           <div className="flex flex-col gap-0.5 text-sm rounded-lg shadow-[0_10px_20px_#020b1d33] sm:text-[15px] sm:flex-row">
             <Link 
               href={session?.user.role === "admin" ? '/dashboard/tramites' : '/iniciar-tramite/cambio-de-radicacion'} 
-              className="group h-7 flex items-center rounded-t-lg px-3 bg-[#ffffffaa] duration-150 justify-start sm:rounded-tr-none sm:rounded-l-lg sm:h-8 hover:bg-white active:opacity-80">
+              className="group h-7 flex items-center rounded-t-lg px-3 bg-[#ffffffaa] duration-150 justify-start sm:rounded-tr-none sm:rounded-l-lg sm:h-8 opacity-90 group-hover:opacity-100 hover:bg-white active:opacity-80">
               <IconPresupuesto 
-                className="mr-2 w-[15px] h-[15px] duration-150 opacity-70 group-hover:opacity-100 sm:w-[16px] sm:h-[16px]"
-                color="#ffffffdd" color2="#020b1d"
+                className="mr-2 w-[15px] h-[15px] duration-150 sm:w-[16px] sm:h-[16px]"
+                color="#ffffffdd" color2="#548eff"
                 />
               <p className="text-[#020b1dcc] duration-150 group-hover:text-[#020b1d]">{session?.user.role === "admin" ? 'Ver trámites' : 'Pedí presupuesto'}</p>
             </Link>
             <Link 
               href={session?.user.role === "admin" ? '/dashboard/consultas' : '/realizar-consulta'} 
-              className="group h-7 flex items-center rounded-b-lg px-3 bg-[#ffffffaa] duration-150 justify-start sm:rounded-bl-none sm:rounded-r-lg sm:h-8 hover:bg-white active:opacity-80">
+              className="group h-7 flex items-center rounded-b-lg px-3 bg-[#ffffffaa] duration-150 justify-start sm:rounded-bl-none sm:rounded-r-lg sm:h-8 opacity-90 group-hover:opacity-100 hover:bg-white active:opacity-80">
               <IconConsulta 
-                className="mr-2 w-[15px] h-[15px] duration-150 opacity-70 group-hover:opacity-100 sm:w-[16px] sm:h-[16px]"
-                color="#ffffffdd" color2="#020b1d"
+                className="mr-2 w-[15px] h-[15px] duration-150 sm:w-[16px] sm:h-[16px]"
+                color="#ffffffdd" color2="#548eff"
                 />
               <p className="text-[#020b1dcc] duration-150 group-hover:text-[#020b1d]">{session?.user.role === "admin" ? 'Ver consultas' : 'Realizá tu consulta'}</p>
             </Link>
@@ -594,18 +594,18 @@ export default function CNPMandataria({
           <div className="flex flex-col gap-0.5 text-sm rounded-lg shadow-[0_10px_20px_#020b1d33] sm:text-[15px] sm:mt-12 sm:flex-row">
             <Link 
               href={session?.user.role === "admin" ? '/dashboard/tramites' : '/iniciar-tramite/cambio-de-radicacion'} 
-              className="group h-7 flex items-center rounded-t-lg px-3 bg-[#ffffffaa] duration-150 justify-start sm:rounded-tr-none sm:rounded-l-lg sm:h-8 hover:bg-white active:opacity-80">
+              className="group h-7 flex items-center rounded-t-lg px-3 bg-[#ffffffaa] duration-150 justify-start sm:rounded-tr-none sm:rounded-l-lg sm:h-8 opacity-90 group-hover:opacity-100 hover:bg-white active:opacity-80">
               <IconPresupuesto 
-                className="mr-2 w-[15px] h-[15px] duration-150 opacity-90 group-hover:opacity-100 sm:w-[16px] sm:h-[16px]"
+                className="mr-2 w-[15px] h-[15px] duration-150 sm:w-[16px] sm:h-[16px]"
                 color="#ffffffdd" color2="#548eff"
                 />
               <p className="text-[#020b1daa] duration-150 group-hover:text-[#020b1d]">{session?.user.role === "admin" ? 'Ver trámites' : 'Pedí presupuesto'}</p>
             </Link>
             <Link 
               href={session?.user.role === "admin" ? '/dashboard/consultas' : '/realizar-consulta'} 
-              className="group h-7 flex items-center rounded-b-lg px-3 bg-[#ffffffaa] duration-150 justify-start sm:rounded-bl-none sm:rounded-r-lg sm:h-8 hover:bg-white active:opacity-80">
+              className="group h-7 flex items-center rounded-b-lg px-3 bg-[#ffffffaa] duration-150 justify-start sm:rounded-bl-none sm:rounded-r-lg sm:h-8 opacity-90 group-hover:opacity-100 hover:bg-white active:opacity-80">
               <IconConsulta 
-                className="mr-2 w-[15px] h-[15px] duration-150 opacity-90 group-hover:opacity-100 sm:w-[16px] sm:h-[16px]"
+                className="mr-2 w-[15px] h-[15px] duration-150 sm:w-[16px] sm:h-[16px]"
                 color="#ffffffdd" color2="#548eff"
                 />
               <p className="text-[#020b1daa] duration-150 group-hover:text-[#020b1d]">{session?.user.role === "admin" ? 'Ver consultas' : 'Realizá tu consulta'}</p>

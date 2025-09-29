@@ -34,7 +34,7 @@
   }
 
   .markdown ul li {
-    @apply  mt-4 mb-2 leading-snug list-disc marker:text-[#548effaa];
+    @apply  mt-4 mb-2 leading-snug list-disc marker:text-[#39507f77];
   }
 
   .markdown ol li {

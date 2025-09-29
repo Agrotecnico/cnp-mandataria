@@ -10,6 +10,4 @@ informacion: ""
 ---
 
 Trámite para registrar un vehículo nuevo.  
-Esta gestión te permite anotar el dominio de un 0 Km de un auto, moto o maquinaria vial que no ha sido inscripto con anterioridad a nombre de una o más personas físicas o jurídicas.
-<!-- Una vez concluido el trámite se obtiene la chapa patente. -->
-<!-- , Documento que acredite la identidad y personería del adquirente, Constancia de inscripción en la C.U.I.T / C.U.I.L. -->
+Esta gestión te permite anotar el dominio de un auto, moto o maquinaria vial 0 Km.

@@ -1,21 +1,17 @@
 import CustomLink from "@/app/ui/custom-link"
-// import { auth } from "auth"
-import { fetchUserById } from '@/app/lib/data';
-import IconLink from "./logosIconos/icon-link";
 
 
 export default async function FooterConsultas() {
-  // const session = await auth()
-  // const user = await fetchUserById(session?.user?.email);
+
   return (
     <footer className="bg-[#39507f19] w-[100vw] pt-2 pb-1.5 border text-[13px] sm:text-sm">
       <div className="flex w-full h-full flex-col gap-3 max-w-[1280px] mx-auto ">
         <div className="flex gap-48 justify-center items-center sm:gap-64 ">
           <CustomLink href="/" className="flex gap-1.5 px-8 [text-shadow:1px_1px_0_#ffffff] duration-150 underline decoration-[#020b1d55] underline-offset-2 hover:decoration-[#020b1d] ">
-            CNP {/* <IconLink width="12" /> */}
+            CNP
           </CustomLink>
-          <CustomLink href="/faq/dif-gestor-mandatario" className="flex gap-1.5 px-8 [text-shadow:1px_1px_0_#ffffff] duration-150 underline decoration-[#020b1d55] underline-offset-2 hover:decoration-[#020b1d] ">
-            FAQ {/* <IconLink width="12" /> */}
+          <CustomLink href="/faq/compra-venta-vehiculo" className="flex gap-1.5 px-8 [text-shadow:1px_1px_0_#ffffff] duration-150 underline decoration-[#020b1d55] underline-offset-2 hover:decoration-[#020b1d] ">
+            FAQ
           </CustomLink>
         </div>
 

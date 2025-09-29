@@ -56,7 +56,7 @@
   opacity: 1;
   height: 14px;
   width: 14px;
-  background: #548eff77;
+  background: #39507f55;
   margin: 0 8px !important;
   transition: 0.2s;
 }
@@ -64,7 +64,7 @@
   bottom: 9vh;
 }
 .swiper2 .swiper-pagination-bullet-active {
-  background-color:#548eff;
+  background-color:#39507fcc;
 }
 .swiper3 > .swiper-pagination {
   justify-content: flex-end;

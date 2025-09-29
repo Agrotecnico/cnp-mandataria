@@ -9,10 +9,7 @@ export default function Page() {
     
   return (
     <div>
-        <EmailVerified />
-
-        
-
+      <EmailVerified />
     </div>
   )
 }

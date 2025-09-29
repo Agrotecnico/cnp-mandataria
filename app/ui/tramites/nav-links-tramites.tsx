@@ -18,15 +18,15 @@ export default function NavLinksTramites({allTramites }:{allTramites:TramiteMd[]
       <h1 className="flex items-center text-start pl-2 pt-1 pb-3 font-semibold text-lg text-[#39507fcc] md:leading-none ">
         Seleccioná un trámite:
       </h1>
-      <Frente className='!bg-[#020b1d14] p-[3px] flex flex-col gap-0.5 '>
+      <Frente className='!bg-[#548eff16] p-[3px] flex flex-col gap-0.5 '>
 
         {allTramites.map((tramite:TramiteMd) => (
           <Link
             as={`/iniciar-tramite/${tramite.slug}`}
             href="/iniciar-tramite/[slug]"
-            className={clsx(`group py-[3px] pl-0.5 pr-2 bg-[#ffffff0e] first:rounded-t-md last:rounded-b-md flex gap-1 items-start duration-200 hover:bg-[#ffffff88] hover:text-[#020b1d] `,
+            className={clsx(`group py-[3px] pl-0.5 pr-2 bg-[#ffffff00] text-[#020b1daa] first:rounded-t-md last:rounded-b-md flex gap-1 items-start duration-200 hover:bg-[#ffffffaa] hover:text-[#020b1ddc] `,
                 {
-                  'text-[#020b1e] bg-[#ffffff89] ': pathname === `/iniciar-tramite/${tramite.slug}`
+                  'text-[#020b1ddd] bg-[#ffffffab] ': pathname === `/iniciar-tramite/${tramite.slug}`
                 }
               )}
             key={tramite.slug} 
@@ -37,9 +37,9 @@ export default function NavLinksTramites({allTramites }:{allTramites:TramiteMd[]
                 alt="icono trámites" 
                 width={12} 
                 height={"auto"}
-                className={clsx(`opacity-90 h-[7px] w-[7px] group-hover:w-[10px] group-hover:h-[10px]`,
+                className={clsx(`opacity-90 h-[6px] w-[6px] group-hover:w-[8px] group-hover:h-[8px]`,
                   {
-                    '[width:_10px] [height:_10px] ': pathname === `/iniciar-tramite/${tramite.slug}`
+                    '[width:_8px] [height:_8px] ': pathname === `/iniciar-tramite/${tramite.slug}`
                   }
                 )} 
               />

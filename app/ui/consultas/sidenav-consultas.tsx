@@ -28,8 +28,8 @@ export default async function SideNavConsultas() {
           href={session?.user.role === "admin" ? '/dashboard/tramites' : '/iniciar-tramite/cambio-de-radicacion'} 
           className="group h-7 flex items-center rounded-t-lg px-3 bg-[#ffffffaa] duration-150 justify-start  sm:h-8 hover:bg-white active:opacity-80">
           <IconPresupuesto 
-            className="mr-2 w-[15px] h-[15px] duration-150 opacity-70 group-hover:opacity-100 sm:w-[16px] sm:h-[16px]"
-            color="#ffffffdd" color2="#020b1d"
+            className="mr-2 w-[15px] h-[15px] duration-150 opacity-90 group-hover:opacity-100 sm:w-[16px] sm:h-[16px]"
+            color="#ffffffdd" color2="#548eff"
             />
           <p className="text-[#020b1dcc] duration-150 group-hover:text-[#020b1d]">{session?.user.role === "admin" ? 'Ver trámites' : 'Pedí presupuesto'}</p>
         </Link>
@@ -37,8 +37,8 @@ export default async function SideNavConsultas() {
           href={session?.user.role === "admin" ? '/dashboard/consultas' : '/realizar-consulta'} 
           className="group h-7 flex items-center rounded-b-lg px-3 bg-[#ffffffaa] duration-150 justify-start  sm:h-8 hover:bg-white active:opacity-80">
           <IconConsulta 
-            className="mr-2 w-[15px] h-[15px] duration-150 opacity-70 group-hover:opacity-100 sm:w-[16px] sm:h-[16px]"
-            color="#ffffffdd" color2="#020b1d"
+            className="mr-2 w-[15px] h-[15px] duration-150 opacity-90 group-hover:opacity-100 sm:w-[16px] sm:h-[16px]"
+            color="#ffffffdd" color2="#548eff"
             />
           <p className="text-[#020b1dcc] duration-150 group-hover:text-[#020b1d]">{session?.user.role === "admin" ? 'Ver consultas' : 'Realizá tu consulta'}</p>
         </Link>

@@ -10,4 +10,3 @@ informacion: ""
 ---
 
 En caso de pérdida, robo o deterioro de estos documentos, se realiza el procedimiento  de duplicación del título o cédula para obtener un nuevo documento.
-<!-- Para realizar el trámite de duplicado de título o cédula, se debe acudir a la institución que expidió el documento original.  -->

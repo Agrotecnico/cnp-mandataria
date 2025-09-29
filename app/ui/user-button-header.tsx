@@ -36,13 +36,7 @@ import IconPresupuesto from './logosIconos/icon-presupuesto';
 
 export default function UserButtonHeader( { user }: { user: User | undefined } ) {
 
-  // const [imageUrl, setImageUrl] = useState("")
-  // const [imgUrlSession, setImgUrlSession ] = useState("")
-  // const [imgUrlSessionx, setImgUrlSessionx ] = useState("")
-  // const [nombre, setNombre ] = useState("")
   const [imgVisitor, setImgVisitor ] = useState<string | null>(null)
-  // const [imgVisitorx, setImgVisitorx ] = useState<string | null>(null)
-
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalOpen2, setIsModalOpen2] = useState(false);
   const [isModalOpen3, setIsModalOpen3] = useState(false);
@@ -52,20 +46,10 @@ export default function UserButtonHeader( { user }: { user: User | undefined } )
   const router = useRouter()
 
   useEffect(() => {
-    // sessionStorage.getItem('setImgUrlSessionx') && setImgUrlSessionx(`${sessionStorage.getItem('setImgUrlSessionx')}`)
-
-    // sessionStorage.getItem('imgVisitorx') ? setImgVisitor(`${sessionStorage.getItem('imgVisitorx')}`) : sessionStorage.getItem('imgVisitor') && setImgVisitor(`${sessionStorage.getItem('imgVisitor')}`)
-
-    sessionStorage.getItem('imgVisitor') && setImgVisitor(`${sessionStorage.getItem('imgVisitor')}`)
-
-
-    // sessionStorage.getItem('imgVisitorx') && setImgVisitorx(`${sessionStorage.getItem('imgVisitorx')}`)
-    // sessionStorage.getItem('nameVisitor') && setNombre(`${sessionStorage.getItem('nameVisitor')}`)
-    // sessionStorage.getItem('imgUrlSession') && setImgUrlSession(`${sessionStorage.getItem('imgUrlSession')}`) 
+    sessionStorage.getItem('imgVisitor') && setImgVisitor(`${sessionStorage.getItem('imgVisitor')}`) 
   }, []);
 
   const isEmailVisitor= user?.email.slice(16) === "@cnpmandataria.com"
-  // const emailVisitorx= emailVisitor === "@cnpmandataria.com"
 
 
   return (
@@ -74,25 +58,26 @@ export default function UserButtonHeader( { user }: { user: User | undefined } )
       <DropdownMenu>
         <div className={`relative items-center justify-center ${user ? "flex" : "hidden" }`} >
           <DropdownMenuTrigger >
-            <div className={`relative items-center justify-center `} >
-                {user?.image ? (
-                  <Image 
-                    src= { user.image }
-                    alt="imagen de perfil"
-                    className="h-10 w-10 rounded-full "
-                    width={40}
-                    height={40}>
-                  </Image>
+            <div className={`relative flex items-end justify-center gap-2`} >
+              {/* <p className='text-[13px] text-[#ffffffcc]'>{user?.name}</p> */}
+              {user?.image ? (
+                <Image 
+                  src= { user.image }
+                  alt="imagen de perfil"
+                  className="h-9 w-9 rounded-full "
+                  width={40}
+                  height={40}>
+                </Image>
               ) : imgVisitor ? (
                 <Image 
-                    src= { imgVisitor }
-                    alt="imagen de perfil"
-                    className="h-10 w-10 rounded-full "
-                    width={40}
-                    height={40}>
-                  </Image>
+                  src= { imgVisitor }
+                  alt="imagen de perfil"
+                  className="h-9 w-9 rounded-full "
+                  width={40}
+                  height={40}>
+                </Image>
               ) : (
-                <span className="flex text-lg h-9 w-9 items-center opacity-80 duration-150 justify-center rounded-full bg-[#ffffffdd] text-[#374151] sm:text-xl hover:opacity-95 active:opacity-70 ">
+                <span className="flex text-lg h-8 w-8 items-center opacity-80 duration-150 justify-center rounded-full bg-[#ffffffdd] text-[#374151] sm:text-xl hover:opacity-95 active:opacity-70 ">
                   { user?.name.substring(0, 1).toUpperCase()  }
                 </span>
               )}
@@ -122,12 +107,12 @@ export default function UserButtonHeader( { user }: { user: User | undefined } )
 
           <Button
             variant={'ghost'}
-            className="!p-0 !justify-start !rounded-[4px] file:ml-auto h-auto w-full  text-[#374151] opacity-80 hover:opacity-100 active:opacity-70 disabled:opacity-40 hover:bg-[#547eff16]"
+            className="!p-0 !justify-start !rounded-[4px] file:ml-auto h-auto w-full text-[#374151] opacity-80 hover:opacity-100 active:opacity-70 disabled:opacity-40 hover:bg-[#547eff16]"
             onClick={async () => {
               setIsModalOpen(true)
             }}
           >
-            <DropdownMenuItem className='w-full px-4 py-1'>
+            <DropdownMenuItem className='w-full px-4 py-1 cursor-pointer'>
               <CameraIcon className="w-4 mr-2 text-[#39507f]" />
               <p>{user?.image /* || imgUrlSession */ ? "Cambiar" : "Cargar"} imagen</p>
             </DropdownMenuItem>
@@ -135,12 +120,12 @@ export default function UserButtonHeader( { user }: { user: User | undefined } )
 
           <Button
             variant={'ghost'}
-            className="!p-0 !justify-start !rounded-[4px] file:ml-auto h-auto w-full  text-[#374151] opacity-80 hover:opacity-100 active:opacity-70 disabled:opacity-40 hover:bg-[#547eff16]"
+            className="!p-0 !justify-start !rounded-[4px] file:ml-auto h-auto w-full text-[#374151] opacity-80 hover:opacity-100 active:opacity-70 disabled:opacity-40 hover:bg-[#547eff16]"
             onClick={async () => {
               setIsModalOpen2(true)
             }}
           >
-            <DropdownMenuItem className='w-full px-4 py-1'>
+            <DropdownMenuItem className='w-full px-4 py-1 cursor-pointer'>
               <UserIcon className="w-4 mr-2 text-[#39507f]" />
               <p>Actualizar nombre</p>
             </DropdownMenuItem>
@@ -148,15 +133,22 @@ export default function UserButtonHeader( { user }: { user: User | undefined } )
 
           <Button
             variant={'ghost'}
-            className="!p-0 !justify-start rounded-[4px] file:ml-auto h-auto w-full  text-[#374151] opacity-80 hover:opacity-100 active:opacity-70 disabled:opacity-40 hover:bg-[#548eff16]"
+            className={`group !p-0 !justify-start rounded-[4px] file:ml-auto h-auto w-full text-[#374151]`}
             onClick={async () => {
-              setIsModalOpen3(true)
+              !isEmailVisitor && setIsModalOpen3(true)
             }}
           >
-            <DropdownMenuItem className='w-full px-4 py-1'>
-              <AtSymbolIcon className="w-4 mr-2 text-[#39507f]" />
-              <p>{user?.email_verified ? "Actualizar" :  "Verificar"} email</p>
-            </DropdownMenuItem>
+            {!isEmailVisitor  ? (
+              <DropdownMenuItem className={`w-full px-4 py-1 cursor-pointer opacity-80 hover:opacity-100 hover:bg-[#548eff16] active:opacity-70`}>
+                <AtSymbolIcon className="w-4 mr-2 text-[#39507f]" />
+                <p>Actualizar e-mail</p>
+              </DropdownMenuItem>
+            ) : (
+              <div className='flex items-center cursor-default w-full px-4 py-1 opacity-45 '>
+                <AtSymbolIcon className="w-4 mr-2 text-[#39507f]" />
+                <p className=''>Cargar e-mail</p>
+              </div>
+            )}
           </Button>
 
           <DropdownMenuSeparator className="h-[1px] bg-[#37415122] m-[3px]" />
@@ -169,7 +161,7 @@ export default function UserButtonHeader( { user }: { user: User | undefined } )
           >
             <DropdownMenuItem className=''>
             </DropdownMenuItem>
-            <div className='w-full px-4 py-1 opacity-50'>
+            <div className='w-full px-4 py-1 opacity-45'>
               <p className="w-full pr-2 text-start cursor-default py-0 rounded-md text-[#374151] ">Actualizar <span  className='text-[13px] font-medium text-[#39507f]'>DIRECCIÓN ENVIO</span></p>
             </div>
           </Button>
@@ -182,7 +174,7 @@ export default function UserButtonHeader( { user }: { user: User | undefined } )
           >
             <DropdownMenuItem className=''>
             </DropdownMenuItem>
-            <div className='w-full px-4 py-1 opacity-50'>
+            <div className='w-full px-4 py-1 opacity-45'>
               <p className="w-full pr-2 text-start py-0 rounded-md text-[#374151] ">Cargar <span  className='text-[13px] font-medium text-[#39507f]'>INFORMACIÓN PERSONAL</span></p>
             </div>
           </Button>
@@ -219,7 +211,7 @@ export default function UserButtonHeader( { user }: { user: User | undefined } )
             <Link
               href={'#'}
             >
-              <div className="cursor-default relative justify-start text-sm gap-4 h-8 w-full !font-normal text-start rounded-md px-0" >
+              <div className="cursor-default relative flex justify-start text-sm gap-4 h-8 w-full !font-normal text-start rounded-md px-0" >
                 <div className="flex items-center gap-0 w-max rounded-md px-2 opacity-70 text-[#374151] ">
                   <div className="w-full px-2 py-1"><span className='font-semibold  text-[13px] text-[#39507f]'>CNP </span>mandataria</div>
                 </div>
@@ -230,7 +222,7 @@ export default function UserButtonHeader( { user }: { user: User | undefined } )
               href={'/'}
             >
               <DropdownMenuItem>
-                <div className="cursor-pointer justify-start text-sm gap-4 h-8 w-full !font-normal text-start rounded-[4px] px-0 hover:bg-[#548eff18]" >
+                <div className="cursor-pointer flex justify-start text-sm gap-4 h-8 w-full !font-normal text-start rounded-[4px] px-0 hover:bg-[#548eff18]" >
                   <div className="flex items-center gap-0 w-max rounded-md px-2 opacity-80 text-[#374151]   group-hover:opacity-100">
                     <div className="w-full px-2 py-1"><span className='font-semibold text-[13px] text-[#39507f]'>CNP </span>mandataria</div>
                   </div>
@@ -243,7 +235,7 @@ export default function UserButtonHeader( { user }: { user: User | undefined } )
             <Link
               href={'#'}
             >
-              <div className="cursor-default relative justify-start text-sm gap-4 h-8 w-full !font-normal text-start px-0" >
+              <div className="cursor-default relative flex justify-start text-sm gap-4 h-8 w-full !font-normal text-start px-0" >
                 <div className="flex items-center gap-0 w-max rounded-md px-2 opacity-70 text-[#374151] ">
                   <div className="w-full text-[13px] px-2 py-1"><span className='font-semibold text-[#39507f]'>CONSULTAS </span>Frecuentes</div>
                 </div>
@@ -254,8 +246,8 @@ export default function UserButtonHeader( { user }: { user: User | undefined } )
               href={'/faq/compra-venta-vehiculo'}
             >
               <DropdownMenuItem>
-                <div className="cursor-pointer justify-start text-sm gap-4 h-8 w-full !font-normal text-start rounded-[4px] px-0 hover:bg-[#548eff18]" >
-                  <div className="flex items-center gap-0 w-max rounded-md px-2 opacity-80 text-[#374151]   group-hover:opacity-100">
+                <div className="cursor-pointer flex justify-start text-sm gap-4 h-8 w-full !font-normal text-start rounded-[4px] px-0 hover:bg-[#548eff18]" >
+                  <div className="flex items-center gap-0 w-max rounded-md px-2 opacity-80 text-[#374151] group-hover:opacity-100">
                     <div className="w-full px-2 py-1"> <span className='font-semibold  text-[13px] text-[#39507f]'>CONSULTAS </span>Frecuentes</div>
                   </div>
                 </div>
@@ -267,10 +259,10 @@ export default function UserButtonHeader( { user }: { user: User | undefined } )
             <Link
               href={'#'}
             >
-              <div className="group relative cursor-default justify-start text-sm gap-4 w-full !font-normal text-start rounded-full px-0" >
+              <div className="cursor-default relative flex justify-start text-sm gap-4 w-full !font-normal text-start px-0" >
                 <div className="flex items-center gap-0 w-max rounded-md px-2 opacity-70 text-[#374151] ">
                   {user?.role === "admin" ? (
-                    <div className="w-full  text-[13px] px-2 py-1"><span className='font-semibold h-8 text-[#39507f]'>ADMIN </span>Panel</div>
+                    <div className="w-full text-[13px] px-2 py-1"><span className='font-semibold h-8 text-[#39507f]'>ADMIN </span>Panel</div>
                   ) : (
                     ''
                   )}
@@ -282,10 +274,10 @@ export default function UserButtonHeader( { user }: { user: User | undefined } )
               href={'/dashboard'}
             >
               <DropdownMenuItem>
-                <div className="group relative cursor-pointer justify-start text-sm gap-4 w-full !font-normal text-start rounded-full px-0" >
-                  <div className="flex items-center gap-0 w-max rounded-[4px] px-2 opacity-80 text-[#374151]  group-hover:bg-[#548eff18] group-hover:opacity-100">
+                <div className="cursor-pointer flex justify-start text-sm gap-4 w-full !font-normal text-start rounded-[4px] px-0 hover:bg-[#548eff18]" >
+                  <div className="flex items-center gap-0 w-max rounded-md px-2 opacity-80 text-[#374151] group-hover:opacity-100">
                     {user?.role === "admin" ? (
-                      <div className="w-full px-2 py-1"><span className='font-semibold  text-[13px] h-8 text-[#39507f]'>ADMIN </span>Panel</div>
+                      <div className="w-full text-[13px] px-2 py-1"><span className='font-semibold h-8 text-[#39507f]'>ADMIN </span>Panel</div>
                     ) : (
                       ''
                     )}
@@ -302,7 +294,7 @@ export default function UserButtonHeader( { user }: { user: User | undefined } )
               href={'#'}
             >
               <div className="group relative cursor-default flex items-center justify-between gap-2 pr-4 text-sm h-8 w-full !font-normal text-start opacity-70 rounded-full px-0" >
-                <div className=" w-max rounded-md ml-2 text-[#374151] ">
+                <div className=" w-max rounded-md px-2 text-[#374151] ">
                   {user?.role === "admin" ? (
                     <div className="w-full px-2 py-1"><span className='font-semibold text-[#39507f]'>Consultas</span></div>
                   ) : (
@@ -318,10 +310,11 @@ export default function UserButtonHeader( { user }: { user: User | undefined } )
               className=""
             >
               <DropdownMenuItem>
-                <div className="group relative cursor-pointer flex items-center justify-between gap-2 ml-2 pr-4 text-sm h-8 w-full !font-normal text-start rounded-[4px] px-0 hover:bg-[#548eff18]" >
-                  <div className="w-max rounded-md opacity-80 text-[#374151] group-hover:opacity-100">
+                <div className="group relative cursor-pointer flex items-center justify-between gap-2 pr-4 text-sm h-8 w-full !font-normal text-start rounded-[4px] px-0 hover:bg-[#548eff18]" >
+                  <div className="w-max px-2 rounded-md opacity-80 text-[#374151] group-hover:opacity-100">
                     {user?.role === "admin" ? (
-                      <div className="w-full px-2 py-1"><span className='font-semibold text-[#39507f]'>Consultas</span></div>
+                      <div className="w-full px-2 py-1">
+                        <span className='font-semibold text-[#39507f]'>Consultas</span></div>
                     ) : (
                       <div className="w-full px-2 py-1"><span className='font-semibold text-[#39507f]'>Realizá </span>la consulta</div>
                     )}
@@ -376,7 +369,8 @@ export default function UserButtonHeader( { user }: { user: User | undefined } )
               await signOut({ callbackUrl: '/' });
               sessionStorage.clear()
             }}
-            disabled={!user}
+            // disabled={!user}
+            disabled={true}
           >
             <DropdownMenuItem>
               <PowerIcon className="w-5 mr-4 text-red-500"/>
@@ -423,10 +417,13 @@ export default function UserButtonHeader( { user }: { user: User | undefined } )
         <div className="relative w-[300px] mt-[64px] mr-10 bg-white rounded-md shadow-lg sm:mr-12 sm:mt-[76px] min-[1024px]:mr-[calc((100vw_-_928px)_/_2)]">
           <EditProfileEmail user={user}  />
           <button
-            onClick={() => setIsModalOpen3(false)}
+            onClick={() => { 
+              setIsModalOpen3(false)
+              location.reload()
+            }}
             className="h-[30px] w-[74px]  absolute left-[8px] opacity-70 bg-[#ff0000] text-[#ffffff] bottom-3 text-[13px]  duration-150 px-2 rounded-md mr-2 hover:opacity-100 active:opacity-70 "
           >
-            Cancelar
+            Cerrar
           </button>
         </div>
       </div>

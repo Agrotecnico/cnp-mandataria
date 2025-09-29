@@ -9,5 +9,4 @@ documentos: "Título del vehículo, Cédula del vehículo"
 informacion: "Radicacion"
 ---
 
-Es un informe expedido por la **DNRPA** (Dirección Nacional de Registros y Propiedad del Automotor) que contiene información sobre la situación jurídica (embargo, prenda, robo, inhibiciones, etc.) del vehículo, según los datos con que cuenta el Registro seccional donde el mismo está radicado.
-<!-- Éste es un documento sumamente importante si usted va a comprar un auto, moto, máquina agrícola o vehículo náutico. -->
+Es un informe expedido por la **DNRPA** (Dirección Nacional de Registros y Propiedad del Automotor) que contiene información sobre la situación jurídica (embargo, prenda, robo, inhibiciones, etc.) del vehículo.

@@ -1,8 +1,7 @@
 "use client"
 
 import Image from 'next/image';
-import { useRouter, useSearchParams, redirect } from 'next/navigation'
-// import { useSearchParams, redirect } from 'next/navigation';
+import { useRouter, useSearchParams, redirect, usePathname } from 'next/navigation'
 import { FormEvent, useState, useEffect, useRef, useActionState  } from 'react';
 import {
   ExclamationCircleIcon,
@@ -17,7 +16,7 @@ import UpdateComment from '@/app/ui/consultas/comments/update-comment';
 import { ImageListType } from "@/app/ui/consultas/typings";
 import ImageUploading from "@/app/ui/consultas/ImageUploading"
 import IconDragDrop from "@/app/ui/logosIconos/icon-drag-drop";
-import { createComment, StateComment, updateUserImage, StateUserImage, updateCommentAvatar, StateUpdateCommentAvatar, createUser, StateUser, authenticate  } from '@/app/lib/actions';
+import { createComment, StateComment, updateUserImage, StateUserImage, updateCommentAvatar, StateUpdateCommentAvatar, createUser, StateUser, authenticate } from '@/app/lib/actions';
 import { Frente } from '@/app/ui/marcos';
 import IconComments from "@/app/ui/logosIconos/icon-comments"
 import { ButtonB, ButtonA } from '@/app/ui/button';
@@ -42,42 +41,33 @@ export default function ListComment({
   }) {
   
   const [nombre, setNombre] = useState("");
-  const [nameVisitor, setNameVisitor] = useState("");
-
   const [images, setImages] = useState<ImageListType>([]);
   const [imageUrl, setImageUrl] = useState("");
   const [imgUrlSession, setImgUrlSession] = useState("");
   const [imgVisitor, setImgVisitor] = useState<string | null>(null);
-  // const [imgVisitorx, setImgVisitorx] = useState("");
-  const [imgUrlSessionx, setImgUrlSessionx] = useState("");
-
   const [comment, setComment] = useState("");
-  // const [commentSession, setCommentSession] = useState("");
-
   const [commentOk, setCommentOk] = useState(true);
   const [comme, setComme] = useState(true);
-
   const [spin, setSpin] = useState(false);
   const [open, setOpen] = useState(false);
-
   const [token, setToken] = useState("");
 
+  // const [nameVisitor, setNameVisitor] = useState("");
+  // const [imgUrlSessionx, setImgUrlSessionx] = useState("");
 
   const router = useRouter()
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('/faq/compra-venta-vehiculo') || '/faq/compra-venta-vehiculo';
+  // const callbackUrl = searchParams.get('/faq/compra-venta-vehiculo') || '/faq/compra-venta-vehiculo';
+  const pathname = usePathname();
   
   const id= user?.id!
   const id2= user?.email!
-  // const id4= '2024-01-01 00:00:00+00'
 
   const onChange = (imageList: ImageListType, addUpdateIndex: Array<number> | undefined) => {
   setImages(imageList);
   };
 
   const maxNumber = 1;
-
-  // const token=  nanoid(10)
 
   const renderFilePreview = (file: File ) => { 
     const fileType = file?.type; 
@@ -127,11 +117,6 @@ export default function ListComment({
     if (buttonRefAuth.current) buttonRefAuth.current.click()
   };
 
-  const buttonRefxxx = useRef<HTMLButtonElement>(null);
-  const handleClickButtonxxx= () => {
-    if (buttonRefxxx.current) buttonRefxxx.current.click()
-  }; //updated avatar comment
-
   const buttonRefxx = useRef<HTMLButtonElement>(null);
   const handleClickButtonxx= () => {
     if (buttonRefxx.current) buttonRefxx.current.click()
@@ -150,12 +135,10 @@ export default function ListComment({
     console.log("Comentario creado")
   }
   const actualizarComment= () => {
-    // setTimeout(handleClickButtonxxx, 200) //updated img comment
-    setTimeout(() => handleClickButtonxxx(), 200) //updated img comment
+    // setTimeout(() => handleClickButtonxxx(), 200) //updated img comment
     !user?.image && setTimeout( handleClickButtonxx, 200) //updated img user
     setTimeout(() => setSpin(false), 2000)
-    // setTimeout(() => location.reload(), 2000) 
-    // location.reload()
+    setTimeout(() => location.reload(), 2000) 
   }
 
   ///////////////////////////////////////////////////////////////
@@ -250,12 +233,7 @@ export default function ListComment({
   useEffect(() => {
     const token=  nanoid(16)
     setToken(token) 
-
-    // sessionStorage.getItem('nameVisitor') && setNameVisitor(`${sessionStorage.getItem('nameVisitor')}`)
-
     sessionStorage.getItem('imgUrlSession') && setImgUrlSession(`${sessionStorage.getItem('imgUrlSession')}`) 
-    // sessionStorage.getItem('imgUrlSessionx') && setImgUrlSessionx(`${sessionStorage.getItem('imgUrlSessionx')}`) 
-
     sessionStorage.getItem('imgVisitor') && setImgVisitor(sessionStorage.getItem('imgVisitor'))
   }, [ ]);
 
@@ -270,15 +248,8 @@ export default function ListComment({
   const initialStatexx: StateUserImage = { message: null, errors: {} };
   const updateUserImageWithId = updateUserImage.bind(null, id );
   const [estadoxx, formActionxx ] = useActionState(updateUserImageWithId, initialStatexx);
-
-  const initialStatexxx: StateUpdateCommentAvatar = { message: null, errors: {} };
-  const updateCommentAvatarWithId = updateCommentAvatar.bind(null, id2);
-  const [estadoxxx, formActionxxx, isPendingxxx] = useActionState(updateCommentAvatarWithId, initialStatexxx);
   
-
   // console.log("user: ", user );
-  // console.log("imageUrl: ", imageUrl);
-  // console.log("imgUrlSession:", imgUrlSession)
 
   return (
     <>
@@ -289,19 +260,17 @@ export default function ListComment({
           <div className={` text-sm sm:text-[15px] `}>
               { user ? (
                 <p><b>{user.name}</b>, podés ampliar esta consulta</p>
-              ) :/*  nameVisitor ? (
-                <p><b>{nameVisitor}</b>, podés ampliar esta consulta</p>
-              )  :*/ "Podés ampliar esta consulta"}
+              ) : "Podés ampliar esta consulta"}
           </div>
           
-          <Frente className={`!p-2 w-full mt-2 mb-9 text-small-regular sm:!p-4 !bg-[#39507f11]`}>
+          <Frente className={`!p-2 w-full mt-2 mb-9 text-small-regular sm:!p-4 !bg-[#548eff16]`}>
             <div className={`flex items-center justify-between gap-2.5 sm:gap-5 ${open && "mb-4"}`}>
               <div className="w-max">
-                <IconComments className="opacity-80 w-9 sm:w-10" />
+                <IconComments className="opacity-80 w-8 sm:w-10" />
               </div>
 
-              <p className={`flex flex-col items-center gap-2 w-full text-start leading-[1.2] delay-50 text-[13px] text-[#39507f] transition-[opacity] duration-300 ${open && "opacity-0"} sm:text-[15px] sm:flex-row`}>
-                <span>Comentá tu experiencia</span><span className='text-xs ml-2 text-[#200b1d77]'>podés eliminarlo</span>
+              <p className={`flex flex-col items-start w-full text-start leading-[1.2] delay-50 text-[13px] text-[#39507f] transition-[opacity] duration-300 ${open && "opacity-0"} sm:text-[15px] sm:flex-row`}>
+                <span className='mr-2'>Comentá tu experiencia</span><span className='text-xs text-[#200b1d77]'>podés eliminarlo</span>
               </p>
 
               <ButtonB
@@ -329,8 +298,7 @@ export default function ListComment({
             >
               {/*  Crear comment  */}
               <div className={` ${!open && "invisible"}`} > 
-                {/* nombre */}
-                <fieldset className={` grid-cols items-center gap-2 sm:grid-cols-2 md:flex-row md:gap-4 ${ user?.name /* || nameVisitor */ ? "hidden" : "grid" }`}>
+                <fieldset className={` grid-cols items-center gap-2 sm:grid-cols-2 md:flex-row md:gap-4 ${ user?.name ? "hidden" : "grid" }`}>
                   <InputCnp
                     className={`text-sm h-8 mb-4 !w-full placeholder:text-[#000000aa] placeholder:text-[13px]  ${!open && "invisible"}`}
                     id="nombre"
@@ -352,7 +320,6 @@ export default function ListComment({
                   </InputCnp>
                 </fieldset>
 
-                {/* comment */}
                 <TextareaCnp
                   id="comment"
                   name="comment"
@@ -385,21 +352,10 @@ export default function ListComment({
                     <ButtonA
                       type="submit"
                       className={`${spin && "before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_1s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/30 before:to-transparent"}  relative overflow-hidden h-8 text-[13px] w-max `}
-                      disabled={ comment && (nombre || user?.name /* || nameVisitor  */ )  ? false : true }
+                      disabled={ comment && (nombre || user?.name )  ? false : true }
                       onClick={() => {
-                        // setSpin(true)
-                        /* !nameVisitor &&  sessionStorage.setItem("nameVisitor", nombre)*/ 
-                        // sessionStorage.setItem("commentSession", comment)
-                        console.log('444444444');
-                        
-                        // imageUrl &&
-
-                        // setTimeout(handleClickButtonAuth, 200) 
                         wait().then(() =>{ 
                           handleClickButtonAuth()
-                          // location.reload()
-                          console.log('333333333');
-                          // setSpin(false)
                         });
                       }}
                     >
@@ -515,16 +471,11 @@ export default function ListComment({
                           type="submit"
                           onClick={() => {
                             setSpin(true);
-                            // setComment("")
-                            console.log('111111')
-                            // wait().then(() =>{ 
-                            //   location.reload()
-                            // });
                           }}
-                          className={`${ spin /* || isPendingxxx */  && "before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_1s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/30 before:to-transparent bg-[#0c5cfe]  "}  relative overflow-hidden  px-2 h-5 flex items-center text-sm text-[#fff] border border-transparent bg-[#4281fd] opacity-80 duration-150 rounded-[4px] hover:opacity-100 disabled:cursor-default disabled:opacity-60 `}
+                          className={`${ spin && "before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_1s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/60 before:to-transparent bg-[#0c5cfe]  "}  relative overflow-hidden  px-4 h-6 flex items-center text-sm text-[#fff] border border-transparent bg-[#4281fd] opacity-80 duration-150 rounded-[4px] hover:opacity-100 disabled:cursor-default disabled:opacity-60 `}
                           disabled={!images.length}
                         >
-                          cargar <IconCamara color="#ffffff" className="ml-2 w-[13px]"  />
+                          cargar <IconCamara color="#ffffff" className="ml-4 w-[13px]"  />
                         </button>
                       </div>
                     </form>
@@ -545,15 +496,14 @@ export default function ListComment({
             )}
           </ImageUploading>
 
-          { !user /* && !nameVisitor */ ?
+          { !user ?
           <div className={`absolute top-[118px] right-4 z-30 `}>
-            {/* <UpdateComment id={commentLast.id} />a */}
             <UpdateComment id={commentLast.id } />
           </div> : ""
           }
 
           {/* update avatar comment */}
-          <form action={formActionxxx}>
+          {/* <form action={formActionxxx}>
             <input
               type="hidden"
               name="avatar"
@@ -566,7 +516,6 @@ export default function ListComment({
               readOnly
             />
 
-            {/* Massages */}
             <div
               className= "flex items-end relative space-x-8"
               aria-live="polite"
@@ -593,7 +542,7 @@ export default function ListComment({
               Guardar cambios
             </button>
             
-          </form>
+          </form> */}
         </div>
         
         {/* List comment */}
@@ -602,60 +551,10 @@ export default function ListComment({
             comments.map((comment, index) => {
               const isAuthor = user && user.email === comment.email_id;
               const isAdmin =user && user.role === "admin";
-              const isVisitor= comment.nombre === user?.name /* nameVisitor */ /* && commentLast.comment === commentSession */
+              const isVisitor= comment.nombre === user?.name 
 
               return (
                 <div key={index} className={`flex flex-col mb-3 gap-[2px]`}>
-                  {/* { comment.email_id == "comment@gmail.com" ? (
-                    <div>
-                      {comment.avatar ? (
-                        <Image
-                          src={ comment.avatar }
-                          alt="Imagen de usuario"
-                          width={40}
-                          height={40}
-                          className="rounded-full object-cover ml-3 h-10 w-10"
-                        />
-                      ) : user?.image || imgUrlSession || imgVisitor ? (
-                        <Image
-                          src={ user?.image ? user?.image : imgUrlSession ? imgUrlSession : imgVisitor! }
-                          alt="Imagen de usuario"
-                          width={40}
-                          height={40}
-                          className="rounded-full object-cover ml-3 h-10 w-10"
-                        />
-                      ) : (
-                        <span className="flex ml-3 h-10 w-10 text-[#39507fcc] items-center justify-center rounded-full bg-[#020b1d18] text-2xl ">
-                          {comment?.nombre?.substring(0, 1).toUpperCase() }
-                        </span>
-                      )}
-                    </div>
-                  ) : (
-                    <div>
-                      { comment.image ? (
-                      <Image
-                        src={ comment.image  }
-                        alt="Imagen de usuario"
-                        width={40}
-                        height={40}
-                        className="rounded-full object-cover ml-3 h-10 w-10"
-                      />
-                      ) :  imageUrl || user?.image || imgUrlSession ? (
-                        <Image
-                          src={ imageUrl ? imageUrl : user?.image ? user.image : imgUrlSession ? imgUrlSession : "" }
-                          alt="Imagen de usuario"
-                          width={40}
-                          height={40}
-                          className="rounded-full object-cover ml-3 h-10 w-10"
-                        />
-                        ) : (
-                        <span className="flex ml-3 h-10 w-10 text-[#39507fcc] items-center justify-center rounded-full bg-[#020b1d18] text-2xl ">
-                          {comment?.nombre?.substring(0, 1).toUpperCase() }
-                        </span>
-                      )}
-                    </div>
-                  )} */}
-
                   { /* comment.avatar ? (
                     <Image
                       src={ comment.avatar }
@@ -679,11 +578,11 @@ export default function ListComment({
                   )}
                  
 
-                  <Fondo key={comment.id} className="flex space-x-4 w-full p-3 pb-2 !bg-[#39507f11] !rounded-[6px] ">
+                  <Fondo key={comment.id} className="flex space-x-4 w-full p-3 pb-2 !bg-[#548eff16] !rounded-[6px] ">
                     <div className="flex-grow">
                       <div className="flex items-center justify-between">
                         <div className="flex flex-wrap">
-                          <p className="font-semibold mr-2">{/* !comment.nombre ? */ comment.name /* : comment.nombre */}</p>
+                          <p className="font-semibold mr-2">{ comment.name }</p>
                         
                           <time className="text-[#020b1d66] text-[13px]">
                             {distanceToNow(new Date(`${comment.created_at}`))}
@@ -716,28 +615,25 @@ export default function ListComment({
             value="comment@gmail.com"
             readOnly
             />
-          
           <input
             type="hidden"
             name="name"
             value={ nombre }
             readOnly
             />
-
           <input
             type="hidden"
             name="image"
             value={ "" }
             readOnly
           />
-
           <input
             type="hidden"
             name="token"
             value= { token }
             readOnly
           />
-
+          <input type="hidden" name="pathname" value={pathname} readOnly />
           <button
             type="submit"
             ref={buttonRefx}
@@ -761,15 +657,13 @@ export default function ListComment({
             value= "72cf0550-3f64-474d-b150-aa813c6b4b67"
             readOnly
           />
-          <input type="hidden" name="redirectTo" value={callbackUrl} readOnly />
-
+          <input type="hidden" name="redirectTo" value={pathname} readOnly />
           <input
               type="hidden"
               name="token"
               value= { token }
               readOnly
             />
-
           <button
             type="submit" 
             ref={buttonRefAuth}
@@ -817,6 +711,7 @@ export default function ListComment({
             value= { token }
             readOnly
           />
+          <input type="hidden" name="pathname" value={pathname} readOnly />
           <button
             type="submit"
             ref={buttonRef}
@@ -836,15 +731,14 @@ export default function ListComment({
             defaultValue={ imageUrl }
             readOnly
           />
-          <div>
-            <button
-              type="submit"
-              ref={buttonRefxx}
-              className='hidden'
-            >
-              Crear comentario
-            </button>
-          </div>
+          <input type="hidden" name="pathname" value={pathname} readOnly />
+          <button
+            type="submit"
+            ref={buttonRefxx}
+            className='hidden'
+          >
+            Crear comentario
+          </button>
         </form>
       </div>
     </>

@@ -97,9 +97,9 @@ export default function EditTramiteForm({
 
           <div className=" text-sm">
             <div className="font-medium">{userMember?.name} </div>
-            <div className=" text-[13px]">{userMember?.email}</div>
             <div className="flex text-[13px]">
-              <p className="text-[#020b1daa] ">{userMember?.email}</p>
+              <div className="">{userMember?.email}</div>
+              {/* <p className="text-[#020b1daa] ">{userMember?.email}</p> */}
               {!userMember?.email_verified && 
               <span className='ml-2 text-red-700'>no verificado</span>
               }

@@ -19,7 +19,6 @@ export default  function UserButtonMenuFaq({allPosts}:{allPosts:Post}) {
 
   return (
     <div 
-      // className={`block  min-[1024px]:hidden`}
       className={`${pathname.startsWith('/faq') ? "block" : "hidden" }  min-[1024px]:hidden`}
       >
       <Dropdown>
@@ -33,12 +32,6 @@ export default  function UserButtonMenuFaq({allPosts}:{allPosts:Post}) {
         </Dropdown.Button>
 
         <Dropdown.Menu >
-          {/* <div className="px-4 pt-8 pb-2 flex items-center flex-col space-y-1 mx-4 sm:pt-10 sm:pb-0 md:pt-8 md:pb-1">
-            <p className="text-sm font-medium leading-none ">
-              CONSULTAS FRECUENTES
-            </p>
-          </div> */}
-
           <div className=" w-screen px-3 pt-8 pb-5 flex flex-col gap-[1px]">
             {allPosts.length ? (
               allPosts.map((post:Post) => (
@@ -47,9 +40,9 @@ export default  function UserButtonMenuFaq({allPosts}:{allPosts:Post}) {
                   href="/faq/[slug]"
                   key={post.slug}
                   className={clsx(
-                    'flex items-center justify-start pl-2 pr-4 text-sm text-[#020b1dbb] duration-200 rounded-lg hover:text-[#020b1dee] hover:bg-[#548eff18] sm:mx-12 ',
+                    'flex items-center justify-start pl-2 pr-4 text-sm text-[#020b1daa] duration-200 rounded-lg hover:text-[#020b1ded] hover:bg-[#548eff16] sm:mx-12 ',
                     {
-                      'bg-[#548eff16] text-[#020b1e]': pathname === `/faq/${post.slug}`,
+                      'bg-[#548eff17] text-[#020b1dee]': pathname === `/faq/${post.slug}`,
                     },
                   )}
                 >
@@ -67,46 +60,6 @@ export default  function UserButtonMenuFaq({allPosts}:{allPosts:Post}) {
               <p>Aún no hay ningúna consulta publicada</p>
             )}
           </div>
-          {/* <Link 
-            href={"https://api.whatsapp.com/send?phone=543476606595"}
-            target="_blank"  
-            className="py-1 px-3 mb-3 mx-3 w-max bg-[#020b1d07] duration-150 opacity-80 rounded-lg flex items-center gap-6 text-sm shadow-[inset_0_0_4px_#020b1d5a] hover:opacity-100 hover:bg-[#020b1d11] active:opacity-80 sm:text-[15px]">
-            <div className="flex flex-col">
-              <div className="h-6 flex items-center justify-start sm:h-[26px]">
-                <IconPresupuesto 
-                  className="mr-2 w-[15px] h-[15px] sm:w-[16px] sm:h-[16px]"
-                  color="#ffffffdd" color2="#020b1d"
-                  />
-                <p>Pedí presupuesto</p>
-              </div>
-              <div className="h-6 flex items-center justify-start sm:h-[26px]">
-                <IconConsulta 
-                  className="mr-2 w-[15px] h-[15px] sm:w-[16px] sm:h-[16px]"
-                  color="#ffffffdd" color2="#020b1d"
-                  />
-                <p>Realizá tu consulta</p>
-              </div>
-            </div>
-            <div className="bg-[#57c061] rounded-lg flex justify-center items-center" >
-              <IconWhatsApp size="32" colorFondo="#0000"  className=" " />
-            </div>
-          </Link> */}
-          
-          {/* <div className="flex flex-col gap-[1px] text-[14px] mx-3 mb-3" >
-            <Link href="/iniciar-tramite/baja-de-vehiculo" >
-              <ButtonA className="relative pl-8 h-6 w-full !rounded-none !rounded-t-[4px] !justify-start">
-                <IconPresupuesto className="absolute w-[15px] h-[15px] bottom-[3px] left-[9px] "/>
-                <p className="">Pedir presupuesto</p>
-              </ButtonA>
-            </Link>
-
-            <Link href="/realizar-consulta" >
-              <ButtonA className=" !bg-[#b2439a] relative pl-8 h-6 w-full !rounded-none !rounded-b-[4px] !justify-start">
-                <IconConsulta className="absolute w-[15px] h-[15px] bottom-[3px] left-[9px] "/>
-                <p className="">Realizar consulta</p>
-              </ButtonA>
-            </Link>
-          </div> */}
         </Dropdown.Menu>
       </Dropdown>
     </div>

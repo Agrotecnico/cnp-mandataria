@@ -29,7 +29,7 @@ export default async function Layout({
       <main className=" mx-auto w-full max-w-[64rem] flex-auto px-3 pt-[68px] sm:pt-20 sm:px-4 md:px-6">
         <div className="mx-auto flex flex-col pb-[72px] md:px-6 ">
           <div className="flex flex-col mb-3 sm:mb-6 min-[900px]:mb-0">
-            <h1 className={`my-2 text-[18px] sm:text-2xl sm:my-4 lg:my-6`} >
+            <h1 className={`my-4 text-[18px] sm:text-2xl sm:my-5 lg:my-6`} >
               Pedí Presupuesto
             </h1>
             <TramiteButtonMenu allTramites={allTramites} />

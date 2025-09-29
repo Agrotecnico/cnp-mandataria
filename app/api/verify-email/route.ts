@@ -36,7 +36,6 @@ export async function GET(request: NextRequest) {
     return new Response("Correo electrónico ya verificado", { status: 400 });
     // return redirect(`/realizar-consulta?verified=true&name=${user?.name}&email=${user?.email}`);
   }
-  // console.log("verify: ", user?.email_verified)
   // marcar el email como verificado
   const identifier= verifyToken.identifier
   await updateUserEmailVerified(identifier)

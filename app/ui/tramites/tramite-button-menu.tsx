@@ -20,10 +20,10 @@ export default  function TramiteButtonMenu({allTramites }:{allTramites:TramiteMd
       <DropdownMenu.Root>
         <DropdownMenu.Trigger asChild >
           <button
-            className="inline-flex h-[28px] text-sm opacity-80 px-2 items-center justify-center rounded-md bg-[#39507f] text-[#ffffff] duration-150 outline-none hover:opacity-100 sm:text-[15px] sm:px-3"
+            className="inline-flex items-center justify-center gap-2 h-[24px] text-[13px] opacity-80 px-2 rounded-md bg-[#39507f] text-[#ffffff] duration-150 outline-none hover:opacity-100 sm:text-[15px] sm:px-3"
           >
-            Seleccioná un trámite
-            <ChevronRightIcon className="w-4 ml-2 rotate-90 stroke-2" />
+            <p>Seleccioná un trámite</p>
+            <ChevronRightIcon className="w-4 rotate-90 stroke-2" />
           </button>
         </DropdownMenu.Trigger>
 
@@ -36,9 +36,9 @@ export default  function TramiteButtonMenu({allTramites }:{allTramites:TramiteMd
               <Link
                   as={`/iniciar-tramite/${tramite.slug}`}
                   href="/iniciar-tramite/[slug]"
-                  className={clsx(`group py-[4px] px-2 mb-[1px] bg-[#020b1d0c] first:rounded-t-md first:mt-0 last:rounded-b-md last:mb-0 flex justify-between text-[#020b1dbb] items-center duration-200 hover:bg-[#020b1d1c] hover:text-[#020b1d] `,
+                  className={clsx(`group py-[4px] px-2 mb-[1px] first:rounded-t-md first:mt-0 last:rounded-b-md last:mb-0 flex justify-between text-[#020b1daa] items-center duration-200 hover:bg-[#548eff1c] hover:text-[#020b1ddd] `,
                       {
-                        'text-[#020b1e] bg-[#020b1d1b] ': pathname === `/iniciar-tramite/${tramite.slug}`
+                        'text-[#020b1ddd] bg-[#548eff1b] ': pathname === `/iniciar-tramite/${tramite.slug}`
                       }
                     )}
                   key={tramite.slug} 
@@ -50,9 +50,9 @@ export default  function TramiteButtonMenu({allTramites }:{allTramites:TramiteMd
                       alt="icono trámites" 
                       width={12} 
                       height={"auto"}
-                      className={clsx(`opacity-90 h-[7px] w-[7px] group-hover:w-[9px] group-hover:h-[9px]`,
+                      className={clsx(`opacity-90 h-[5px] w-[5px] group-hover:w-[7px] group-hover:h-[7px]`,
                         {
-                          '[width:_9px] [height:_9px]': pathname === `/iniciar-tramite/${tramite.slug}`
+                          '[width:_7px] [height:_7px]': pathname === `/iniciar-tramite/${tramite.slug}`
                         }
                       )} 
                     />
