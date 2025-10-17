@@ -1,23 +1,17 @@
 import Link from 'next/link';
 import { auth } from 'auth';
-import { SessionProvider } from "next-auth/react"
 
 import UserButtonHeader from '@/app/ui/user-button-header';
-import UserButtonMenu from '@/app/ui/user-button-menu';
-// import UserButtonMenuMember from '@/app/ui/user-button-menu-member';
 import UserButtonMenuFaq from '@/app/ui/user-button-menu-faq';
 import UserButtonMenuIni from '@/app/ui/user-button-menu-ini';
 import LogoCnpColor from '@/app/ui/logosIconos/logo-cnp-color';
 import LogoCnpColorV from '@/app/ui/logosIconos/logo-cnp-color-v';
-import IconCuenta from '@/app/ui/logosIconos/icon-cuenta';
 import { fetchUserById } from '@/app/lib/data'; 
 import { getAllPosts } from '@/app/lib/getPost';
-import VisitorButtonHeader from './visitor-button-header';
 
 
 export default async function Header( ) {
   const session = await auth()
-  // const user= session?.user ? await fetchUserById(session.user.email) : null;
   const user = await fetchUserById(session?.user?.email)
   const allPosts = getAllPosts();
 
@@ -40,11 +34,9 @@ export default async function Header( ) {
           {session?.user.role === "admin" ? (
             <>
               <UserButtonMenuFaq  allPosts={allPosts} />
-              {/* <UserButtonMenu /> */}
             </>
             ) : session ? (
             <>
-              {/* <UserButtonMenuMember /> */}
               <UserButtonMenuFaq  allPosts={allPosts} />
               <UserButtonMenuIni />
             </>
@@ -57,16 +49,7 @@ export default async function Header( ) {
           }
         </div>
 
-        {/* {session ? (
-          <div className="flex items-center gap-2 ">
-            <span className="hidden text-sm text-[#fffffff2] [text-shadow:_1px_1px_0px_#000000c9] md:inline-flex ">
-              {session.user.name}
-            </span> */}
-            <UserButtonHeader user={user} />
-          {/* </div>
-        ) : (
-          <VisitorButtonHeader  />
-         )}  */}
+        <UserButtonHeader user={user} />
       </div>
     </header>
   );

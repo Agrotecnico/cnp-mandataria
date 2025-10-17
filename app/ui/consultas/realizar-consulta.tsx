@@ -1,32 +1,30 @@
 'use client';
 
-import { useActionState } from 'react';
-import { FormEvent, useState, useEffect, useRef } from 'react';
+import { FormEvent, useState, useEffect, useRef, useActionState } from 'react';
 import { ExclamationCircleIcon } from '@heroicons/react/24/outline'
 import { Disclosure, DisclosurePanel } from '@headlessui/react';
 import clsx from 'clsx';
-import { useSearchParams, redirect, usePathname } from 'next/navigation';
-import { useSession } from "next-auth/react"
+import {  usePathname } from 'next/navigation';
 
-import IconConsulta from "@/app/ui/logosIconos/icon-consulta"
-import { createConsulta, createVerificationToken, StateConsulta, StateVerificationToken, updateUserEmail, StateUserEmail, updateCommentEmail, StateUpdateCommentEmail } from '@/app/lib/actions';
-import { createUser, StateUser, authenticate, authenticate2, handleFormPedido } from '@/app/lib/actions';
-import { updateUserEmailVerifiedx, deleteVerification } from "@/app/lib/actions"
+import { createConsulta, createVerificationToken, StateConsulta, StateVerificationToken, updateUserEmail, StateUserEmail, updateCommentEmail, StateUpdateCommentEmail,  createUser, StateUser, authenticate, authenticate2, handleFormPedido } from '@/app/lib/actions';
 import { Frente } from '@/app/ui/marcos';
 import useToggleState from "@/app/lib/hooks/use-toggle-state";
+import IconConsulta from "@/app/ui/logosIconos/icon-consulta"
 import IconCambio from '@/app/ui/logosIconos/icon-cambio';
-import IconArchivo from '@/app/ui/logosIconos/icon-archivo';
-import { ImageListType } from "@/app/ui/consultas/typings";
-import ImageUploading from "@/app/ui/consultas/ImageUploading"
 import IconDragDrop from '@/app/ui/logosIconos/icon-drag-drop';
-import { ButtonB, ButtonA } from '@/app/ui/button';
 import IconCuenta from "@/app/ui/logosIconos/icon-cuenta"
 import IconEmail2 from "@/app/ui/logosIconos/icon-email2"
+import IconRegistro from "@/app/ui/logosIconos/icon-registro"
+import IconEnvioEmail from '@/app/ui/logosIconos/icon-envio-email';
+import IconAdjunto from '@/app/ui/logosIconos/icon-adjunto';
+import { ImageListType } from "@/app/ui/consultas/typings";
+import ImageUploading from "@/app/ui/consultas/ImageUploading"
+import { ButtonB, ButtonA } from '@/app/ui/button';
 import { InputCnp } from "@/app/ui/uiRadix/input-cnp";
 import { TextareaCnp } from "@/app/ui/uiRadix/textarea-cnp";
-import IconRegistro from "@/app/ui/logosIconos/icon-registro"
 import { nanoid } from "nanoid";
-import { User, CommentLast } from '@/app/lib/definitions';
+import { User } from '@/app/lib/definitions';
+
 
 const wait = () => new Promise((resolve) => setTimeout(resolve, 1000));
 
@@ -134,8 +132,12 @@ export default function RealizarConsulta({
 
     const resizedBlobs: Blob[] = [];
     for (const file of files) {
-      const resizedBlob = await resizeImage(file, 1024, 1024);
-      resizedBlobs.push(resizedBlob);
+      if ( file.type === "application/pdf" ) {
+        resizedBlobs.push(file);
+      } else {
+        const resizedBlob = await resizeImage(file, 1024, 1024);
+        resizedBlobs.push(resizedBlob);
+      }
     }
 
     try {
@@ -188,9 +190,12 @@ export default function RealizarConsulta({
       };
 
       img.onload = () => {
-        const scale = Math.min(maxWidth / img.width, maxHeight / img.height);
-        const width = img.width * scale;
-        const height = img.height * scale;
+        let scale = Math.min(maxWidth / img.width, maxHeight / img.height);
+
+        const scaleMin = scale > 1 ? 1 : scale
+
+        const width = img.width * scaleMin;
+        const height = img.height * scaleMin;
 
         canvas.width = width;
         canvas.height = height;
@@ -214,14 +219,14 @@ export default function RealizarConsulta({
         <img 
           src={URL.createObjectURL(file)} 
           alt={file.name} 
-          className="min-h-[64px] object-contain bg-[#ffffffaa] w-16 border border-[#1d021544] [border-radius:_6px_6px_0_6px] " />
+          className="h-[64px] object-cover bg-[#ffffffaa] w-16 border border-[#1d021544] [border-radius:_6px_6px_0_6px] " />
       ); 
       } else if ( fileType === 'application/pdf' ) { 
         return ( 
         <embed 
           src={URL.createObjectURL(file)} 
           type="application/pdf" 
-          className="min-h-[80px] object-contain bg-[#ffffffaa] w-[80px] h-[100px]  border border-[#1d021544]  [border-radius:_6px_6px_0_6px] " />
+          className="h-[64px] object-cover bg-[#ffffffaa] w-[60px] border border-[#1d021544]  [border-radius:_6px_6px_0_6px] " />
         ); 
       } else { return ( 
       <p className=" text-[#fff] break-words p-2 text-xs text-left">
@@ -261,7 +266,8 @@ export default function RealizarConsulta({
   const updateCommentEmailWithId = updateCommentEmail.bind(null, id);
   const [estadoxxxx, formActionxxxx, isPendingxxxx] = useActionState(updateCommentEmailWithId, initialStatexxxx);
 
-  // console.log("commentLast: ", commentLast.avatar ) 
+  // console.log("files", files)
+
 
   return (
     <>
@@ -270,7 +276,7 @@ export default function RealizarConsulta({
           <div className="relative flex items-center gap-2.5 sm:gap-5">
             <IconConsulta 
               className=" ml-1.5 w-[18px] sm:ml-3 sm:w-[22px] " 
-              color="#fffc" color2="#39507fcc"
+              color="#39507fcc" color2="#fffd"
             />
             <p className="text-sm text-[#39507f]">Consulta <span className={` text-[#ff0000] ${consulta && "text-[#0000]"}`}>*</span></p>
           </div>
@@ -317,7 +323,7 @@ export default function RealizarConsulta({
       >
         <div className="flex items-center justify-between sm:flex-row" >
           <div className="relative flex items-center gap-2.5 sm:gap-5">
-            <IconArchivo className=" ml-1.5 w-7 sm:ml-3 sm:w-8" />
+            <IconAdjunto className=" ml-1.5 w-[22px] sm:ml-3 sm:w-[27px]" />
             <div className={`w-full text-start text-[14px] text-[#39507f] `}>
               Adjuntar archivos <span className="text-xs opacity-80">(Opcional)</span>
             </div>
@@ -368,7 +374,41 @@ export default function RealizarConsulta({
                 dragProps,
                 errors,
               }) => (
-                <div className={`flex flex-col-reverse bg-[#020b1da3] rounded-lg ${!images.length ? 'gap-0' : 'gap-[1px]'} ${!state && "invisible"}`} >
+                <div className={`flex flex-col bg-[#020b1da3] rounded-lg ${!images.length ? 'gap-0' : 'gap-[1px]'} ${!state && "invisible"}`} >
+                  <button
+                    type="button"
+                    onClick={onImageUpload}
+                    {...dragProps}
+                    className={`group rounded-lg w-full disabled:!cursor-default `}
+                    disabled= {!state}
+                  >
+                    <div className={`relative label-dnd  ${!images.length ? 'rounded-lg' : 'rounded-t-lg'} bg-[#020b1d] text-[#ffffffdd] w-full px-2 py-3 duration-150 text-sm flex flex-col justify-center items-center active:opacity-80 `}>
+                      <div className="flex flex-col items-center duration-150 opacity-90 group-hover:opacity-100 min-[512px]:flex-row ">
+                        <IconDragDrop className= "w-[30px] opacity-80  min-[512px]:mr-7" />
+                        <div>
+                          Elegí un archivo o arrastralo y sueltá aquí <br />
+                          <p className="text-xs mt-1.5 text-[#ffffffbb]"> archivos <b>jpg</b>, <b>png</b> o <b>pdf</b>
+                          </p>
+                        </div>
+                      </div>
+                      {errors && (
+                        <div className={`w-max mb-1 mt-4 mx-auto text-[12.5px] ${!state && "hidden"} border border-[#ffffff1e] tracking-wide text-[#ffffffee] leading-[1.5] px-2 bg-[#4d70b5] rounded-xl `}>
+                          {errors.maxNumber && (
+                            <span>Cantidad máxima: {maxNumber} archivos</span>
+                          )}
+                          {errors.maxFileSize && (
+                            <span>El tamaño excede el máximo permitido (4 MB)</span>
+                          )}
+                          {errors.acceptType && (
+                            <span>El tipo de archivo no está permitido</span>
+                          )}
+                        </div>
+                      )}
+                      <div className={`absolute w-full h-full outline-1 duration-150 outline-offset-2 outline-dashed outline-[#00000003] ${!images.length ? 'rounded-lg' : 'rounded-t-lg'} ${isDragging ? ' hover:bg-[#ffffff55] ' : "hover:bg-[#ffffff31]"} hover:outline-[#000000ee] hover:border-b-1 hover:border-[#ffffff69] hover:border-dashed `}>
+                      </div>
+                    </div>
+                  </button>
+
                   <div className= "flex flex-col rounded-b-lg bg-[#020b1d] ">
                     <div className= {`flex items-baseline justify-start px-3 gap-x-2 flex-wrap text-sm w-full cursor-default max-[512px]:justify-center sm:px-9 sm:gap-x-4 `}>
                       { images.map((image, index) => (
@@ -399,46 +439,6 @@ export default function RealizarConsulta({
                       ))}
                     </div>
                   </div>
-
-                  <button
-                    type="button"
-                    onClick={onImageUpload}
-                    {...dragProps}
-                    className={`group rounded-lg w-full disabled:!cursor-default `}
-                    disabled= {!state}
-                  >
-                    <div className={`relative label-dnd  ${!images.length ? 'rounded-lg' : 'rounded-t-lg'} bg-[#020b1d] text-[#ffffffdd] w-full px-2 py-3 duration-150 text-sm flex flex-col justify-center items-center active:opacity-80 `}>
-                      <div className="flex flex-col items-center duration-150 opacity-90 group-hover:opacity-100 min-[512px]:flex-row ">
-                        <IconDragDrop className= "w-9 opacity-80  min-[512px]:mr-7" />
-                        <div>
-                          Click y elegí un archivo o arrastralo y sueltá aquí <br />
-                          <p className="text-xs mt-1.5 text-[#ffffffbb]">Máximo: <b>{maxNumber} </b> archivos <b>jpg</b>, <b>png</b> o <b>pdf</b> <span className="">(de una sola página)</span> {/*  <br />Tamaño Max de cada archivo: <b>4 MB</b> */}
-                          </p>
-                        </div>
-                      </div>
-                      {errors && (
-                        <div className={`w-max mb-1 mt-4 mx-auto text-[12.5px] ${!state && "hidden"} border border-[#ffffff1e] tracking-wide text-[#ffffffee] leading-[1.5] px-2 bg-[#4d70b5] rounded-xl `}>
-                          {errors.maxNumber && (
-                            // <span>La cantidad excede el máximo permitido</span>
-                            <span>Cantidad máxima: {maxNumber} archivos</span>
-                          )}
-                          {errors.acceptType && (
-                            <span>El tipo de archivo no está permitido</span>
-                          )}
-                          {errors.maxFileSize && (
-                            <span>El tamaño excede el máximo permitido</span>
-                          )}
-                          {errors.resolution && (
-                            <span>
-                              La resolución no coincide con la permitida
-                            </span>
-                          )}
-                        </div>
-                      )}
-                      <div className={`absolute w-full h-full outline-1 outline-offset-2 outline-dashed outline-[#00000003]  ${isDragging ? ' hover:bg-[#ffffff44] ' : undefined}  ${!images.length ? 'rounded-lg hover:bg-[#ffffff22]' : 'rounded-t-lg hover:bg-[#ffffff22]'} hover:outline-[#000000ee] hover:border-b-1 hover:border-[#ffffff69] hover:border-dashed `}>{/* !outline-[#000000cc]  */}
-                      </div>
-                    </div>
-                  </button>
                 </div>
               )}
             </ImageUploading>
@@ -448,9 +448,9 @@ export default function RealizarConsulta({
 
       {/* registrar email consulta */}
       { !user ? (
-        <Frente className={`!p-2 mt-2 text-small-regular sm:!p-4 !bg-[#548eff16] `}>
-          <div className="flex items-center justify-between gap-2 sm:gap-5 ">
-            <div className="mt-1.5 ">
+        <Frente className={`!px-2 py-3 mt-5 text-small-regular !bg-[#e8edf6ff] sm:!px-4 sm:py-2 `}>
+          <div className="flex items-start justify-between gap-3 sm:items-center sm:gap-5 ">
+            <div className="mt-[2px] sm:mt-1.5 ">
               <IconRegistro className="w-5 ml-1.5 sm:w-6 sm:ml-3 " />
             </div>
 
@@ -489,7 +489,7 @@ export default function RealizarConsulta({
               <form action={formActionx}>
                 <fieldset className={`mb-2 grid grid-cols-1 items-center gap-2 md:grid-cols-2 md:mb-4 md:flex-row md:gap-4`}>
                   <InputCnp
-                    className={`text-sm h-8 `}
+                    className={`text-sm h-8 !bg-[#ffffff] `}
                     id="email"
                     type="email"
                     name="email"
@@ -508,33 +508,30 @@ export default function RealizarConsulta({
                     <IconEmail2  className="absolute w-[14px] left-[9px] top-[9px] " color="#39507faa" />
                   </InputCnp>
                   
-                  <div /* className={` ${ user?.name && "hidden"}`} */>
-                    <InputCnp
-                      className={`text-sm h-8`}
-                      id="name"
-                      type="text"
-                      name="name"
-                      minLength={3}
-                      maxLength={100}
-                      value={ name /*? name :  nameVisitor ? nameVisitor : ""*/  }
-                      placeholder= "Nombre"
-                      required
-                      disabled={ !open }
-                      onChange={(e) => {
-                        setName(e.target.value);
-                      }} >
-                      <div className="absolute rounded-l-[4px] h-[32px] w-[32px] left-0 top-0 bg-[#020b1d0b]" >
-                      </div>
-                      <IconCuenta  className="absolute w-[14px] left-[9px] top-[9px] " color="#39507faa" />
-                    </InputCnp>
-                  </div>
+                  <InputCnp
+                    className={`text-sm h-8 !bg-[#ffffff]`}
+                    id="name"
+                    type="text"
+                    name="name"
+                    minLength={3}
+                    maxLength={100}
+                    value={ name }
+                    placeholder= "Nombre"
+                    required
+                    disabled={ !open }
+                    onChange={(e) => {
+                      setName(e.target.value);
+                    }} >
+                    <div className="absolute rounded-l-[4px] h-[32px] w-[32px] left-0 top-0 bg-[#020b1d0b]" >
+                    </div>
+                    <IconCuenta  className="absolute w-[14px] left-[9px] top-[9px] " color="#39507faa" />
+                  </InputCnp>
 
                   <input
                     type="hidden"
                     id="image"
                     name="image"
-                    // value={ imagen ? imagen : imageUrl ? imageUrl : "" }
-                    value={ /*imagen ? imagen :  imgUrlSessionx ? imgUrlSessionx :  imageUrl ? imageUrl :*/ "" }
+                    value={ "" }
                     readOnly
                   />
                   <input type="hidden" name="pathname" value={pathname} readOnly />
@@ -561,7 +558,7 @@ export default function RealizarConsulta({
                     setTimeout(handleClickButtonAuth, 200) 
                     // sessionStorage.clear()
                   }}
-                  disabled= {(/* nameVisitor ||  user?.name ||*/ name) && email && isEmailValid(`${email}`) ? false : true}
+                  disabled= {( name) && email && isEmailValid(`${email}`) ? false : true}
                 >
                   Enviar
                 </ButtonA>
@@ -570,9 +567,9 @@ export default function RealizarConsulta({
           </div>
         </Frente>
       ) : isEmailVisitor ? (
-        <Frente className={`!p-2 mt-2 text-small-regular sm:!p-4 !bg-[#548eff16] `}>
-          <div className="flex items-center justify-between gap-2 sm:gap-5 ">
-            <div className="mt-1.5 ">
+        <Frente className={`!px-2 py-3 mt-5 text-small-regular !bg-[#e8edf6ff] sm:!px-4 sm:py-2 `}>
+          <div className="flex items-start justify-between gap-3  sm:items-center sm:gap-5 ">
+            <div className="mt-[2px] sm:mt-1.5 ">
               <IconRegistro className="w-5 sm:w-6 sm:ml-3 md:ml-1.5 " />
             </div>
 
@@ -610,7 +607,7 @@ export default function RealizarConsulta({
             <div className={`pt-2 sm:pt-4 ${!open && "invisible"} `}> 
               <fieldset className={`mb-2 grid grid-cols-1 items-center gap-2 md:grid-cols-2 md:mb-4 md:flex-row md:gap-4`}>
                 <InputCnp
-                  className={`text-sm h-8 `}
+                  className={`text-sm h-8 !bg-[#ffffff]`}
                   id="email"
                   type="email"
                   name="email"
@@ -645,17 +642,13 @@ export default function RealizarConsulta({
               </div>
 
               <form onSubmit={ uploadToServer3 }>
-                {/* button submit */}
                 <ButtonA
                   type="submit"
                   className={`${(isPendingx || isPendingAuth) && "before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_1s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/30 before:to-transparent"}  relative overflow-hidden  h-8 text-[13px] w-max ml-auto ${!open && "hidden"} disabled:!opacity-60`}
                   onClick={() => { 
-                    // handleClickButtonxxxx()
-                    // setTimeout(handleClickButtonxxxx, 200)
                     setTimeout(handleClickButtonAuth, 2000) 
-                    // sessionStorage.clear()
                   }}
-                  disabled= {(/* nameVisitor || */ user?.name || name) && email && isEmailValid(`${email}`) ? false : true}
+                  disabled= {( user?.name || name) && email && isEmailValid(`${email}`) ? false : true}
                 >
                   Enviar
                 </ButtonA>
@@ -664,17 +657,17 @@ export default function RealizarConsulta({
           </div>
         </Frente>
       ) : (
-        <Frente className={`flex items-center gap-2.5 py-3 px-2 mt-2 !bg-[#d7e5d9aa] text-small-regular ${estado?.message === "consultaCreada" && "hidden"} sm:py-2 sm:px4 sm:gap-5`}>{/*  ${user && "!bg-[#d7e5d9]"} */}
-          <IconRegistro className=" w-5 ml-1.5 mt-1.5 sm:w-6 sm:mt-2 sm:ml-3" />
-          <div className={`w-full text-start text-[13px] text-[#39507f] transition-[opacity] duration-300 sm:text-sm `}>
-            <p>Te enviaré la <b>respuesta</b> por e-mail a<span className= "underline decoration-[#39507fdd] underline-offset-2 ml-2 ">{user?.email}. </span></p>
+        <Frente className={`flex items-start gap-2.5 !py-3 px-2 mt-5 !bg-[#e8edf6ff] text-small-regular ${estado?.message === "consultaCreada" && "hidden"} sm:py-2 sm:px-4 sm:gap-5 sm:items-center`}>
+          <IconEnvioEmail className=" w-8 ml-1.5 mt-0.5 sm:w-10 sm:ml-3 sm:mt-0" />
+          <div className={`w-full text-start text-[13px] text-[#2e4067] sm:text-sm `}>
+            <p>Te enviaré la <b>respuesta</b> por e-mail a<span className= "underline decoration-[#39507fdd] underline-offset-2 mx-1.5 ">{user.email} </span></p>
           </div>
         </Frente>
       )}
 
       {estado?.message === "consultaCreada" && (
-        <Frente className="!p-2 mt-2 !bg-[#d7e5d9] sm:!p-4 ">
-          <div className={`w-full text-start text-sm text-[#39507f] transition-[opacity] duration-300 sm:text-[15px] `}>
+        <Frente className="!p-2 mt-5 !bg-[#d7e5d9] sm:!p-4 ">
+          <div className={`w-full text-start text-sm text-[#2e4067] transition-[opacity] duration-300 sm:text-[15px] `}>
             <p className="sm:text-center">Recibí la <b>consulta</b>, te responderé a la mayor brevedad.</p>
             <p className={`mt-2 ${ user?.email_verified && "hidden"} sm:text-center`}>
               Por favor, revisá el correo electrónico <span className= "underline decoration-[#39507fdd] underline-offset-2 mx-1 ">{user?.email}</span> y enviá la verificación.
@@ -789,7 +782,6 @@ export default function RealizarConsulta({
         <input
           type="hidden"
           name="email_id"
-          // value={session?.user.email ? session?.user.email : email}
           value={user?.email ? user.email : email}
           readOnly
         />
@@ -807,7 +799,6 @@ export default function RealizarConsulta({
         <input
           type="hidden"
           name="identifier"
-          // value={email}
           value={user?.email}
           readOnly
         />
@@ -919,7 +910,6 @@ export default function RealizarConsulta({
           Enviar Consulta
         </button>
       </form>
-      
     </>
   );
 }

@@ -6,53 +6,38 @@ import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 
 import { User } from '@/app/lib/definitions';
-import { updateUserImage, StateUserImage, updateCommentAvatarMenu, StateUpdateCommentAvatarMenu } from '@/app/lib/actions';
-import useToggleState from '@/app/lib/hooks/use-toggle-state';
+import { updateUserImage, StateUserImage } from '@/app/lib/actions';
 import ImageUploading from "@/app/ui/consultas/ImageUploading"
 import { ImageListType} from '@/app/ui/consultas/typings';
 import IconDragDrop from '@/app/ui/logosIconos/icon-drag-drop';
-import { ButtonA } from "@/app/ui/button";
 import IconCuenta from '@/app/ui/logosIconos/icon-cuenta';
 import IconCamara from '@/app/ui/logosIconos/icon-camara';
+import { ButtonA } from "@/app/ui/button";
 
+const wait = () => new Promise((resolve) => setTimeout(resolve, 3000));
 
-export default function EditProfileImage( { user }: { user: User | undefined } ) {
+export default function EditProfileImage( { user, setIsModalOpen}: { user: User | undefined; setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>
+ } ) {
 
   const pathname = usePathname();
 
   const [images, setImages] = useState<ImageListType>([]);
   const [imageUrl, setImageUrl] = useState("");
-
   const [imgVisitor, setImgVisitor] = useState<string | null>(null);
-  const [imgUrlSession, setImgUrlSession] = useState("");
   const [nameVisitor, setNameVisitor] = useState<string | null>(null);
-
   const [spin, setSpin] = useState(false);
-  const [successState, setSuccessState] = useState(false);
 
-  const { state, close, toggle } = useToggleState();
-  
-  const [imgUrlSessionx, setImgUrlSessionx] = useState("");
-  const [imageSrc, setImageSrc] = useState<string | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const maxNumber = 1;
-  // const id= user?.image ? user.image : imgUrlSession
   const file: File | undefined = images ? images[0]?.file : undefined
-
-  const clearState = () => {
-    setSuccessState(false);
-  };
 
   const files: File[]= []
   images.map((image) => {
     files.push(image.file!)
   })
 
-  const buttonRef = useRef<HTMLButtonElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null); // update image user
   const handleClickButton= () => {
     if (buttonRef.current) buttonRef.current.click()
-  }; // update image user
+  };
 
   const actualizarImageUser= () => {
     user && setTimeout(() => handleClickButton(), 200)
@@ -94,8 +79,6 @@ export default function EditProfileImage( { user }: { user: User | undefined } )
       setImageUrl(responseData.urls[0]);
 
       !user?.image && sessionStorage.setItem("imgUrlSessionx", responseData.urls[0])
-
-      console.log('1111111111111');
 
       if (response.ok) {
         console.log('Ok imagen subida');
@@ -139,14 +122,9 @@ export default function EditProfileImage( { user }: { user: User | undefined } )
   };
 
   useEffect(() => {
-    sessionStorage.getItem('imgUrlSession') && setImgUrlSession(`${sessionStorage.getItem('imgUrlSession')}`)
     sessionStorage.getItem('imgVisitor') && setImgVisitor(`${sessionStorage.getItem('imgVisitor')}`)
-    // sessionStorage.getItem('imgUrlSessionx') && setImgUrlSessionx(`${sessionStorage.getItem('imgUrlSessionx')}`)
     sessionStorage.getItem('nameVisitor') && setNameVisitor(`${sessionStorage.getItem('nameVisitor')}`) 
-    if (successState) {
-      close();
-    }
-  }, [successState, close ]);
+  }, []);
 
   const onChange = (imageList: ImageListType, addUpdateIndex: Array<number> | undefined) => {
     setImages(imageList);
@@ -165,14 +143,14 @@ export default function EditProfileImage( { user }: { user: User | undefined } )
             <img 
               src={URL.createObjectURL(file!)} 
               alt="Imagen de usuario"
-              className="object-cover h-16 w-16 rounded-full bg-cover [box-shadow:0_1px_#ffffff,_0_-1px_#0000002e] "
+              className="object-cover h-14 w-14 rounded-full bg-cover [box-shadow:0_1px_#ffffff,_0_-1px_#0000002e] "
               width={80}
               height={80} />
           ) : user?.image  ? (
             <Image 
               src= { user.image }
               alt="imagen de perfil"
-              className="h-16 w-16 rounded-full "
+              className="h-14 w-14 rounded-full "
               width={80}
               height={80}>
             </Image>
@@ -180,27 +158,27 @@ export default function EditProfileImage( { user }: { user: User | undefined } )
             <Image 
               src= { imgVisitor! }
               alt="imagen de perfil"
-              className="h-16 w-16 rounded-full "
+              className="h-14 w-14 rounded-full "
               width={80}
               height={80}>
             </Image>
           ) : (
             <span className="flex h-14 w-14 items-center justify-center rounded-full bg-[#39507f22] text-2xl text-[#39507f99] ">
               {nameVisitor ? nameVisitor.substring(0, 1).toUpperCase() : 
-              <IconCuenta className="w-7 sm:w-10" color='#39507f66' />}
+              <IconCuenta className="w-7 sm:w-8" color='#39507f66' />}
             </span>
           )}
         </div> 
 
-        <div className={`flex flex-col gap-5 pt-4 delay-200 `}>
-          <div className="flex flex-wrap mb-[1px]">
+        <div className={`flex flex-col gap-9 pt-8 delay-200 `}>
+          <div className="flex flex-wrap m-1">
             <div className="w-full flex flex-col items-center">
               <ImageUploading
                 multiple= {false}
                 value={images}
                 onChange={onChange}
                 // onError={onError}
-                maxNumber={maxNumber}
+                // maxNumber={maxNumber}
                 dataURLKey="data_url"
                 maxFileSize= {4000000}
                 acceptType={["jpg", "png"]}
@@ -215,26 +193,27 @@ export default function EditProfileImage( { user }: { user: User | undefined } )
                   dragProps,
                   errors,
                 }) => (
-                  <div className={`relative flex gap-[1px] flex-col w-full `} >
+                  <div className={`relative flex flex-col gap-[1px] w-full `} >
                     <button
                       type="button"
                       onClick={onImageUpload}
                       {...dragProps}
-                      className={`text-[#020b1dcc] group w-full disabled:!cursor-default ${isDragging && 'hover:bg-[#548eff55] '} `}
-                      disabled= {imageList.length == maxNumber}
+                      className={`group w-full rounded-md disabled:!cursor-default `}
+                      disabled= {imageList.length > 0}
                     >
-                      <div className={`relative label-dnd w-full duration-150 text-sm flex flex-col justify-center items-center `}>
-
-                        {errors ? (
-                          <div className={`w-max mb-1 mt-4 mx-auto text-[12.5px] border border-[#ffffff1e] tracking-wide text-[#ffffffee] leading-[1.5] py-0.5 px-2 bg-[#365491] rounded-xl `}>
-                            {errors.maxNumber && (
-                              <span>La cantidad excede el máximo permitido</span>
-                            )}
+                      <div className={`relative label-dnd rounded-md bg-[#548eff36] text-[#020b1d] w-full px-2 py-2 duration-150 text-sm flex flex-col justify-center items-center  hover:text-[#020b1dd3] `}>
+                        <div className="flex items-center gap-2 text-[13px] duration-150 opacity-90 group-hover:opacity-100">
+                          <IconDragDrop color='#39507f' className= "w-[30px] opacity-80 ml-2" />
+                          <div className='leading-[1]'>
+                            Elegí un archivo o arrastralo y sueltá aquí <br />
+                            <p className="text-xs mt-1.5"> archivos <span className='font-semibold'>jpg</span >, <span  className='font-semibold' >png</span > o <span className='font-semibold' >pdf</span >
+                            </p>
+                          </div>
+                        </div>
+                        {errors && (
+                          <div className={`w-max mb-1 mt-4 mx-auto text-[12.5px] border border-[#ffffff1e] tracking-wide text-[#ffffffee] leading-[1.5] px-2 bg-[#4d70b5] rounded-xl `}>
                             {errors.acceptType && (
                               <span>El tipo de archivo no está permitido</span>
-                            )}
-                            {errors.maxFileSize && (
-                              <span>El tamaño excede el máximo permitido</span>
                             )}
                             {errors.resolution && (
                               <span>
@@ -242,27 +221,13 @@ export default function EditProfileImage( { user }: { user: User | undefined } )
                               </span>
                             )}
                           </div>
-                        ) : (
-                          <div 
-                            className={`w-full rounded-t-lg py-1 px-2 flex items-center justify-evenly duration-150  ${imageList.length == maxNumber ? "opacity-50 group-hover:opacity-50" : "opacity-80 group-hover:opacity-100"} `}>
-                            <IconDragDrop color="#39507fcc" className= "w-6 opacity-80 rotate-45 " />
-                            <p className={`text-[12.5px] tracking-wide leading-[1.5] py-0.5 px-2 `}>Seleccioná una IMAGEN</p>
-                          </div>
                         )}
-
-                        <div 
-                          className={` duration-150 ${imageList.length == maxNumber ? "opacity-50 group-hover:opacity-50" : "opacity-80 group-hover:opacity-100"} `} >
-                          <p className={`text-[13px] p-2 `}>Click y elegí un archivo o arrastralo y sueltá aquí</p>
-                        </div>
-                        
-                        <div 
-                          className={`absolute w-full h-full bg-[#548eff11] border border-[#39507f06] rounded-md outline-1 outline-dashed outline-[#0000009e] ${imageList.length == maxNumber ? "outline-[#0000005e] hover:bg-[#548eff11] active:opacity-100 " : "hover:outline-[#000000]  hover:bg-[#548eff1c]"} active:opacity-50 `}
-                          >
+                        <div className={`absolute w-full h-full rounded-md outline-1 duration-150 outline-offset-2 outline-dashed outline-[#00000073] ${isDragging ? ' hover:bg-[#548eff44] ' : !images.length ? "bg-[#ffffff55] hover:bg-[#ffffff00] hover:outline-[#000000ee] " : "bg-[#ffffff77] hover:bg-[#ffffff77] hover:outline-[#00000073]" }`}>
                         </div>
                       </div>
                     </button>
 
-                    <div className= "absolute -top-[58px] left-[136px] flex flex-col  " >
+                    <div className= "absolute -top-[74px] left-[130px] flex flex-col  " >
                       <div className="text-[13px] flex flex-col items-center justify-end  gap-0.5">
                         <button 
                           onClick={() => {
@@ -283,10 +248,22 @@ export default function EditProfileImage( { user }: { user: User | undefined } )
 
           {/* subir img  */}
           <form onSubmit={ uploadToServer }
-            className="-ml-0.5 w-[calc(100%_+_4px)] flex justify-end items-center" >
+            className="-ml-0.5 w-[calc(100%_+_4px)] flex justify-between items-center" >
+            <button
+              type="button"
+              onClick={() => {
+                setIsModalOpen(false)
+                wait().then(() => {
+                  setImages([])
+                })
+              }}
+              className="h-[30px] w-[74px] opacity-70 bg-[#ff0000] text-[#ffffff] bottom-3 text-[13px]  duration-150 px-2 rounded-md hover:opacity-100 active:opacity-70 "
+            >
+              Cancelar
+            </button>
 
             <ButtonA
-              className={`${ spin  && "before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_1s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/30 before:to-transparent bg-[#28395a] "}  relative overflow-hidden  h-[30px] text-[13px] w-[200px] bg-[#39507f] !rounded-md disabled:opacity-50 `}
+              className={`${ spin  && "before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_1s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/30 before:to-transparent bg-[#28395a] "}  relative overflow-hidden  h-[30px] text-[13px] w-[200px] bg-[#39507f] !rounded-md disabled:hover:opacity-60`}
               type="submit"
               disabled={!images.length }
               onClick={() => {

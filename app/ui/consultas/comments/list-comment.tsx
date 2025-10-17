@@ -1,30 +1,26 @@
 "use client"
 
 import Image from 'next/image';
-import { useRouter, useSearchParams, redirect, usePathname } from 'next/navigation'
+import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { FormEvent, useState, useEffect, useRef, useActionState  } from 'react';
-import {
-  ExclamationCircleIcon,
-} from '@heroicons/react/24/outline';
+import { ExclamationCircleIcon } from '@heroicons/react/24/outline';
 import clsx from 'clsx';
 import { nanoid } from "nanoid";
 
 import { User, CommentsPost, Post, Comment } from "@/app/lib/definitions";
 import  distanceToNow  from "@/app/lib/dateRelative";
-import { Fondo } from "@/app/ui/marcos";
+import { Fondo, Frente } from "@/app/ui/marcos";
 import UpdateComment from '@/app/ui/consultas/comments/update-comment';
 import { ImageListType } from "@/app/ui/consultas/typings";
 import ImageUploading from "@/app/ui/consultas/ImageUploading"
 import IconDragDrop from "@/app/ui/logosIconos/icon-drag-drop";
-import { createComment, StateComment, updateUserImage, StateUserImage, updateCommentAvatar, StateUpdateCommentAvatar, createUser, StateUser, authenticate } from '@/app/lib/actions';
-import { Frente } from '@/app/ui/marcos';
+import IconCuenta from "@/app/ui/logosIconos/icon-cuenta"
+import IconCamara from '@/app/ui/logosIconos/icon-camara';
 import IconComments from "@/app/ui/logosIconos/icon-comments"
+import { createComment, StateComment, updateUserImage, StateUserImage, createUser, StateUser, authenticate } from '@/app/lib/actions';
 import { ButtonB, ButtonA } from '@/app/ui/button';
 import { InputCnp } from "@/app/ui/uiRadix/input-cnp";
 import { TextareaCnp } from "@/app/ui/uiRadix/textarea-cnp";
-import IconCuenta from "@/app/ui/logosIconos/icon-cuenta"
-import IconCamara from '@/app/ui/logosIconos/icon-camara';
-
 
 const wait = () => new Promise((resolve) => setTimeout(resolve, 2000));
 
@@ -52,16 +48,9 @@ export default function ListComment({
   const [open, setOpen] = useState(false);
   const [token, setToken] = useState("");
 
-  // const [nameVisitor, setNameVisitor] = useState("");
-  // const [imgUrlSessionx, setImgUrlSessionx] = useState("");
-
-  const router = useRouter()
-  const searchParams = useSearchParams();
-  // const callbackUrl = searchParams.get('/faq/compra-venta-vehiculo') || '/faq/compra-venta-vehiculo';
   const pathname = usePathname();
   
   const id= user?.id!
-  const id2= user?.email!
 
   const onChange = (imageList: ImageListType, addUpdateIndex: Array<number> | undefined) => {
   setImages(imageList);
@@ -102,40 +91,37 @@ export default function ListComment({
   })
   const file: File | undefined = images ? images[0]?.file : undefined
   
-  const buttonRef = useRef<HTMLButtonElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null); //create comment
   const handleClickButton= () => {
     if (buttonRef.current) buttonRef.current.click()
-  }; //create comment
+  };
 
-  const buttonRefx = useRef<HTMLButtonElement>(null);
+  const buttonRefx = useRef<HTMLButtonElement>(null); //create user
   const handleClickButtonx= () => {
     if (buttonRefx.current) buttonRefx.current.click()
-  }; //create user
+  };
 
   const buttonRefAuth = useRef<HTMLButtonElement>(null);
   const handleClickButtonAuth= () => {
     if (buttonRefAuth.current) buttonRefAuth.current.click()
   };
 
-  const buttonRefxx = useRef<HTMLButtonElement>(null);
+  const buttonRefxx = useRef<HTMLButtonElement>(null); //updated img user
   const handleClickButtonxx= () => {
     if (buttonRefxx.current) buttonRefxx.current.click()
-  };//updated img user
+  };
 
   const crearComment= () => {
     setTimeout(() => handleClickButton(), 200) //create comment
     !user && setTimeout(() => handleClickButtonx(), 200) //create user
     setTimeout(() => setSpin(true), 200)
-    setTimeout(() => console.log("22222222"), 2000)
     setTimeout(() => setSpin(false), 2000)
     setTimeout(() => setOpen(!open), 2000)
     !user?.image && setTimeout(() => setComme(!comme), 2000)
     !user?.image && setTimeout(() => setCommentOk(!commentOk), 2000)
-    // location.reload()
     console.log("Comentario creado")
   }
   const actualizarComment= () => {
-    // setTimeout(() => handleClickButtonxxx(), 200) //updated img comment
     !user?.image && setTimeout( handleClickButtonxx, 200) //updated img user
     setTimeout(() => setSpin(false), 2000)
     setTimeout(() => location.reload(), 2000) 
@@ -248,9 +234,8 @@ export default function ListComment({
   const initialStatexx: StateUserImage = { message: null, errors: {} };
   const updateUserImageWithId = updateUserImage.bind(null, id );
   const [estadoxx, formActionxx ] = useActionState(updateUserImageWithId, initialStatexx);
-  
-  // console.log("user: ", user );
 
+  
   return (
     <>
       <div className={`relative ${!comme && "mt-[92px]"}`}>
@@ -263,14 +248,14 @@ export default function ListComment({
               ) : "Podés ampliar esta consulta"}
           </div>
           
-          <Frente className={`!p-2 w-full mt-2 mb-9 text-small-regular sm:!p-4 !bg-[#548eff16]`}>
+          <Frente className={`!p-2 w-full mt-2 mb-9 text-small-regular sm:!p-4 !bg-[#e8edf6ff]`}>
             <div className={`flex items-center justify-between gap-2.5 sm:gap-5 ${open && "mb-4"}`}>
               <div className="w-max">
                 <IconComments className="opacity-80 w-8 sm:w-10" />
               </div>
 
               <p className={`flex flex-col items-start w-full text-start leading-[1.2] delay-50 text-[13px] text-[#39507f] transition-[opacity] duration-300 ${open && "opacity-0"} sm:text-[15px] sm:flex-row`}>
-                <span className='mr-2'>Comentá tu experiencia</span><span className='text-xs text-[#200b1d77]'>podés eliminarlo</span>
+                <span className='mr-2'>Comentá tu experiencia</span><span className='text-[13px] text-[#200b1d77]'>(podés eliminarlo)</span>
               </p>
 
               <ButtonB
@@ -351,7 +336,7 @@ export default function ListComment({
                   <div className={`flex items-center justify-end w-full gap-4 mt-4 text-sm `}>
                     <ButtonA
                       type="submit"
-                      className={`${spin && "before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_1s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/30 before:to-transparent"}  relative overflow-hidden h-8 text-[13px] w-max `}
+                      className={`${spin && "before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_1s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/60 before:to-transparent"}  relative overflow-hidden h-8 text-[13px] w-max `}
                       disabled={ comment && (nombre || user?.name )  ? false : true }
                       onClick={() => {
                         wait().then(() =>{ 
@@ -369,7 +354,7 @@ export default function ListComment({
         </div>
 
         {/* Actualizar avatar comment */}
-        <div className={` ${images.length != 0 ? "absolute -top-[60px]" : "absolute -top-[60px]"} -left-[5px] w-full gap-1 flex flex-col mb-3 } ${comme === true || imgVisitor  ? "hidden" : "block" } `}>
+        <div className={` ${images.length != 0 ? "absolute -top-[56px]" : "absolute -top-[56px]"} -left-[5px] w-full gap-1 flex flex-col mb-3 } ${comme === true || imgVisitor  ? "hidden" : "block" } `}>
           <ImageUploading
             multiple= {false}
             value={images}
@@ -377,8 +362,8 @@ export default function ListComment({
             // onError={onError}
             maxNumber={maxNumber}
             dataURLKey="data_url"
-            maxFileSize= {3000000}
-            acceptType={["jpg", "png", "pdf"]}
+            maxFileSize= {4000000}
+            acceptType={["jpg", "png"]}
           >
             {({
               imageList,
@@ -408,9 +393,9 @@ export default function ListComment({
                         {errors.acceptType && (
                           <span>El tipo de archivo no está permitido</span>
                         )}
-                        {errors.maxFileSize && (
+                        {/* {errors.maxFileSize && (
                           <span>El tamaño excede el máximo permitido</span>
-                        )}
+                        )} */}
                         {errors.resolution && (
                           <span>
                             La resolución no coincide con la permitida
@@ -430,17 +415,17 @@ export default function ListComment({
                     </div>
 
                     <div 
-                      className={`absolute z-20 w-[50px] h-[50px] ${images.length ? "left-[12px] top-[48px]" : "left-[12px] top-[48px]"} border border-[#39507f06]  bg-[#ffffff00] rounded-full outline-1 outline-dashed outline-[#888]  outline-offset-1   ${isDragging ? 'outline-[#666] bg-[#39507f55]  hover:bg-[#ffffff]' : undefined} ${imageList.length == maxNumber ? "opacity-50" : "opacity-80"} ${imageList.length == maxNumber ? "group-hover:opacity-50" : "group-hover:opacity-100 group-hover:outline-[#666]"}  `}
+                      className={`absolute z-20 w-[50px] h-[50px] ${images.length ? "left-[12px] top-[46px]" : "left-[12px] top-[44px]"} border border-[#39507f06]  bg-[#ffffff00] rounded-full outline-1 outline-dashed outline-[#888]  outline-offset-1   ${isDragging ? 'outline-[#666] bg-[#39507f55]  hover:bg-[#ffffff]' : undefined} ${imageList.length == maxNumber ? "opacity-50" : "opacity-80"} ${imageList.length == maxNumber ? "group-hover:opacity-50" : "group-hover:opacity-100 group-hover:outline-[#666]"}  `}
                       >
                     </div>
 
                     <div 
-                      className={`absolute w-[60px] h-[60px] ${images.length ? "left-[7px] top-[43px] " : "left-[12px] top-[48px] hidden"}  bg-[#39507f00] rounded-full outline-1 outline-dashed outline-[#00000000]  outline-offset-1   ${isDragging ? 'outline-[#000] bg-[#39507f66]' : undefined}   `}
+                      className={`absolute z-[70] w-[60px] h-[60px] ${images.length ? "left-[7px] top-[41px] " : "left-[12px] top-[48px] hidden"}  bg-[#39507f00] rounded-full outline-1 outline-dashed outline-[#00000000]  outline-offset-1   ${isDragging ? 'outline-[#000] bg-[#39507f66]' : undefined}   `}
                       >
                     </div>
 
                     <div 
-                      className={`absolute w-[142px] h-[24px] ${images.length ? "left-[12px] top-[48px] hidden" : "left-[6px] top-[4px]"} border border-[#39507f06]  bg-[#ffffff00] rounded-sm outline-1 outline-dashed outline-[#888]  outline-offset-1   ${isDragging ? 'outline-[#666] bg-[#39507f55]  hover:bg-[#ffffff]' : undefined} ${imageList.length == maxNumber ? "opacity-50" : "opacity-80"} ${imageList.length == maxNumber ? "group-hover:opacity-50" : "group-hover:opacity-100 group-hover:outline-[#666]"}  `}
+                      className={`absolute w-[142px] h-7 ${images.length ? "left-[12px] top-[48px] hidden" : "left-[8px] top-[0px]"} border border-[#39507f06]  bg-[#ffffff00] rounded-md outline-1 outline-dashed outline-[#888]  outline-offset-1   ${isDragging ? 'outline-[#666] bg-[#39507f55]  hover:bg-[#ffffff]' : undefined} ${imageList.length == maxNumber ? "opacity-50" : "opacity-80"} ${imageList.length == maxNumber ? "group-hover:opacity-50" : "group-hover:opacity-100 group-hover:outline-[#666]"}  `}
                       >
                     </div>
                   </div>
@@ -448,34 +433,34 @@ export default function ListComment({
 
                 <div className="w-full flex flex-col justify-start gap-4">
                   <div className={` ${images.length ? "hidden" : "flex" } ml-2 text-[13px] items-center justify-start gap-5 `}>
-                    <p className="flex items-center gap-1.5 h-8 bg-[#ffffff] text-[#020b1daa] px-2 py-0.5 cursor-pointer rounded-l-md " >
+                    <p className="flex items-center gap-1.5 w-[142px] h-7 bg-[#ffffff] text-[#020b1daa] px-2 py-0.5 cursor-pointer rounded-md " >
                       Agregar imagen<IconCamara className="w-[14px]" />
                     </p>
                   </div>
 
-                  <div className={` ${images.length ? "flex" : "hidden"} text-[13px] items-center justify-start gap-[1px] `}>
+                  <div className={` ${images.length ? "flex" : "hidden"} text-[13px] items-center justify-start gap-2 `}>
                     <button 
                       onClick={() => {
                       onImageUpdate(0)
                       }} 
-                      className="flex items-center gap-1.5 h-8 bg-[#ffffff] text-[#020b1daa] px-2 py-0.5 cursor-pointer rounded-l-md duration-200 hover:text-[#020b1dee] active:opacity-70 disabled:opacity-40 disabled:cursor-default"
-                      disabled= {!files.length}
+                      className="flex items-center ml-2 gap-1.5 h-[30px] opacity-80 bg-[#ffffffee] text-[#020b1ddd] px-2 py-0.5 cursor-pointer rounded-md duration-200 hover:opacity-100 active:opacity-70 "/* disabled:opacity-40 disabled:cursor-default */
+                      // disabled= {!files.length}
                       >
                       <p>Cambiar</p>
-                      <IconCamara className="w-[14px]" />
+                      <IconCamara className="w-[14px]" color="#39507f" />
                     </button>
 
                     <form onSubmit={ uploadToServer } >
-                      <div className="relative flex justify-end gap-3 mb-0.5 ml-2 ">
+                      <div className="relative flex justify-end gap-3 ">
                         <button
                           type="submit"
                           onClick={() => {
                             setSpin(true);
                           }}
-                          className={`${ spin && "before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_1s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/60 before:to-transparent bg-[#0c5cfe]  "}  relative overflow-hidden  px-4 h-6 flex items-center text-sm text-[#fff] border border-transparent bg-[#4281fd] opacity-80 duration-150 rounded-[4px] hover:opacity-100 disabled:cursor-default disabled:opacity-60 `}
+                          className={`${ spin && "before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_1s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/60 before:to-transparent bg-[#39507f] "} relative overflow-hidden  px-3 h-7 flex items-center text-sm text-[#ffffff] border border-transparent bg-[#39507f] opacity-80 duration-150 rounded-[4px] hover:opacity-100 disabled:cursor-default disabled:opacity-60 `}
                           disabled={!images.length}
                         >
-                          cargar <IconCamara color="#ffffff" className="ml-4 w-[13px]"  />
+                          cargar <IconCamara color="#ffffff" className="ml-3 w-[13px]"  />
                         </button>
                       </div>
                     </form>
@@ -501,48 +486,6 @@ export default function ListComment({
             <UpdateComment id={commentLast.id } />
           </div> : ""
           }
-
-          {/* update avatar comment */}
-          {/* <form action={formActionxxx}>
-            <input
-              type="hidden"
-              name="avatar"
-              defaultValue={imageUrl}
-            />
-            <input
-              type="hidden"
-              name="post_slug"
-              value= {post.slug}
-              readOnly
-            />
-
-            <div
-              className= "flex items-end relative space-x-8"
-              aria-live="polite"
-              aria-atomic="true"
-            >
-              {estadoxxx?.message && (
-                <>
-                  <ExclamationCircleIcon className="absolute top-4 h-5 w-5 text-red-500" />
-                  <p className="pt-4 text-sm text-red-500">
-                    {estadoxxx?.message}
-                  </p>
-                </>
-              )}
-            </div>
-
-            <button
-              type="submit"
-              ref={buttonRefxxx}
-              className="hidden"
-              onClick={() => {
-                location.reload();
-              }}
-            >
-              Guardar cambios
-            </button>
-            
-          </form> */}
         </div>
         
         {/* List comment */}
@@ -551,34 +494,26 @@ export default function ListComment({
             comments.map((comment, index) => {
               const isAuthor = user && user.email === comment.email_id;
               const isAdmin =user && user.role === "admin";
-              const isVisitor= comment.nombre === user?.name 
+              // const isVisitor= comment.email_id === user?.email 
 
               return (
                 <div key={index} className={`flex flex-col mb-3 gap-[2px]`}>
-                  { /* comment.avatar ? (
-                    <Image
-                      src={ comment.avatar }
-                      alt="Imagen de usuario"
-                      width={40}
-                      height={40}
-                      className="rounded-full object-cover ml-3 h-10 w-10"
-                    />
-                  ) : */  comment.image ? (
+                  { comment.image ? (
                     <Image
                       src={ comment.image }
                       alt="Imagen de usuario"
                       width={40}
                       height={40}
-                      className="rounded-full object-cover ml-3 h-10 w-10"
+                      className="rounded-full p-[1px] [box-shadow:_inset_0_1px_#ffffff,inset_0_-1px_#00000055] object-cover ml-3 h-10 w-10"
                     />
                   )  :  (
-                    <span className="flex ml-3 h-10 w-10 text-[#39507fcc] items-center justify-center rounded-full bg-[#020b1d18] text-2xl ">
+                    <span className="flex ml-3 h-10 w-10 text-[#39507fcc] items-center justify-center rounded-full bg-[#020b1d12] text-2xl ">
                       {comment?.name?.substring(0, 1).toUpperCase() }
                     </span>
                   )}
                  
 
-                  <Fondo key={comment.id} className="flex space-x-4 w-full p-3 pb-2 !bg-[#548eff16] !rounded-[6px] ">
+                  <Frente key={comment.id} className="flex text-[#020b1dbb] space-x-4 w-full p-3 !bg-[#ffffffbb] !rounded-[6px] ">
                     <div className="flex-grow">
                       <div className="flex items-center justify-between">
                         <div className="flex flex-wrap">
@@ -589,16 +524,16 @@ export default function ListComment({
                           </time>
                         </div>
                         <div className='relative flex items-center gap-0'>
-                          { (isAdmin || (isAuthor || isVisitor) ) &&
+                          { (isAdmin || (isAuthor /* || isVisitor */) ) &&
                             <UpdateComment id={comment.id} /> 
                           }
                         </div>
                       </div>
-                      <div className=" mt-1 leading-relaxed">
+                      <div className=" mt-1 leading-relaxed text-[#020b1db6]">
                         {comment.comment }
                       </div>
                     </div>
-                  </Fondo>
+                  </Frente>
                 </div>
               );
             }
@@ -659,11 +594,11 @@ export default function ListComment({
           />
           <input type="hidden" name="redirectTo" value={pathname} readOnly />
           <input
-              type="hidden"
-              name="token"
-              value= { token }
-              readOnly
-            />
+            type="hidden"
+            name="token"
+            value= { token }
+            readOnly
+          />
           <button
             type="submit" 
             ref={buttonRefAuth}
@@ -725,7 +660,6 @@ export default function ListComment({
         <form action={formActionxx}>
           <input
             type="hidden"
-            id="image"
             name="image"
             // defaultValue={ imageUrl ? imageUrl : user?.image ? user.image : imgUrlSession ? imgUrlSession : "" }
             defaultValue={ imageUrl }

@@ -1,21 +1,14 @@
 "use client"
 
-
 import { useState } from "react"
-import { useRouter } from 'next/navigation'
 
-import { updateCommentDelete, deleteComment } from '@/app/lib/actions';
+import { deleteComment } from '@/app/lib/actions';
 
 const wait = () => new Promise((resolve) => setTimeout(resolve, 1000));
-
 
 export default function DeleteComment({ id } : { id: string}) {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const router = useRouter()
-
-  // const updateCommentDeleteWithId = updateCommentDelete.bind(null, id);
 
   const deleteCommentWithId = deleteComment.bind(null, id);
 

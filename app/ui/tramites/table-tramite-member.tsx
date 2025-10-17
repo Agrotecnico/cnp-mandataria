@@ -11,8 +11,6 @@ import { Disclosure, DisclosurePanel } from '@headlessui/react'
 import useToggleState from "@/app/lib/hooks/use-toggle-state"
 import { formatDateToLocal, formatCurrency } from '@/app/lib/utils';
 import distanceToNow from '@/app/lib/dateRelative';
-import {InputCnp} from "@/app/ui/uiRadix/input-cnp"
-import IconCuenta from "@/app/ui/logosIconos/icon-cuenta"
 
 
 export default function TableTramiteMember( { 
@@ -22,10 +20,6 @@ export default function TableTramiteMember( {
 } ) {
   
   const [successState, setSuccessState] = useState(false)
-
-  const [presupuesto, setPresupuesto] = useState("")
-  const [finalizado, setFinalizado] = useState("")
-  const [estado, setEstado] = useState(false)
   
   const { state, close, toggle } = useToggleState()
 

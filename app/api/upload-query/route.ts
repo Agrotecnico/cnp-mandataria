@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { v2 as cloudinary } from 'cloudinary';
 
 
+
 cloudinary.config({
   cloud_name: process.env.NEXT_PUBLIC_CLAUDINARY_NAME,
   api_key: process.env.NEXT_PUBLIC_CLAUDINARY_KEY,

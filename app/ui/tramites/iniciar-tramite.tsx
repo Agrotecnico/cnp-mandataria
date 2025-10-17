@@ -1,33 +1,34 @@
 'use client';
 
-import { useActionState } from 'react';
-import { FormEvent, useState, useEffect, useRef } from 'react';
+import { FormEvent, useState, useEffect, useRef, useActionState } from 'react';
 import { ExclamationCircleIcon, ArrowPathIcon } from '@heroicons/react/24/outline'
 import clsx from 'clsx';
 import * as Tabs  from '@radix-ui/react-tabs';
 import Image from 'next/image'
 import { usePathname  } from 'next/navigation';
 import { nanoid } from "nanoid";
+import fs from 'fs';
+
+
 
 import { User } from '@/app/lib/definitions';
 import { createTramite, StateCreateTramite, createVerificationToken, StateVerificationToken, updateUserEmail, StateUserEmail, updateCommentEmail, StateUpdateCommentEmail,createUser, StateUser, authenticate, authenticate2, handleFormPedido  } from '@/app/lib/actions';
-// import { createConsulta, StateConsulta, updateUserEmail, StateUserEmail, updateCommentEmail, StateUpdateCommentEmail } from '@/app/lib/actions';
-// import { createUser, StateUser, authenticate, authenticate2, handleFormPedido } from '@/app/lib/actions';
 import { Frente } from '@/app/ui/marcos';
 import IconCambio from '@/app/ui/logosIconos/icon-cambio';
-import { ImageListType} from '@/app/ui/consultas/typings';
-import ImageUploading from "@/app/ui/consultas/ImageUploading"
 import IconDragDrop from '@/app/ui/logosIconos/icon-drag-drop';
-import { ButtonB, ButtonA } from '@/app/ui/button';
-import markdownStyles from './markdown-styles.module.css';
 import IconCuenta from "@/app/ui/logosIconos/icon-cuenta"
 import IconEmail2 from "@/app/ui/logosIconos/icon-email2"
+import IconRegistro from "@/app/ui/logosIconos/icon-registro"
+import IconInfo from '@/app/ui/logosIconos/icon-info';
+import IconEnvioEmail from '@/app/ui/logosIconos/icon-envio-email';
+import { ImageListType} from '@/app/ui/consultas/typings';
+import ImageUploading from "@/app/ui/consultas/ImageUploading"
+import { ButtonB, ButtonA } from '@/app/ui/button';
+import markdownStyles from '@/app/ui/tramites/markdown-styles.module.css';
 import { InputCnp } from "@/app/ui/uiRadix/input-cnp";
 import { TextareaCnp } from "@/app/ui/uiRadix/textarea-cnp";
-import IconRegistro from "@/app/ui/logosIconos/icon-registro"
 import { TramiteMd } from "@/app/lib/definitions"
-import { handleFormRegistro } from '@/app/lib/actions';
-import IconInfo from '../logosIconos/icon-info';
+import { PDFDocument } from 'pdf-lib';
 
 
 export default function IniciarTramite( {
@@ -52,17 +53,11 @@ export default function IniciarTramite( {
   const [open, setOpen] = useState(false);
   const [info, setInfo] = useState<string | undefined>("")
 
-  const [imgUserSession, setImgUserSession ] = useState<string | null>(null)
-  const [estadoRegistrar, setEstadoRegistrar] = useState(false)
-  const [emailSession, setEmailSession] = useState(false);
-  const [nombre, setNombre] = useState<string | null>(null)
-
   const [token, setToken] = useState("");
 
   const pathname = usePathname()
 
   const tokenx= nanoid()
-  const imagen= user?.image
   const isEmailVisitor= user?.email.slice(16) === "@cnpmandataria.com"
   const id= user?.email!
 
@@ -71,15 +66,9 @@ export default function IniciarTramite( {
     return regex.test(email);
   }
 
-   const wait = () => new Promise((resolve) => setTimeout(resolve, 1000));
-
   const documentacions: string[] | undefined = tramiteMd.documentacion?.split(", ")
 
   const documentos:string[] | undefined= tramiteMd.documentos?.split(", ")
-  const informations:string[] | undefined= tramiteMd.informacion?.split(", ")
-
-  const lengthDocumentos= documentos?.length
-  const lengthInformations= informations.length 
 
   const maxNumber = documentos?.length;
 
@@ -124,7 +113,6 @@ export default function IniciarTramite( {
 
   const enviartramite= () => {
     setTimeout(handleClickButton, 200) 
-    // setTimeout(() => setSpin(false), 200) 
   }
 
   const enviarConsultaxxxx= () => {
@@ -149,13 +137,18 @@ export default function IniciarTramite( {
 
     const resizedBlobs: Blob[] = [];
     for (const file of files) {
-      const resizedBlob = await resizeImage(file, 1024, 1024);
-      resizedBlobs.push(resizedBlob);
+      if ( file.type === "application/pdf" ) {
+        resizedBlobs.push(file);
+      }  else {
+        const resizedBlob = await resizeImage(file, 1024, 1024);
+        resizedBlobs.push(resizedBlob);
+      }
     }
 
     try {
       setSpin(true)
       const data = new FormData();
+
       {resizedBlobs.map((resizedBlob, index) => {
         data.append(`file${index}`, resizedBlob );
       })}
@@ -205,8 +198,11 @@ export default function IniciarTramite( {
 
       img.onload = () => {
         const scale = Math.min(maxWidth / img.width, maxHeight / img.height);
-        const width = img.width * scale;
-        const height = img.height * scale;
+
+        const scaleMin = scale > 1 ? 1 : scale
+
+        const width = img.width * scaleMin;
+        const height = img.height * scaleMin;
 
         canvas.width = width;
         canvas.height = height;
@@ -232,14 +228,14 @@ export default function IniciarTramite( {
           alt={file.name} 
           width={80}
           height={80}
-          className="min-h-[80px] object-contain bg-[#ffffffaa] w-20 border border-[#1d021544] [border-radius:_6px_6px_0_6px] " />
+          className="h-[64px] object-cover bg-[#ffffffaa] w-16 border border-[#1d021544] [border-radius:_6px_6px_0_6px] " />
       ); 
       } else if ( fileType === 'application/pdf' ) { 
         return ( 
         <embed 
           src={URL.createObjectURL(file)} 
           type="application/pdf" 
-          className="min-h-[80px] object-contain bg-[#ffffffaa] w-[80px] h-[100px]  border border-[#1d021544]  [border-radius:_6px_6px_0_6px] " />
+          className="h-[64px] object-cover bg-[#ffffffaa] w-[60px] border border-[#1d021544]  [border-radius:_6px_6px_0_6px] " />
         ); 
       } else { return ( 
       <p className=" text-[#fff] break-words p-2 text-xs text-left">
@@ -251,19 +247,10 @@ export default function IniciarTramite( {
 
   useEffect(() => {
     !tramite && tramiteMd.slug !== "x-Otros" && setTramite(`${tramiteMd.tramite}`);
-    const data= sessionStorage.getItem('imgUrlSession')
-    setImgUserSession(data)
-
     user?.email && setEmail(`${user.email}`)  
-
     user?.name ? setName(`${user.name}`) : setName(`${sessionStorage.getItem('nameVisitor')}`)
     sessionStorage.getItem('nameVisitor') && setNameVisitor(`${sessionStorage.getItem('nameVisitor')}`)
-
     user?.image ? setImageUrl(`${user.image}`) : sessionStorage.getItem('imgUrlSession') && setImageUrl(`${sessionStorage.getItem('imgUrlSession')}`)
-    
-    if (sessionStorage.getItem('email')) {
-      setEmailSession(true);
-    }
     setToken(tokenx)
   }, [ ])
 
@@ -290,11 +277,8 @@ export default function IniciarTramite( {
   const updateCommentEmailWithId = updateCommentEmail.bind(null, id);
   const [estadoxxxx, formActionxxxx, isPendingxxxx] = useActionState(updateCommentEmailWithId, initialStatexxxx);
 
-
-  // console.log("name: ", name ? name : nameVisitor ? nameVisitor : ""  ) 
-  // console.log("email: ", email ) 
-  console.log("images.leng: ", images.length  ) 
-
+  // console.log("ancho, alto: ", img.width)
+  // console.log("ancho, alto: ", height)
 
   return (
     <>
@@ -313,7 +297,7 @@ export default function IniciarTramite( {
 
       <Frente className="!bg-[#548eff16] ">
         <Tabs.Root
-          className="flex min-h-[320px] flex-col h-full sm:min-h-[300px]"
+          className="flex flex-col min-h-[332px]"
           defaultValue="tab1"
         >
           <Tabs.List
@@ -346,76 +330,74 @@ export default function IniciarTramite( {
           </Tabs.List>
 
           <Tabs.Content
-            className="flex flex-col justify-between grow rounded-b-md p-2 outline-none leading-[1.15] text-[13px] text-[#020b1dcc] sm:p-4 sm:leading-[1.2] sm:text-sm"
+            className="grow rounded-b-md p-2 outline-none text-[13px] text-[#020b1dcc] sm:p-4 sm:text-[15px]"
             value="tab1"
           >
-            <div className="flex flex-col">
-              <p className="mb-3 mt-1 sm:mt-0 leading-normal">
-                {tramiteMd.slug === "x-Otros" ? "Describí el trámite" : "Descripción general del trámite" }  
-              </p>
+            <div className="flex flex-col justify-between min-h-[259px]">
+              <div className="flex flex-col">
+                <p className="mb-3 mt-1 sm:mt-0 ">
+                  {tramiteMd.slug === "x-Otros" ? "Describí el trámite" : "Descripción general del trámite" }  
+                </p>
 
-              <div className=" duration-300 rounded-[4px] ">
-                {tramiteMd.slug === "x-Otros" ? (
-                  <div className="flex flex-col gap-y-1">
-                    <TextareaCnp
-                      className=""
-                      id="tramite"
-                      name="tramite"
-                      placeholder= "Descripción..."
-                      required
-                      value={tramite}
-                      rows={5}
-                      maxLength={1024}
-                      wrap="hard"
-                      onChange={(e) => {
-                        setTramite(e.target.value);
-                      }}
-                    />
-                  </div>
-                ) : (
-                  <div className="bg-[#ffffffaa]">
-                    <div
-                    className={`rounded-sm pt-2 px-3  ${markdownStyles['markdown']}`}
-                    dangerouslySetInnerHTML={{ __html: content }}
-                    />
-                    <p className="px-3 underline underline-offset-2 decoration-[#020b1d55]">
-                      Comprobantes
-                    </p>
-                    <div className="py-2 px-3 rounded-sm">
-                      <ul>
-                          {documentacions?.map((documento, index) => (
-                              <li key={index} className="flex ">
-                                  <span className="mr-1">-</span><span>{documento}</span>
-                              </li>
-                          ))}
+                <div className=" duration-300 rounded-[4px] leading-[1.2]">
+                  {tramiteMd.slug === "x-Otros" ? (
+                    <div className="flex flex-col gap-y-1">
+                      <TextareaCnp
+                        className=""
+                        id="tramite"
+                        name="tramite"
+                        placeholder= "Descripción..."
+                        required
+                        value={tramite}
+                        rows={5}
+                        maxLength={1024}
+                        wrap="hard"
+                        onChange={(e) => {
+                          setTramite(e.target.value);
+                        }}
+                      />
+                    </div>
+                  ) : (
+                    <div className="bg-[#ffffffaa]">
+                      <div
+                      className={`rounded-sm pt-2 px-3  ${markdownStyles['markdown']}`}
+                      dangerouslySetInnerHTML={{ __html: content }}
+                      />
+                      <h3 className="px-3 underline underline-offset-2 decoration-[#020b1d55]">
+                        Comprobantes
+                      </h3>
+                      <ul className="py-2 px-3 rounded-sm">
+                        {documentacions?.map((documento, index) => (
+                          <li key={index} className="flex ">
+                              <span className="mr-1">-</span><span>{documento}</span>
+                          </li>
+                        ))}
                       </ul>
                     </div>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
-            </div>
-            
-            <div className="flex w-full  mt-3">
-              <div className="flex items-center text-[13px] opacity-90 md:text-[13.5px]">
-                  <ArrowPathIcon className="h-4 w-4 mr-2.5 text-[#39507f9d] stroke-2 " />
-                  <p className="text-[#39507f7d] font-medium ">{tramiteMd.date !== "actual" ? tramiteMd.date : date }</p>
+              
+              <div className="flex items-center mt-3 text-[13px] opacity-90 md:text-[13.5px]">
+                <ArrowPathIcon className="h-4 w-4 mr-2.5 text-[#39507f9d] stroke-2 " />
+                <p className="text-[#39507f7d] font-medium ">{tramiteMd.date !== "actual" ? tramiteMd.date : date }</p>
               </div>
             </div>
           </Tabs.Content>
 
           <Tabs.Content
-            className="!min-h-[262px] !h-full grow rounded-b-md p-2 outline-none text-[13px] text-[#020b1dcc] sm:p-4 sm:text-[15px]"
+            className="grow rounded-b-md p-2 outline-none text-[13px] text-[#020b1dcc] sm:p-4 sm:text-[15px]"
             value="tab2"
           >
             <p className="mb-3 mt-1 sm:mt-0">
                {tramiteMd.slug === "x-Otros" ? "Podés cargar dos comprobantes:" : "Cargá los siguientes comprobantes:" }  
             </p>
 
-            <div className="py-2 px-3 mb-4 rounded-sm bg-[#ffffffaa]">
+            <div className="py-2 px-3 mb-3 rounded-sm bg-[#ffffffaa]">
               <ul className="list-none" >
                   {documentos?.map((documento, index) => (
-                    <li key={index} className=" ">
-                      {documento} <span className={`font-semibold text-xs text-[#ff0000] ${tramiteMd.slug === "x-Otros" /* || index + 1 <= images.length */  && "hidden"} ${index + 1 <= images.length && "text-transparent"}`}>*</span>
+                    <li key={index} className=" leading-[1.2] ">
+                      {documento} <span className={`font-semibold text-xs text-[#ff0000] ${tramiteMd.slug === "x-Otros"  && "hidden"} ${index + 1 <= images.length && "text-transparent"}`}>*</span>
                     </li>
                   ))}
               </ul>
@@ -441,9 +423,42 @@ export default function IniciarTramite( {
                 dragProps,
                 errors,
               }) => (
-                <div className={`flex flex-col-reverse bg-[#020b1da3] rounded-lg ${!images.length ? 'gap-0' : 'gap-[1px]'} $ `} >
+                <div className={`flex flex-col bg-[#020b1da3] rounded-lg ${!images.length ? 'gap-0' : 'gap-[1px]'} $ `} >
+                  <button
+                    type="button"
+                    onClick={onImageUpload}
+                    {...dragProps}
+                    className={`group rounded-lg w-full disabled:!cursor-default `}
+                  >
+                    <div className={`relative label-dnd  ${!images.length ? 'rounded-lg' : 'rounded-t-lg'} bg-[#020b1d] text-[#ffffffdd] w-full px-2 py-3 duration-150 text-sm flex flex-col justify-center items-center active:opacity-80 `}>
+                      <div className="flex items-center gap-3 text-[13px] duration-150 opacity-90 group-hover:opacity-100">
+                        <IconDragDrop className= "w-[30px] opacity-80  min-[512px]:mr-7" />
+                        <div className='leading-[1]'>
+                          Elegí un archivo o arrastralo y sueltá aquí <br />
+                          <p className="text-xs mt-1.5 text-[#ffffffbb]"> archivos <b>jpg</b>, <b>png</b> o <b>pdf</b>
+                          </p>
+                        </div>
+                      </div>
+                      {errors && (
+                        <div className={`w-max mb-1 mt-4 mx-auto text-[12.5px] border border-[#ffffff1e] tracking-wide text-[#ffffffee] leading-[1.5] px-2 bg-[#4d70b5] rounded-xl `}>
+                          {errors.maxNumber && (
+                            <span>Cantidad máxima: {maxNumber} archivos</span>
+                          )}
+                          {errors.maxFileSize && (
+                            <span>El tamaño excede el máximo permitido (4 MB)</span>
+                          )}
+                          {errors.acceptType && (
+                            <span>El tipo de archivo no está permitido</span>
+                          )}
+                        </div>
+                      )}
+                      <div className={`absolute w-full h-full outline-1 duration-150 outline-offset-2 outline-dashed outline-[#00000003] ${!images.length ? 'rounded-lg' : 'rounded-t-lg'} ${isDragging ? ' hover:bg-[#ffffff55] ' : "hover:bg-[#ffffff31]"} hover:outline-[#000000ee] hover:border-b-1 hover:border-[#ffffff69] hover:border-dashed `}>
+                      </div>
+                    </div>
+                  </button>
+
                   <div className= "flex flex-col rounded-b-lg bg-[#020b1d] ">
-                    <div className= {`flex items-baseline justify-start px-3 gap-x-2 flex-wrap text-sm w-full cursor-default max-[512px]:justify-center sm:px-9 sm:gap-x-4 `}>
+                    <div className= {`flex items-baseline justify-start px-3 gap-x-4 flex-wrap text-sm w-full cursor-default max-[512px]:justify-center sm:px-9 sm:gap-x-4 `}>
                       { images.map((image, index) => (
                         <div key={index} className="flex flex-col items-start pb-2 pt-2.5">
                           <div className="image-item flex justify-start">
@@ -465,127 +480,20 @@ export default function IniciarTramite( {
                               </div>
                             </div>
                           </div>
-                          <div className="text-xs break-words w-36 text-[#ffffffee] mt-[3px] opacity-60 text-start ">
+                          <div className="text-xs break-words text-[#ffffffee] mt-[3px] opacity-60 text-start ">
                             {image.file?.name } 
                           </div>
                         </div>
                       ))}
                     </div>
                   </div>
-
-                  <button
-                    type="button"
-                    onClick={onImageUpload}
-                    {...dragProps}
-                    className={`group rounded-lg w-full disabled:!cursor-default `}
-                  >
-                    <div className={`relative label-dnd  ${!images.length ? 'rounded-lg' : 'rounded-t-lg'} bg-[#020b1d] text-[#ffffffdd] w-full px-2 py-3 duration-150 text-sm flex flex-col justify-center items-center active:opacity-80 `}>
-                      <div className="flex flex-col items-center duration-150 opacity-90 group-hover:opacity-100 min-[512px]:flex-row ">
-                        <IconDragDrop className= "w-9 opacity-80  min-[512px]:mr-7" />
-                        <div>
-                          Click y elegí un archivo o arrastralo y sueltá aquí <br />
-                          <p className="text-xs mt-1.5 text-[#ffffffbb]">Máximo: <b>{maxNumber} </b> archivos <b>jpg</b>, <b>png</b> o <b>pdf</b> <span className="">(de una sola página)</span> {/*  <br />Tamaño Max de cada archivo: <b>4 MB</b> */}
-                          </p>
-                        </div>
-                      </div>
-                      {errors && (
-                        <div className={`w-max mb-1 mt-4 mx-auto text-[12.5px] border border-[#ffffff1e] tracking-wide text-[#ffffffee] leading-[1.5] px-2 bg-[#4d70b5] rounded-xl `}>
-                          {errors.maxNumber && (
-                            <span>Cantidad máxima: {maxNumber} archivos</span>
-                          )}
-                          {errors.acceptType && (
-                            <span>El tipo de archivo no está permitido</span>
-                          )}
-                          {/* {errors.maxFileSize && (
-                            <span>El tamaño excede el máximo permitido</span>
-                          )} */}
-                          {/* {errors.resolution && (
-                            <span>
-                              La resolución no coincide con la permitida
-                            </span>
-                          )} */}
-                        </div>
-                      )}
-                      <div className={`absolute w-full h-full outline-1 outline-offset-2 outline-dashed outline-[#00000003]  ${isDragging ? ' hover:bg-[#ffffff44] ' : undefined}  ${!images.length ? 'rounded-lg hover:bg-[#ffffff22]' : 'rounded-t-lg hover:bg-[#ffffff22]'} hover:outline-[#000000ee] hover:border-b-1 hover:border-[#ffffff69] hover:border-dashed `}>
-                      </div>
-                    </div>
-                  </button>
-
-                  {/* <button
-                    type="button"
-                    onClick={onImageUpload}
-                    {...dragProps}
-                    className={`hidden group rounded-lg w-full disabled:!cursor-default `}
-                  >
-                    <div className={`relative label-dnd  ${!images.length ? 'rounded-lg' : 'rounded-t-lg'} bg-[#020b1d] text-[#ffffffdd] w-full p-2 duration-150 text-sm flex flex-col justify-center items-center active:opacity-80 sm:p-4 `}>
-                      <div className="flex flex-col items-center duration-150 opacity-80 group-hover:opacity-100 min-[512px]:flex-row ">
-                        <IconDragDrop className= "w-9 opacity-80  min-[512px]:mr-7" />
-                        <div>
-                          Click y elegí un archivo o arrastralo y sueltá aquí <br />
-                          <p className="text-xs mt-1.5 text-[#ffffffbb]">Máximo: <b>{maxNumber}</b> arch. <b>jpg</b>, <b>png</b> o <b>(pdf</b> <span className="">de una sola página)</span>  <br />Tamaño Max de cada archivo: <b>4 MB</b>
-                            </p>
-                        </div>
-                      </div>
-                      
-                      {errors && (
-                        <div className={`w-max mb-1 mt-4 mx-auto text-[12.5px] border border-[#ffffff1e] tracking-wide text-[#ffffffee] leading-[1.5] py-0.5 px-2 bg-[#365491] rounded-xl `}>
-                          {errors.maxNumber && (
-                            <span>Cantidad máxima: {maxNumber} arch.</span>
-                          )}
-                          {errors.acceptType && (
-                            <span>El tipo de archivo no está permitido</span>
-                          )}
-                          {errors.maxFileSize && (
-                            <span>El tamaño excede el máximo permitido</span>
-                          )}
-                          {errors.resolution && (
-                            <span>
-                              La resolución no coincide con la permitida
-                            </span>
-                          )}
-                        </div>
-                      )}
-                      <div className={`absolute w-full h-full outline-2 outline-dashed outline-[#00000003]  ${isDragging ? '!outline-[#000000cc] bg-[#ffffff33] ' : undefined}  ${!images.length ? 'rounded-lg' : 'rounded-t-lg'} hover:outline-[#0000006e] hover:border-b-2 hover:border-[#ffffff69] hover:border-dashed `}>
-                      </div>
-                    </div>
-                  </button>
-                  <div className= "hidden flex-col rounded-b-lg bg-[#020b1d] ">
-                    <div className= {`flex items-baseline justify-start px-3 gap-x-2 flex-wrap text-sm w-full cursor-default max-[512px]:justify-center sm:px-9 sm:gap-x-4`}>
-                      { images.map((image, index) => (
-                        <div key={index} className="flex flex-col pb-4 pt-5">
-                          <div className="image-item flex justify-start">
-
-                            {renderFilePreview( image.file! )} 
-
-                            <div className="flex flex-col text-[13px] justify-end gap-0.5 ">
-                              <div onClick={() => {
-                                onImageUpdate(index)
-                                }} className="border border-[#d9dee8] border-l-0 bg-[#d7d7d7] px-1.5 py-0.5 cursor-pointer rounded-e-md duration-200 text-[#020b1daa] hover:border-[#c0c8d8] hover:text-[#020b1ddd]  hover:bg-[#ffffff] active:bg-[#ffffffaa]  "
-                              >
-                                Cambiar
-                              </div>
-                              <div onClick={() => {
-                                onImageRemove(index)
-                                }} className="border border-[#d9dee8] border-l-0 bg-[#d7d7d7] px-1.5 py-0.5 cursor-pointer rounded-e-md duration-200 text-[#020b1daa] hover:text-[#020b1ddd] hover:border-[#c0c8d8] hover:bg-[#ffffff] active:bg-[#ffffffaa] "
-                                >
-                                Eliminar
-                              </div>
-                            </div>
-                          </div>
-                          <div className="text-xs break-words w-36 text-[#ffffffee] mt-[3px] opacity-80 text-start sm:text-sm sm:w-44">
-                            {documentos?.length && documentos[index].toLocaleUpperCase() }
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div> */}
                 </div>
               )}
             </ImageUploading>
           </Tabs.Content>
 
           <Tabs.Content
-            className="grow rounded-b-md p-2 outline-none text-sm text-[#020b1dcc] sm:p-4 sm:text-[15px]"
+            className="grow rounded-b-md p-2 outline-none text-[13px] text-[#020b1dcc] sm:p-4 sm:text-[15px]"
             value="tab3"
           >
             <fieldset className="w-full mt-1 sm:mt-0">
@@ -596,7 +504,7 @@ export default function IniciarTramite( {
                 Información adicional
               </label>
               <TextareaCnp
-                className="text-sm mt-3 placeholder:opacity-50"
+                className="text-sm mt-3 placeholder:opacity-50 !border-0"
                 id="Información"
                 name="Información"
                 rows={5}
@@ -618,12 +526,11 @@ export default function IniciarTramite( {
         </Tabs.Root>
       </Frente>
 
-
       {/* registrar email tramite */}
       { !user ? (
-        <Frente className="!p-2 mt-2 text-small-regular sm:!p-4 !bg-[#548eff16] ">
-          <div className="flex items-center justify-between gap-2 sm:gap-5 ">
-            <div className="mt-1.5 ">
+        <Frente className="`!px-2 py-3 mt-5 text-small-regular !bg-[#e8edf6ff] sm:!px-4 sm:py-2 `">
+          <div className="flex items-start justify-between gap-3  sm:items-center sm:gap-5 ">
+            <div className="mt-[2px] sm:mt-1.5  ">
               <IconRegistro className=" w-5 ml-1.5 sm:w-6 sm:ml-3" />
             </div>
             
@@ -662,7 +569,7 @@ export default function IniciarTramite( {
               <form action={formActionx}>
                 <fieldset className={`mb-2 grid grid-cols-1 items-center gap-2 md:grid-cols-2 md:mb-4 md:flex-row md:gap-4`}>
                   <InputCnp
-                    className={`text-sm h-8 `}
+                    className={`text-sm h-8 !bg-[#ffffff]`}
                     id="email"
                     type="email"
                     name="email"
@@ -683,7 +590,7 @@ export default function IniciarTramite( {
                   
                   <div className={` ${nameVisitor   && "hidden"}`}>
                     <InputCnp
-                      className={`text-sm h-8`}
+                      className={`text-sm h-8 !bg-[#ffffff]`}
                       id="name"
                       type="text"
                       name="name"
@@ -732,7 +639,7 @@ export default function IniciarTramite( {
                   onClick={() => { 
                     setTimeout(handleClickButtonAuth, 200) 
                   }}
-                  disabled= {(/* nameVisitor || */ name) && email && isEmailValid(`${email}`) ? false : true}
+                  disabled= {( name) && email && isEmailValid(`${email}`) ? false : true}
                 >
                   Enviar
                 </ButtonA>
@@ -741,9 +648,9 @@ export default function IniciarTramite( {
           </div>
         </Frente>
       ) : isEmailVisitor ? (
-        <Frente className={`!p-2 mt-2 text-small-regular sm:!p-4 !bg-[#548eff16] `}>
-          <div className="flex items-center justify-between gap-2 sm:gap-5 ">
-            <div className="mt-1.5 ">
+        <Frente className={`!px-2 py-3 mt-5 text-small-regular !bg-[#e8edf6ff] sm:!px-4 sm:py-2 `}>
+          <div className="flex items-start justify-between gap-3  sm:items-center sm:gap-5 ">
+            <div className="mt-[2px] sm:mt-1.5  ">
               <IconRegistro className="w-5 ml-1.5 sm:w-6 sm:ml-3 " />
             </div>
 
@@ -781,7 +688,7 @@ export default function IniciarTramite( {
             <div className={`pt-2 sm:pt-4 ${!open && "invisible"} `}> 
               <fieldset className={`mb-2 grid grid-cols-1 items-center gap-2 md:grid-cols-2 md:mb-4 md:flex-row md:gap-4`}>
                 <InputCnp
-                  className={`text-sm h-8 `}
+                  className={`text-sm h-8 !bg-[#ffffff]`}
                   id="email"
                   type="email"
                   name="email"
@@ -831,17 +738,17 @@ export default function IniciarTramite( {
           </div>
         </Frente>
       ) : (
-        <Frente className={`flex items-center gap-2.5 py-3 px-2 mt-2 !bg-[#d7e5d9aa] text-small-regular ${estado?.message === "tramiteIniciado" && "hidden"} sm:py-2 sm:px4 sm:gap-5`}>{/*  ${user && "!bg-[#d7e5d9]"} */}
-          <IconRegistro className=" w-5 ml-1.5 mt-1.5 sm:w-6 sm:mt-2 sm:ml-3" />
-          <div className={`w-full text-start text-[13px] text-[#39507f] transition-[opacity] duration-300 sm:text-sm `}>
-            <p>Te enviaré el <b>presupuesto</b> por e-mail a<span className= "underline decoration-[#39507fdd] underline-offset-2 mx-1.5 ">{user.email}. </span></p>
+        <Frente className={`flex items-start gap-2.5 !py-3 px-2 mt-5 !bg-[#e8edf6] text-small-regular ${estado?.message === "tramiteIniciado" && "hidden"} sm:py-2 sm:px4 sm:gap-5 sm:items-center`}>
+          <IconEnvioEmail className=" w-8 ml-1.5 mt-0.5 sm:w-10 sm:ml-3 sm:mt-0" />
+          <div className={`w-full text-start text-[13px] text-[#2e4067] sm:text-sm `}>
+            <p>Te enviaré el <b>presupuesto</b> por e-mail a<span className= "underline decoration-[#39507fdd] underline-offset-2 mx-1.5 ">{user.email} </span></p>
           </div>
         </Frente>
       )}
 
       {estado?.message === "tramiteIniciado" && (
-        <Frente className="!p-2 mt-2 !bg-[#d7e5d9] sm:!p-4 ">
-          <div className={`w-full text-start font-medium text-sm text-[#39507f] transition-[opacity] duration-300 `}>
+        <Frente className="!p-2 mt-5 !bg-[#d7e5d9] sm:!p-4 ">
+          <div className={`w-full text-start text-sm text-[#2e4067] transition-[opacity] duration-300 `}>
             <p className="sm:text-center">Recibí el <b>pedido de presupuesto</b>, te responderé a la mayor brevedad.</p>
             <p className={`mt-2 font-medium ${ user?.email_verified && "hidden"} sm:text-center`}>
               Por favor, revisá el correo electrónico <span className= "underline decoration-[#020b1d81] underline-offset-2 mx-1 ">{user?.email}</span> y enviá la verificación.

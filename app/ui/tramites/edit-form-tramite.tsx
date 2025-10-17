@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import { useFormState } from 'react-dom';
 import { useActionState } from 'react';
 import { CheckIcon, ClockIcon } from '@heroicons/react/24/outline'
 import { Disclosure, DisclosurePanel } from '@headlessui/react'
@@ -33,7 +32,6 @@ export default function EditTramiteForm({
   }) {
 
     const [successState, setSuccessState] = useState(false)
-    const [estado, setEstado] = useState(true)
     const [estadoRegistrar, setEstadoRegistrar] = useState(false)
     const [pago, setPago] = useState("pendiente")
     const [finalizado, setFinalizado] = useState("")
@@ -45,6 +43,7 @@ export default function EditTramiteForm({
     const [impuestos, setImpuestos] = useState("")
 
     // const [validez, setValidez] = useState("7")
+    // const [estado, setEstado] = useState(true)
 
     const { state, close, toggle } = useToggleState()
 
@@ -68,7 +67,6 @@ export default function EditTramiteForm({
 
   const archivosAdjuntos= tramite?.documentos_url
   const archivos: string[] = JSON.parse(`${archivosAdjuntos}`)
-  // const infoAdjuntos: string[] = JSON.parse(tramite?.informacion!)
   const infoAdjuntos= tramite?.informacion!
 
   const initialState: StateUpdateTramite = { message: null, errors: {} };
@@ -99,7 +97,6 @@ export default function EditTramiteForm({
             <div className="font-medium">{userMember?.name} </div>
             <div className="flex text-[13px]">
               <div className="">{userMember?.email}</div>
-              {/* <p className="text-[#020b1daa] ">{userMember?.email}</p> */}
               {!userMember?.email_verified && 
               <span className='ml-2 text-red-700'>no verificado</span>
               }

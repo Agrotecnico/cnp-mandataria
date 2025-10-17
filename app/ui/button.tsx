@@ -23,7 +23,7 @@ export function ButtonA({ children, className, ...rest }: ButtonProps) {
     <button
       {...rest}
       className={clsx(
-        'flex justify-center items-center gap-1 rounded-lg px-4 border border-[#e9dae900] bg-[#39507f] text-[#ffffff] opacity-90 duration-150 ease-in hover:bg-[#31456d] hover:opacity-100 active:opacity-60 focus:outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500 aria-disabled:cursor-not-allowed aria-disabled:opacity-65 disabled:cursor-default disabled:opacity-65 ',
+        'flex justify-center items-center gap-1 rounded-lg px-4 bg-[#31456d] text-[#ffffff] opacity-85 duration-150 ease-in hover:opacity-100 active:opacity-60 focus:outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500 aria-disabled:cursor-not-allowed aria-disabled:opacity-60 disabled:cursor-default disabled:opacity-60 ',
         className,
       )}
     >

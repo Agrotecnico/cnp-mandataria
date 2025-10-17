@@ -3,14 +3,18 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import clsx from 'clsx';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from '@/app/ui/uiRadix/dropdown-menu';
 
 import Dropdown from '@/app/ui/Dropdown';
 import type { Post } from "@/app/lib/definitions"
-import { ButtonA } from '@/app/ui/button';
-import IconPresupuesto from '@/app/ui/logosIconos/icon-presupuesto';
-import IconConsulta from '@/app/ui/logosIconos/icon-consulta';
 import IconMenu from './logosIconos/icon-menu';
-import IconWhatsApp from "@/app/ui/logosIconos/icon-whatsApp";
 
 
 export default  function UserButtonMenuFaq({allPosts}:{allPosts:Post}) {
@@ -19,16 +23,13 @@ export default  function UserButtonMenuFaq({allPosts}:{allPosts:Post}) {
 
   return (
     <div 
-      className={`${pathname.startsWith('/faq') ? "block" : "hidden" }  min-[1024px]:hidden`}
+      className={`${pathname.startsWith('/faq') ? "block" : "hidden" }  lg:hidden`}
       >
       <Dropdown>
         <Dropdown.Button>
-          <div className="flex items-center gap-2  duration-200 opacity-75 hover:opacity-[0.9]">
-            <IconMenu width='18px' className="fill-[#ffffffcc]"/>
-            <p className="text-[13px] leading-[1.1] text-[#fff] font-medium ">
-              FAQ
-            </p>
-          </div>
+          <p className="text-[13px] leading-[1.1] text-[#fff] font-medium duration-200 opacity-80 hover:opacity-95 sm:text-sm">
+            FAQ
+          </p>
         </Dropdown.Button>
 
         <Dropdown.Menu >
@@ -39,18 +40,16 @@ export default  function UserButtonMenuFaq({allPosts}:{allPosts:Post}) {
                   as={`/faq/${post.slug}`}
                   href="/faq/[slug]"
                   key={post.slug}
-                  className={clsx(
-                    'flex items-center justify-start pl-2 pr-4 text-sm text-[#020b1daa] duration-200 rounded-lg hover:text-[#020b1ded] hover:bg-[#548eff16] sm:mx-12 ',
+                  className={clsx('w-full text-sm flex items-center justify-start first:rounded-t-md last:rounded-b-md duration-200 text-[#020b1d88] bg-[#548eff15] [box-shadow:_inset_0_1px_#ffffff,inset_0_-1px_#0000002e] hover:bg-[#548eff1d] hover:text-[#020b1dbb] active:opacity-85',
                     {
-                      'bg-[#548eff17] text-[#020b1dee]': pathname === `/faq/${post.slug}`,
-                    },
+                      'text-[#020b1dba] bg-[#548eff1e] ':  pathname === `/faq/${post.slug}`,
+                    }
                   )}
                 >
                   <Dropdown.MenuItem>
-                    <div className="flex items-start">
-                      <div className="mt-3 mr-2 w-1.5 h-1.5 rounded-full text-transparent bg-[#39507f99]">o</div>
-                      <p className="text-sm py-1.5 text-start ">
-                        {post.excerpt}
+                    <div className="w-full py-2 px-2.5 gap-2 flex items-center justify-start sm:justify-start" >
+                      <p className="text-sm text-start ">
+                      {post.excerpt}
                       </p>
                     </div>
                   </Dropdown.MenuItem>

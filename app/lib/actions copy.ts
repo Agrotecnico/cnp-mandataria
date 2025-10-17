@@ -3,14 +3,16 @@
 import { z } from 'zod';
 import { sql } from '@vercel/postgres';
 import { revalidatePath } from 'next/cache';
-import { redirect } from 'next/navigation';
+import { redirect, useRouter } from 'next/navigation';
 import { signIn } from '@/auth';
 import { AuthError } from 'next-auth';
 import bcrypt from "bcrypt";
 import { emailPresupuesto } from "@/app/lib/brevo/email-presupuesto";
 import { emailRespuesta } from "@/app/lib/brevo/email-respuesta";
 import { emailConfirmRegistro } from "@/app/lib/brevo/email-confirm-registro";
+import { emailConfirmPedido } from "@/app/lib/brevo/email-confirm-pedido";
 import { emailVerification } from "@/app/lib/brevo/email-verification";
+import { nanoid } from "nanoid";
 
 const FormSchema = z.object({
   id: z.string(),
@@ -97,7 +99,7 @@ const FormSchemaVerificationToken = z.object({
 
 const CreateInvoice = FormSchema.omit({ id: true, date: true });
 const CreateCustomer = FormSchemaCustomer.omit({ id: true });
-const CreateUser = FormSchemaUser.omit({ id: true, role: true, password: true, email_verified: true, created_at: true, updated_at: true });
+const CreateUser = FormSchemaUser.omit({ id: true, role: true, password: true,/* , confirmPassword: true, image: true */email_verified: true, created_at: true, updated_at: true });
 const CreateConsulta = FormSchemaConsulta.omit({ created_at: true, respuesta: true,  id: true,  updated_at: true });
 const CreateTramite = FormSchemaTramite.omit({ id: true, presupuesto: true, created_at: true, budgeted_at: true, started_at: true, canceled_at: true, finished_at: true, estado: true });
 const CreateComment = FormSchemaComment.omit({ id: true, created_at: true, deleted_at: true });
@@ -106,10 +108,10 @@ const CreateVerificationToken = FormSchemaVerificationToken;
 
 const UpdateInvoice = FormSchema.omit({ date: true, id: true });
 const UpdateCustomer = FormSchemaCustomer.omit({ id: true });
-const UpdateUser = FormSchemaUser.omit({ role: true, id: true, password: true, image: true, name: true, email_verified: true, created_at: true, updated_at: true });
-const UpdateUserImage = FormSchemaUser.omit({ role: true, id: true, password: true, name: true, email: true, email_verified: true, created_at: true, updated_at: true });
-const UpdateUserName = FormSchemaUser.omit({ role: true, id: true, password: true, image: true, email: true, email_verified: true, created_at: true, updated_at: true });
-const UpdateUserEmail = FormSchemaUser.omit({ role: true, id: true, password: true, image: true, name: true, email_verified: true, created_at: true, updated_at: true });
+const UpdateUser = FormSchemaUser.omit({ role: true, id: true, password: true,/*  confirmPassword: true, */ image: true, name: true, email_verified: true, created_at: true, updated_at: true });
+const UpdateUserImage = FormSchemaUser.omit({ role: true, id: true, password: true,/*  confirmPassword: true, */ name: true, email: true, email_verified: true, created_at: true, updated_at: true });
+const UpdateUserName = FormSchemaUser.omit({ role: true, id: true, password: true, /* confirmPassword: true, */ image: true, email: true, email_verified: true, created_at: true, updated_at: true });
+const UpdateUserEmail = FormSchemaUser.omit({ role: true, id: true, password: true,/*  confirmPassword: true, */ image: true, name: true, email_verified: true, created_at: true, updated_at: true });
 const UpdateConsulta = FormSchemaConsulta.omit({  created_at: true, id: true, email_id: true, archivos_url: true });
 const UpdateTramite = FormSchemaTramite.omit({ created_at: true, id: true, email_id: true, documentos_url: true, tramite: true, informacion: true });
 const UpdateComment = FormSchemaComment.omit({ created_at: true, id: true, comment: true, nombre: true });
@@ -140,6 +142,9 @@ export type StateUser = {
   errors?: {
     name?: string[];
     email?: string[];
+    // password?: string[];
+    // confirmPassword?: string[];
+    // role?: string[] | undefined;
     image?: string[] | undefined;
   };
   message?: string | null;
@@ -213,6 +218,7 @@ export type StateComment = {
     comment?: string[];
     nombre?: string[] | undefined;
     avatar?: string[] | undefined;
+    // deleted_at?: string[] | null;
   };
   message?: string | null;
 };
@@ -221,6 +227,8 @@ export type StateUpdateComment = {
   errors?: {
     email_id?: string[] | undefined;
     post_slug?: string[];
+    // comment?: string[];
+    // deleted_at?: string[] | undefined;
     avatar?: string[] | undefined;
   };
   message?: string | null;
@@ -229,6 +237,10 @@ export type StateUpdateComment = {
 export type StateUpdateCommentEmail = {
   errors?: {
     email_id?: string[] | undefined;
+    // post_slug?: string[];
+    // comment?: string[];
+    // deleted_at?: string[] | undefined;
+    // avatar?: string[] | undefined;
   };
   message?: string | null;
 };
@@ -474,6 +486,8 @@ export async function updateConsulta(
   formData: FormData,
 ) {
   const validatedFields = UpdateConsulta.safeParse({
+    // name: formData.get('name'),
+    // email: formData.get('email'),
     consulta: formData.get('consulta'),
     respuesta: formData.get('respuesta'),
     updated_at: formData.get('updated_at'),
@@ -817,6 +831,7 @@ export async function createComment(prevStateComment: StateComment, formData: Fo
     email_id: formData.get('email_id'),
     post_slug: formData.get('post_slug'),
     comment: formData.get('comment'),
+    // deleted_at: formData.get('deleted_at'),
     nombre: formData.get('nombre'),
     avatar: formData.get('avatar'),
   });
@@ -833,9 +848,12 @@ export async function createComment(prevStateComment: StateComment, formData: Fo
   }
 
   // Prepare data for insertion into the database
-  const { email_id, post_slug, comment, nombre, avatar } = validatedFields.data;
+  const { email_id, post_slug, /* deleted_at, */ comment, nombre, avatar } = validatedFields.data;
 
   const emailToken= email_id === "" ? `${token}@cnpmandataria.com` : email_id
+  // const emailToken= email_id === "" ? `comment@gmail.com` : email_id
+
+  // const date= new Date('2024-01-01 00:00:00+00').toString()
 
   const date=  null
   const avatarNull= avatar === "" ? null : avatar 
@@ -859,6 +877,9 @@ export async function createComment(prevStateComment: StateComment, formData: Fo
   // Revalidate the cache for the invoices page and redirect the user.
   revalidatePath(`${pathname}`);
   redirect(`${pathname}`);
+
+  // revalidatePath('/dashboard/tusConsultas');
+  // redirect('/dashboard/tusConsultas');
 
 }
 export async function updateCommentEmail(
@@ -931,6 +952,7 @@ export async function updateCommentAvatar(
   redirect(`/faq/${post_slug}`);
 }
 
+
 export async function updateComment(
   id2: string,
   prevStateStateComment: StateUpdateComment,
@@ -988,8 +1010,6 @@ export async function updateCommentDelete(
     return { message: 'Database Error: No se pudo actualizar el comentario.' };
   }
 }
-
-
 export async function updateCommentComment(
   id: string
 ) {

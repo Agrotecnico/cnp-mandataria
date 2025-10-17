@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import clsx from 'clsx';
 
-import { Frente } from '@/app/ui/marcos';
 import { usePathname } from 'next/navigation';
 import type { Post } from "@/app/lib/definitions"
 
@@ -12,26 +11,24 @@ export default function NavLinksConsultas({allPosts}:{allPosts:Post}) {
   const pathname = usePathname();
   
   return (
-    <div className="flex flex-col gap-[1px]">
+    <div className="flex flex-col">
       {allPosts.length ? (
         allPosts.map((post:Post) => (
           <Link
             as={`/faq/${post.slug}`}
             href="/faq/[slug]"
             key={post.slug}
-            className={clsx(
-              'flex items-center justify-start pl-2 pr-4 text-sm text-[#020b1dbb] duration-200 rounded-[4px] hover:text-[#020b1d] hover:bg-[#548eff13]',
+            className={clsx('w-full text-sm flex items-center justify-start first:rounded-l-md last:rounded-r-md duration-150 text-[#020b1daa] bg-[#e8edf6ff] [box-shadow:_inset_0_1px_#ffffff,inset_0_-1px_#0000002e] hover:bg-[#ffffffae] hover:text-[#020b1ddd] md:first:rounded-bl-none md:last:rounded-tr-none md:first:rounded-t-md md:last:rounded-b-md active:opacity-80',
               {
-                'bg-[#548eff12] text-[#020b1e]': pathname === `/faq/${post.slug}`,
-              },
+                'text-[#020b1ddc] bg-[#ffffffae] ':  pathname === `/faq/${post.slug}`,
+              }
             )}
           >
-            <div className="flex items-start">
-              <div className="mt-3 mr-2 w-1.5 h-1.5 rounded-full text-transparent bg-[#39507f77]">o</div>
-              <p className="text-sm py-1.5 text-start ">
-                {post.excerpt}
+            <button className="w-full py-2 px-2.5 gap-2 flex flex-col items-center justify-center sm:flex-row sm:justify-start" >
+              <p className="text-sm text-start ">
+              {post.excerpt}
               </p>
-            </div>
+            </button>
           </Link>
         ))
       ) : (

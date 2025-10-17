@@ -1,6 +1,6 @@
 import Image from 'next/image'
 
-import { formatDateToLocal, formatCurrency } from '@/app/lib/utils';
+import { formatDateToLocal } from '@/app/lib/utils';
 import { UpdateConsulta } from '@/app/ui/consultas/buttons';
 import Search from '@/app/ui/search';
 import { fetchFilteredConsultas } from '@/app/lib/data';
@@ -8,15 +8,12 @@ import distanceToNow from '@/app/lib/dateRelative';
 import DeleteConsulta from "@/app/ui/consultas/delete-consulta"
 import IconConsulta from '../logosIconos/icon-consulta';
 import IconRespuesta from '../logosIconos/icon-respuesta'
-import { User } from "@/app/lib/definitions"
 
 
 export default async function TableConsultaAdmin({
-  // user,
   query,
   currentPage,
 }: {
-  // user: User | undefined;
   query: string;
   currentPage: number;
 }) {
@@ -73,8 +70,7 @@ export default async function TableConsultaAdmin({
 
                 <div className="flex flex-col w-full  py-2 gap-2 border-y border-[#020b1d14]">
                   <div className={`flex items-center `}>
-                    {/* <div className="mr-2 px-[5px] bg-[#dd00dd00] rounded-[4px]">&#10003;</div> */}
-                    <IconConsulta color="#ffffff"  color2="#39507fdd" size="17"  className="mr-2"/>
+                    <IconConsulta color="#39507fcc"  color2="#ffffff" size="17"  className="mr-2"/>
                     <div className={``}>
                       Consulta realizada 
 
@@ -88,9 +84,7 @@ export default async function TableConsultaAdmin({
                   </div>
 
                   <div className={`flex items-center `}>
-                    {/* <div className={`mr-2 px-[5px] rounded-[4px]  ${!AllConsulta.respuesta && "text-[#ffffff] bg-[#e580d0]"}`}>&#10003;</div> */}
-
-                    {AllConsulta.respuesta ? <IconRespuesta color="#ffffff" color2="#39507fdd" size="17"  className="mr-2"/> : <IconRespuesta color="#ffffff" color2="#548eff" size="18"  className="mr-2 scale-x-[-1]"/>}
+                    {AllConsulta.respuesta ? <IconRespuesta color="#ffffff" color2="#39507fdd" size="17"  className="mr-2"/> : <IconRespuesta color="#ffffff" color2="#548eff" size="17"  className="mr-2 scale-x-[-1]"/>}
 
                     { AllConsulta.respuesta  ? (
                       <div className={``}>

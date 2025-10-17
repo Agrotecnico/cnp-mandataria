@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-// import { useFormState } from 'react-dom';
 import { useActionState } from 'react';
 import clsx from 'clsx';
 import { useState, useRef } from 'react';
@@ -10,7 +9,7 @@ import { Consulta } from '@/app/lib/definitions';
 import { Button, ButtonA } from '@/app/ui/button';
 import { handleFormRespuesta, updateConsulta, StateUpdateConsulta } from '@/app/lib/actions';
 import { User } from '@/app/lib/definitions';
-import { formatDateToLocal, formatCurrency } from '@/app/lib/utils';
+import { formatDateToLocal } from '@/app/lib/utils';
 import { Frente } from '@/app/ui/marcos';
 import { TextareaCnp } from "@/app/ui/uiRadix/textarea-cnp";
 import IconEnvioEmail from '../logosIconos/icon-envio-email';
@@ -20,7 +19,6 @@ import {InputCnp} from "@/app/ui/uiRadix/input-cnp"
 import IconCuenta from "@/app/ui/logosIconos/icon-cuenta"
 import IconEmail2 from "@/app/ui/logosIconos/icon-email2";
 import IconAdjunto from "@/app/ui/logosIconos/icon-adjunto";
-import { Span } from 'next/dist/trace';
 
 
 export default function EditConsultaForm({
@@ -32,7 +30,6 @@ export default function EditConsultaForm({
 }) {
 
   const [estado, setEstado] = useState(false)
-  const [estadoRespuesta, setEstadoRespuesta] = useState(false)
   const [estadoRegistrar, setEstadoRegistrar] = useState(false)
   const [estadoAdjunto, setEstadoAdjunto] = useState(false)
 
@@ -41,8 +38,6 @@ export default function EditConsultaForm({
 
   const archivosAdjuntos= consulta.archivos_url
   const archivos: string[] = JSON.parse(`${archivosAdjuntos}`)
-  // const infoAdjuntos: string[] = JSON.parse(tramite?.informacion!)
-  // const infoAdjuntos= consulta?.informacion!
 
   const consultaA:string[] | undefined= consulta.consulta.split(": ")
 
@@ -82,7 +77,6 @@ export default function EditConsultaForm({
           <div className=" text-sm">
             <div className="font-medium">{userMember?.name} </div>
             <div className="flex text-[13px]">
-              {/* <span>{userMember?.email}</span> */}
               <p className="text-[#020b1daa] ">{userMember?.email}</p>
               {!userMember?.email_verified && 
               <span className='ml-2 text-red-600'>no verificado</span>
@@ -124,7 +118,6 @@ export default function EditConsultaForm({
               <div className="text-[#020b1ddd] bg-[#020b1d] rounded flex gap-5 items-baseline ">
                 {archivos?.map((archivo, index) => (
                   <div key={index } className=" text-[13px] leading-[18px] opacity-80 hover:opacity-100 ">
-                    
                     <Link 
                       href={archivo.slice(-4) === ".pdf" ? 
                         archivo.replace(".pdf", ".png") 
@@ -154,7 +147,7 @@ export default function EditConsultaForm({
         <Frente className="p-3 mb-2 text-sm sm:p-4" >
           <div className="w-full items-center flex gap-3 justify-end sm:mb-0">
             <div className="flex gap-4 w-full">
-              <IconConsulta  className="w-5 h-5" color="#ffffff" color2="#39507fcc" />
+              <IconConsulta  className="w-5 h-5" color="#39507fcc" color2="#ffffff" />
               <p className={`font-medium text-[14px] text-[#39507fdd]`}>
                 CONSULTA 
                 <span className="text-[13px]" > - {formatDateToLocal(consulta.created_at)}</span>
@@ -168,7 +161,7 @@ export default function EditConsultaForm({
               data-active={estado}
               type='button'
             >
-              {estado ? "Cerrar" /* : consulta.respuesta ? <div><span className="text-[12px] uppercase">Ver</span></div> */ : <div><span className="text-[12px] uppercase">Ver</span></div> }
+              {estado ? "Cerrar" : <div><span className="text-[12px] uppercase">Ver</span></div> }
             </Button>
           </div>
 
@@ -444,8 +437,6 @@ export default function EditConsultaForm({
                       </div>
                     </TextareaCnp>
                   </fieldset>
-
-                  
                 </div>
 
                 <button 
