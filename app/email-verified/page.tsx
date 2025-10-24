@@ -1,11 +1,12 @@
 import { useActionState } from 'react';
 
-
-import EmailVerified from '../ui/email-verified';
+import { auth } from 'auth';
+import EmailVerified from '@/app/ui/email-verified';
+import { fetchUserByEmail, fetchCommentLast } from '@/app/lib/data';
 
 
 // function  PaginaVerificaciónEmail() {
-export default function Page() {
+export default async function Page() {
     
   return (
     <div>

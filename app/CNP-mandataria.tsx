@@ -1,23 +1,15 @@
 'use client';
 
-// Import Swiper React components
 import { Swiper, SwiperSlide } from 'swiper/react';
 import Link from 'next/link';
-
-// Import Swiper styles
 import 'swiper/css';
 import 'swiper/css/zoom';
 import 'swiper/css/effect-fade';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import './styles.css';
-import NavInicio from '@/app/ui/navInicio';
-import FooterInicio from '@/app/ui/footerInicio';
-import IconTiempo from '@/app/ui/logosIconos/icon-tiempo';
-import IconConocimiento from '@/app/ui/logosIconos/icon-conocimiento';
-import IconSeguridad from '@/app/ui/logosIconos/icon-seguridad';
-import { agrotecnico, agrotecnico2, tramites1, tramites2, tramites3, } from '@/app/constant';
 import Image from 'next/image'
+import { useSession } from "next-auth/react"
 import {
   Keyboard,
   Scrollbar,
@@ -29,16 +21,20 @@ import {
   EffectFade,
   Parallax,
 } from 'swiper/modules';
-import { Frente, Fondo } from '@/app/ui/marcos';
-import { useSession } from "next-auth/react"
-import { User } from '@/app/lib/definitions';
-import  IconWhatsApp2  from "@/app/ui/logosIconos/icon-whatsApp2";
 import { ChevronRightIcon, } from '@heroicons/react/24/outline';
-import IconPresupuesto from './ui/logosIconos/icon-presupuesto';
-import IconConsulta from './ui/logosIconos/icon-consulta';
-import IconLink from './ui/logosIconos/icon-link';
 
-
+import NavInicio from '@/app/ui/navInicio';
+import FooterInicio from '@/app/ui/footerInicio';
+import IconTiempo from '@/app/ui/logosIconos/icon-tiempo';
+import IconConocimiento from '@/app/ui/logosIconos/icon-conocimiento';
+import IconSeguridad from '@/app/ui/logosIconos/icon-seguridad';
+import IconPresupuesto from '@/app/ui/logosIconos/icon-presupuesto';
+import IconConsulta from '@/app/ui/logosIconos/icon-consulta';
+import IconLink from '@/app/ui/logosIconos/icon-link';
+import  IconWhatsApp2  from "@/app/ui/logosIconos/icon-whatsApp2";
+import { agrotecnico, agrotecnico2, tramites1, tramites2, tramites3, } from '@/app/constant';
+import { Frente, Fondo } from '@/app/ui/marcos';
+import { User } from '@/app/lib/definitions';
 
 
 export default function CNPMandataria({
@@ -117,6 +113,7 @@ export default function CNPMandataria({
           
         </Link>
       </div>
+
 
       {/* Inicio */}
       <SwiperSlide id="ini" className= "">
@@ -206,7 +203,7 @@ export default function CNPMandataria({
                       <p className="flex justify-center mb-1 w-full text-center">
                         Podés
                         <Link href={session?.user.role === "admin" ? '/dashboard/consultas' : '/realizar-consulta'}  className="flex px-1.5 rounded-md duration-200 underline decoration-[#1d021581] underline-offset-2 hover:decoration-[#1d0215] hover:underline-offset-[3px] hover:text-[#020b1d] ">
-                          {session?.user.role === "admin" ? "ver las consultas" : "realizá una consulta" }
+                          {session?.user.role === "admin" ? "ver las consultas" : "realizár una consulta" }
                           {/* <IconLink size="13px" className="ml-1"/> */}
                         </Link>
                       </p>
@@ -565,7 +562,7 @@ export default function CNPMandataria({
       {/* Consultas */}
       <SwiperSlide id="cp" className="" >
         <div className="flex flex-col items-center justify-center w-full h-[70vh] gap-[7%]">
-          <Fondo className="p-2 mx-2 sm:p-4">
+          <Fondo className="!bg-[#d9e1f0] p-2 mx-2 sm:p-4">
             <div className="mb-1.5 w-full text-[17px] text-center font-medium sm:text-xl sm:mt-2.5 sm:mb-4">
               CONSULTAS FRECUENTES
             </div>

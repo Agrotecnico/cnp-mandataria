@@ -115,18 +115,34 @@ export async function fetchCardDataMember(email: string) {
   try {
     const consultaCountPromise = sql`SELECT COUNT(*) FROM consultas WHERE email_id = ${email}`;
     const tramiteCountPromise = sql`SELECT COUNT(*) FROM tramites WHERE email_id = ${email}`;
+    const respondidaCountPromise = sql`
+      SELECT COUNT(*) 
+      FROM consultas 
+      WHERE email_id = ${email} AND respuesta != 'null'`;
+    const terminadoCountPromise = sql`
+      SELECT COUNT(*) 
+      FROM tramites 
+      WHERE email_id = ${email} AND estado = 'terminado' OR
+            email_id = ${email} AND estado = 'cancelado'
+    `;
 
     const data = await Promise.all([
       consultaCountPromise,
       tramiteCountPromise,
+      respondidaCountPromise,
+      terminadoCountPromise,
     ]);
 
     const numberOfConsultas = Number(data[0].rows[0].count ?? '0');
     const numberOfTramites = Number(data[1].rows[0].count ?? '0');
+    const numberOfRespondidas = Number(data[2].rows[0].count ?? '0');
+    const numberOfTerminados = Number(data[3].rows[0].count ?? '0');
 
     return {
       numberOfConsultas,
       numberOfTramites,
+      numberOfRespondidas,
+      numberOfTerminados,
     };
   } catch (error) {
     console.error('Database Error:', error);

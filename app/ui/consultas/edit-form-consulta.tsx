@@ -94,7 +94,7 @@ export default function EditConsultaForm({
             </div>
 
             <Button
-              className="relative h-[30px] rounded-md border border-[hsl(220,25%,88%)] min-h-[24px] w-[72px] justify-center bg-[#ffffffaa] !px-2.5 py-1 text-[13px] !font-normal text-[#020b1daa] hover:bg-[#ffffff] hover:text-[#020b1ddd] hover:border-[#c0c8d8] active:!bg-[#eee]"
+              className="relative h-[30px] rounded-md border border-[#548eff33)] min-h-[24px] w-[72px] justify-center bg-[#ffffffaa] !px-2.5 py-1 text-[13px] !font-normal text-[#020b1daa] hover:bg-[#ffffff] hover:text-[#020b1ddd] hover:border-[#548eff66] active:!bg-[#eee]"
               onClick={() => { setEstadoAdjunto(!estadoAdjunto)}}
               data-testid="edit-button"
               data-active={estadoAdjunto}
@@ -106,15 +106,15 @@ export default function EditConsultaForm({
 
           <div
             className={clsx(
-              "transition-[max-height,opacity] duration-300 ease-in-out overflow-visible",
+              "transition-[max-height,opacity] duration-300 ease-in-out overflow-visible p-3 bg-[#020b1d] rounded-lg ",
               {
-                "max-h-[1000px] opacity-100 ": estadoAdjunto,
-                "max-h-0 opacity-0 ": !estadoAdjunto,
+                "max-h-[1000px] opacity-100 mt-4 ": estadoAdjunto,
+                "max-h-0 opacity-0 mt-0 p-0 ": !estadoAdjunto,
                 "invisible": !estadoAdjunto,
               }
             )}
           >
-            <div className={`flex flex-wrap mt-0 mb-3 gap-2 ${estadoAdjunto && "mt-4"}`}>
+            <div className={`flex flex-wrap gap-2`}>{/*  ${estadoAdjunto && "mt-4"} */}
               <div className="text-[#020b1ddd] bg-[#020b1d] rounded flex gap-5 items-baseline ">
                 {archivos?.map((archivo, index) => (
                   <div key={index } className=" text-[13px] leading-[18px] opacity-80 hover:opacity-100 ">
@@ -155,7 +155,7 @@ export default function EditConsultaForm({
             </div>
 
             <Button
-              className="relative h-[30px] rounded-md border border-[#e9dae9] min-h-[24px] w-[72px] justify-center bg-[#ffffffaa] !px-2.5 py-1 text-[13px] !font-normal text-[#020b1daa] hover:bg-[#ffffff] hover:text-[#020b1ddd] hover:border-[#d8c0d7] active:!bg-[#eee]"
+              className="relative h-[30px] rounded-md border border-[#548eff33] min-h-[24px] w-[72px] justify-center bg-[#ffffffaa] !px-2.5 py-1 text-[13px] !font-normal text-[#020b1daa] hover:bg-[#ffffff] hover:text-[#020b1ddd] hover:border-[#5483ff66] active:!bg-[#eee]"
               onClick={() => { setEstado(!estado)}}
               data-testid="edit-button"
               data-active={estado}
@@ -191,7 +191,7 @@ export default function EditConsultaForm({
           <div className="w-full items-center flex gap-3 justify-end sm:mb-0">
             <div className={`flex gap-4 w-full text-[15px] sm:text-base`}>
                {!consulta.updated_at ? (
-                  <p className={`flex items-center font-medium text-[14px]`}>
+                  <p className={`flex items-center font-medium text-[#39507fdd] text-[14px]`}>
                     <IconRespuesta color="#ffffff" color2="#80a2e5" size="20"  className="mr-4 scale-x-[-1]"/>
                     ENVIAR RESPUESTA
                   </p>

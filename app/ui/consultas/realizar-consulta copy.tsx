@@ -4,8 +4,7 @@ import { FormEvent, useState, useEffect, useRef, useActionState } from 'react';
 import { ExclamationCircleIcon } from '@heroicons/react/24/outline'
 import { Disclosure, DisclosurePanel } from '@headlessui/react';
 import clsx from 'clsx';
-import {  usePathname, useSearchParams, redirect  } from 'next/navigation';
-import 'react-toastify/dist/ReactToastify.css';
+import {  usePathname } from 'next/navigation';
 
 import { createConsulta, createVerificationToken, StateConsulta, StateVerificationToken, updateUserEmail, StateUserEmail, updateCommentEmail, StateUpdateCommentEmail,  createUser, StateUser, authenticate, authenticate2, handleFormPedido } from '@/app/lib/actions';
 import { Frente } from '@/app/ui/marcos';
@@ -52,13 +51,6 @@ export default function RealizarConsulta({
   const [consultaDisabled, setConsultaDisabled] = useState(false);
 
   const pathname = usePathname();
-
-  // const searchParams = useSearchParams();
-  // const isVerified = searchParams.get('verified') === 'true' ? true : false;
-  // const callbackUrl = '/dashboard';
-
-
-
   const tokenx= nanoid()
   const isEmailVisitor= user?.email.slice(16) === "@cnpmandataria.com"
   const id= user?.email!
@@ -243,15 +235,12 @@ export default function RealizarConsulta({
       ); 
     }
   }
-  
 
   useEffect(() => {
     if (successState) {
       close()
     }
-
     setToken(tokenx)
-
   }, [])
 
   const onChange = (imageList: ImageListType, addUpdateIndex: Array<number> | undefined) => {
@@ -277,12 +266,12 @@ export default function RealizarConsulta({
   const updateCommentEmailWithId = updateCommentEmail.bind(null, id);
   const [estadoxxxx, formActionxxxx, isPendingxxxx] = useActionState(updateCommentEmailWithId, initialStatexxxx);
 
-  // console.log("isVerified", isVerified)
+  // console.log("files", files)
 
 
   return (
     <>
-      <Frente className=" p-2 text-small-regular sm:p-4 !bg-[#d9e1f0] ">
+      <Frente className=" p-2 text-small-regular sm:p-4 !bg-[#548eff16] ">
         <div className="flex items-center justify-between sm:flex-row" >
           <div className="relative flex items-center gap-2.5 sm:gap-5">
             <IconConsulta 
@@ -329,7 +318,9 @@ export default function RealizarConsulta({
       </Frente>
 
       {/* adjuntar archivos */}
-      <Frente className=" p-2 mt-2 text-small-regular sm:p-4 !bg-[#d9e1f0] ">
+      <Frente 
+       className=" p-2 mt-2 text-small-regular sm:p-4 !bg-[#548eff16] "
+      >
         <div className="flex items-center justify-between sm:flex-row" >
           <div className="relative flex items-center gap-2.5 sm:gap-5">
             <IconAdjunto className=" ml-1.5 w-[22px] sm:ml-3 sm:w-[27px]" />
@@ -383,7 +374,7 @@ export default function RealizarConsulta({
                 dragProps,
                 errors,
               }) => (
-                <div className={`flex flex-col ${!images.length ? 'gap-0' : 'gap-1.5'} ${!state && "invisible"}`} >
+                <div className={`flex flex-col bg-[#020b1da3] rounded-lg ${!images.length ? 'gap-0' : 'gap-[1px]'} ${!state && "invisible"}`} >
                   <button
                     type="button"
                     onClick={onImageUpload}
@@ -391,17 +382,17 @@ export default function RealizarConsulta({
                     className={`group rounded-lg w-full disabled:!cursor-default `}
                     disabled= {!state}
                   >
-                    <div className={`relative label-dnd  ${!images.length ? 'rounded-lg' : 'rounded-t-lg'} bg-[#ffffffd7] text-[#020b1ddd] w-[calc(100%_-_8px)] mx-auto px-2 py-3 duration-150 flex flex-col justify-center items-center `}>
-                      <div className="flex items-center gap-3 text-[13px] duration-150 sm:text-sm">
-                        <IconDragDrop className= "w-[30px]  min-[512px]:mr-7" />
-                        <div className='leading-[1]'>
+                    <div className={`relative label-dnd  ${!images.length ? 'rounded-lg' : 'rounded-t-lg'} bg-[#020b1d] text-[#ffffffdd] w-full px-2 py-3 duration-150 text-sm flex flex-col justify-center items-center active:opacity-80 `}>
+                      <div className="flex flex-col items-center duration-150 opacity-90 group-hover:opacity-100 min-[512px]:flex-row ">
+                        <IconDragDrop className= "w-[30px] opacity-80  min-[512px]:mr-7" />
+                        <div>
                           Elegí un archivo o arrastralo y sueltá aquí <br />
-                          <p className="text-xs mt-1.5 "> archivos <span className='font-medium'>jpg</span >, <span className='font-medium'>png</span > o <span className='font-medium' >pdf</span >
+                          <p className="text-xs mt-1.5 text-[#ffffffbb]"> archivos <b>jpg</b>, <b>png</b> o <b>pdf</b>
                           </p>
                         </div>
                       </div>
                       {errors && (
-                        <div className={`w-max mb-1 mt-4 mx-auto text-[12.5px] border border-[#ffffff1e] tracking-wide text-[#ffffffee] leading-[1.5] px-2 bg-[#4d70b5] rounded-xl `}>
+                        <div className={`w-max mb-1 mt-4 mx-auto text-[12.5px] ${!state && "hidden"} border border-[#ffffff1e] tracking-wide text-[#ffffffee] leading-[1.5] px-2 bg-[#4d70b5] rounded-xl `}>
                           {errors.maxNumber && (
                             <span>Cantidad máxima: {maxNumber} archivos</span>
                           )}
@@ -413,9 +404,7 @@ export default function RealizarConsulta({
                           )}
                         </div>
                       )}
-                      <div 
-                        className={`absolute mx-auto w-[calc(100%_+_2px)] h-full bg-[#548eff10] outline-1 duration-150 outline-offset-2 outline-dashed outline-[#00000070] ${isDragging ? ' hover:bg-[#4369b566] rounded-lg hover:outline-[#000000ee] ' : !images.length ? " hover:bg-[#ffffff00] hover:outline-[#000000ee] rounded-lg  " : " hover:bg-[#ffffff00] hover:outline-[#000000ee] rounded-t-lg" }`}
-                        >
+                      <div className={`absolute w-full h-full outline-1 duration-150 outline-offset-2 outline-dashed outline-[#00000003] ${!images.length ? 'rounded-lg' : 'rounded-t-lg'} ${isDragging ? ' hover:bg-[#ffffff55] ' : "hover:bg-[#ffffff31]"} hover:outline-[#000000ee] hover:border-b-1 hover:border-[#ffffff69] hover:border-dashed `}>
                       </div>
                     </div>
                   </button>
@@ -428,16 +417,16 @@ export default function RealizarConsulta({
 
                             {renderFilePreview( image.file! )} 
 
-                            <div className="flex flex-col text-[12px] justify-end gap-[1px] ">
+                            <div className="flex flex-col text-[13px] justify-end gap-0.5 ">
                               <div onClick={() => {
                                 onImageUpdate(index)
-                                }} className="border border-[#e9dae9] border-l-0 bg-[#d7d7d7] px-1.5 cursor-pointer rounded-e-md duration-200 text-[#1d0215aa] hover:border-[#d8c0d7] hover:text-[#1d0215dd]  hover:bg-[#ffffff] active:bg-[#ffffffaa]  "
+                                }} className="border border-[#e9dae9] border-l-0 bg-[#d7d7d7] px-1.5 py-0.5 cursor-pointer rounded-e-md duration-200 text-[#1d0215aa] hover:border-[#d8c0d7] hover:text-[#1d0215dd]  hover:bg-[#ffffff] active:bg-[#ffffffaa]  "
                               >
                                 Cambiar
                               </div>
                               <div onClick={() => {
                                 onImageRemove(index)
-                                }} className="border border-[#e9dae9] border-l-0 bg-[#d7d7d7] px-1.5 cursor-pointer rounded-e-md duration-200 text-[#1d0215aa] hover:text-[#1d0215dd] hover:border-[#d8c0d7] hover:bg-[#ffffff] active:bg-[#ffffffaa] "
+                                }} className="border border-[#e9dae9] border-l-0 bg-[#d7d7d7] px-1.5 py-0.5 cursor-pointer rounded-e-md duration-200 text-[#1d0215aa] hover:text-[#1d0215dd] hover:border-[#d8c0d7] hover:bg-[#ffffff] active:bg-[#ffffffaa] "
                                 >
                                 Eliminar
                               </div>
@@ -459,7 +448,7 @@ export default function RealizarConsulta({
 
       {/* registrar email consulta */}
       { !user ? (
-        <Frente className={`!px-2 py-3 mt-5 text-small-regular !bg-[#e5ebf5] sm:!px-4 sm:py-2 `}>
+        <Frente className={`!px-2 py-3 mt-5 text-small-regular !bg-[#e8edf6ff] sm:!px-4 sm:py-2 `}>
           <div className="flex items-start justify-between gap-3 sm:items-center sm:gap-5 ">
             <div className="mt-[2px] sm:mt-1.5 ">
               <IconRegistro className="w-5 ml-1.5 sm:w-6 sm:ml-3 " />
@@ -475,7 +464,7 @@ export default function RealizarConsulta({
               className={`h-8 text-[13px]  w-max`}
               onClick={() => { 
                 setOpen(!open); 
-                setEmail(""); 
+                // setEmail(""); 
                 setName("");
               }}
 
@@ -497,76 +486,77 @@ export default function RealizarConsulta({
           >
             {/* create user */}
             <div className={`pt-2 sm:pt-4 ${!open && "invisible"} `}> 
-              <form action={formActionx}>
-                <fieldset className={`mb-2 grid grid-cols-1 items-center gap-2 md:grid-cols-2 md:mb-4 md:flex-row md:gap-4`}>
-                  <InputCnp
-                    className={`text-sm h-8 !bg-[#ffffff] `}
-                    id="email"
-                    type="email"
-                    name="email"
-                    minLength={3}
-                    maxLength={100}
-                    value={email}
-                    placeholder= "Email"
-                    required
-                    disabled={ !open }
-                    onChange={(e) => {
-                      setEmail(e.target.value);
-                    }} 
-                    >
-                    <div className="absolute rounded-l-[4px] h-[32px] w-[32px] left-0 top-0 bg-[#020b1d0b]" >
-                    </div>
-                    <IconEmail2  className="absolute w-[14px] left-[9px] top-[9px] " color="#39507faa" />
-                  </InputCnp>
-                  
-                  <InputCnp
-                    className={`text-sm h-8 !bg-[#ffffff]`}
-                    id="name"
-                    type="text"
-                    name="name"
-                    minLength={3}
-                    maxLength={100}
-                    value={ name }
-                    placeholder= "Nombre"
-                    required
-                    disabled={ !open }
-                    onChange={(e) => {
-                      setName(e.target.value);
-                    }} >
-                    <div className="absolute rounded-l-[4px] h-[32px] w-[32px] left-0 top-0 bg-[#020b1d0b]" >
-                    </div>
-                    <IconCuenta  className="absolute w-[14px] left-[9px] top-[9px] " color="#39507faa" />
-                  </InputCnp>
+              <fieldset className={`mb-2 grid grid-cols-1 items-center gap-2 md:grid-cols-2 md:mb-4 md:flex-row md:gap-4`}>
+                <InputCnp
+                  className={`text-sm h-8 !bg-[#ffffff] `}
+                  id="email"
+                  type="email"
+                  name="email"
+                  minLength={3}
+                  maxLength={100}
+                  value={email}
+                  placeholder= "Email"
+                  required
+                  disabled={ !open }
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                  }} 
+                  >
+                  <div className="absolute rounded-l-[4px] h-[32px] w-[32px] left-0 top-0 bg-[#020b1d0b]" >
+                  </div>
+                  <IconEmail2  className="absolute w-[14px] left-[9px] top-[9px] " color="#39507faa" />
+                </InputCnp>
+                
+                <InputCnp
+                  className={`text-sm h-8 !bg-[#ffffff]`}
+                  id="name"
+                  type="text"
+                  name="name"
+                  minLength={3}
+                  maxLength={100}
+                  value={ name }
+                  placeholder= "Nombre"
+                  required
+                  disabled={ !open }
+                  onChange={(e) => {
+                    setName(e.target.value);
+                  }} >
+                  <div className="absolute rounded-l-[4px] h-[32px] w-[32px] left-0 top-0 bg-[#020b1d0b]" >
+                  </div>
+                  <IconCuenta  className="absolute w-[14px] left-[9px] top-[9px] " color="#39507faa" />
+                </InputCnp>
 
-                  <input
-                    type="hidden"
-                    id="image"
-                    name="image"
-                    value={ "" }
-                    readOnly
-                  />
-                  <input type="hidden" name="pathname" value={pathname} readOnly />
-                </fieldset>
+                <input
+                  type="hidden"
+                  id="image"
+                  name="image"
+                  value={ "" }
+                  readOnly
+                />
+                <input type="hidden" name="pathname" value={pathname} readOnly />
+              </fieldset>
 
-                {/* Massages erros */}
-                <div
-                  className="flex items-end relative space-x-8"
-                  aria-live="polite"
-                  aria-atomic="true"
-                >
-                  {estadox?.message && (
-                    <>
-                      <ExclamationCircleIcon className="absolute top-4 h-5 w-5 text-red-500" />
-                      <p className="pt-4 text-sm text-red-500">{estadox?.message}</p>
-                    </>
-                  )}
-                </div>
+              {/* Massages erros */}
+              <div
+                className="flex items-end relative space-x-8"
+                aria-live="polite"
+                aria-atomic="true"
+              >
+                {estadox?.message && (
+                  <>
+                    <ExclamationCircleIcon className="absolute top-4 h-5 w-5 text-red-500" />
+                    <p className="pt-4 text-sm text-red-500">{estadox?.message}</p>
+                  </>
+                )}
+              </div>
 
-                {/* button submit */}
+              {/* button submit */}
+              <form action={formActionx}>  
                 <ButtonA
                   className={`${(isPendingx || isPendingAuth) && "before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_1s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/30 before:to-transparent"}  relative overflow-hidden  h-8 text-[13px] w-max ml-auto ${!open && "hidden"} disabled:!opacity-60`}
                   onClick={() => { 
                     setTimeout(handleClickButtonAuth, 200) 
+                    // sessionStorage.clear()
                   }}
                   disabled= {( name) && email && isEmailValid(`${email}`) ? false : true}
                 >
@@ -577,7 +567,7 @@ export default function RealizarConsulta({
           </div>
         </Frente>
       ) : isEmailVisitor ? (
-        <Frente className={`!px-2 py-3 mt-5 text-small-regular !bg-[#e5ebf5] sm:!px-4 sm:py-2 `}>
+        <Frente className={`!px-2 py-3 mt-5 text-small-regular !bg-[#e8edf6ff] sm:!px-4 sm:py-2 `}>
           <div className="flex items-start justify-between gap-3  sm:items-center sm:gap-5 ">
             <div className="mt-[2px] sm:mt-1.5 ">
               <IconRegistro className="w-5 sm:w-6 sm:ml-3 md:ml-1.5 " />
@@ -667,7 +657,7 @@ export default function RealizarConsulta({
           </div>
         </Frente>
       ) : (
-        <Frente className={`flex items-start gap-2.5 !py-3 px-2 mt-5 !bg-[#d8edd99c] text-small-regular ${estado?.message === "consultaCreada" && "hidden"} sm:py-2 sm:px-4 sm:gap-5 sm:items-center`}>
+        <Frente className={`flex items-start gap-2.5 !py-3 px-2 mt-5 !bg-[#e8edf6ff] text-small-regular ${estado?.message === "consultaCreada" && "hidden"} sm:py-2 sm:px-4 sm:gap-5 sm:items-center`}>
           <IconEnvioEmail className=" w-8 ml-1.5 mt-0.5 sm:w-10 sm:ml-3 sm:mt-0" />
           <div className={`w-full text-start text-[13px] text-[#2e4067] sm:text-sm `}>
             <p>Te enviaré la <b>respuesta</b> por e-mail a<span className= "underline decoration-[#39507fdd] underline-offset-2 mx-1.5 ">{user.email} </span></p>
@@ -685,7 +675,7 @@ export default function RealizarConsulta({
           </div>
         </Frente> 
       )}
-      
+
       {/* Massages error consult */}
       <div
         className="mb-3 mt-3 flex items-end space-x-1"
@@ -762,7 +752,7 @@ export default function RealizarConsulta({
         <input
           type="hidden"
           name="password"
-          value= {token}
+          value= "72cf0550-3f64-474d-b150-aa813c6b4b67"
           readOnly
         />
         <input type="hidden" name="redirectTo" value={pathname} readOnly/>
@@ -857,8 +847,7 @@ export default function RealizarConsulta({
         <input
           type="hidden"
           name="content" 
-          // value="/realizar-consulta"
-          value={pathname}
+          value="/realizar-consulta"
           readOnly
         />
         <input

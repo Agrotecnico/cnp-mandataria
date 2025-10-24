@@ -33,16 +33,16 @@ export default  function UserButtonMenuFaq({allPosts}:{allPosts:Post}) {
         </Dropdown.Button>
 
         <Dropdown.Menu >
-          <div className=" w-screen px-3 pt-8 pb-5 flex flex-col gap-[1px]">
+          <div className=" w-screen px-[6%] pt-8 pb-5 flex flex-col">
             {allPosts.length ? (
               allPosts.map((post:Post) => (
                 <Link
                   as={`/faq/${post.slug}`}
                   href="/faq/[slug]"
                   key={post.slug}
-                  className={clsx('w-full text-sm flex items-center justify-start first:rounded-t-md last:rounded-b-md duration-200 text-[#020b1d88] bg-[#548eff15] [box-shadow:_inset_0_1px_#ffffff,inset_0_-1px_#0000002e] hover:bg-[#548eff1d] hover:text-[#020b1dbb] active:opacity-85',
+                  className={clsx('w-full text-sm flex items-center justify-start first:rounded-t-md last:rounded-b-md duration-200 text-[#020b1d88] bg-[#548eff14] [box-shadow:_inset_0_1px_#ffffff,inset_0_-1px_#0000002e] hover:bg-[#548eff29] hover:text-[#020b1dbb] active:opacity-80',
                     {
-                      'text-[#020b1dba] bg-[#548eff1e] ':  pathname === `/faq/${post.slug}`,
+                      'text-[#020b1dba] bg-[#548eff28] ':  pathname === `/faq/${post.slug}`,
                     }
                   )}
                 >

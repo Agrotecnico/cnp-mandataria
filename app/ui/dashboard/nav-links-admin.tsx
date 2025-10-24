@@ -7,7 +7,6 @@ import { links }  from '@/app/constant';
 
 
 export default function NavLinksAdmin() {
-
   const pathname = usePathname();
   
     return (

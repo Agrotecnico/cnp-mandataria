@@ -17,6 +17,7 @@ const publicRoutes= [
   // "/^\/iniciar-tramite\/[\w-]+$/.test(pathname)",
   "/login",
   // "/register",
+  "/email-verified",
   "/api/auth/signIn",
   "/api/auth/auth",
   "/api/verify-email",
@@ -24,7 +25,6 @@ const publicRoutes= [
   "/api/upload-query",
   // "/api/auth/providers",
   // "/query",
-  "/email-verified",
   "/pruebas"
 ]
 

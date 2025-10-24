@@ -80,9 +80,13 @@ export default function UserButtonHeader( { user }: { user: User | undefined } )
             </div>
           </DropdownMenuTrigger>
         </div>
-        <div className={`items-center justify-center w-9 h-9 bg-[#ffffff00] rounded-full opacity-30  ${ user ? "hidden" : "flex" } `}>
-          <IconCuenta className="w-8 sm:w-8" color='#ffffffdd' />
-        </div>
+
+        <Link href={'/login'} className={`${ user && "hidden" }`} >
+          <div className={`flex items-center justify-center w-9 h-9 rounded-full opacity-60  hover:opacity-75 active:bg-opacity-60 cursor-pointer`}>
+            <IconCuenta className="w-6 sm:w-7" color='#ffffffdd' />
+          </div>
+        </Link>
+
         <DropdownMenuContent
           className="relative -mr-8 mt-1.5 bg-white w-[300px] !p-2 rounded-md shadow-xl shadow-[#30032222] sm:mt-3"
           align="end"
@@ -181,7 +185,7 @@ export default function UserButtonHeader( { user }: { user: User | undefined } )
             variant={'ghost'}
             className="mt-1 !px-4 !py-1 !justify-start !rounded-[4px] file:ml-auto h-auto w-full text-[#020b1d99] opacity-90 hover:opacity-100 active:opacity-70 disabled:opacity-40 hover:bg-[#547eff16] hover:text-[#020b1dc1]"
             onClick={async () => {
-              await signOut({ callbackUrl: pathname });
+              await signOut({ callbackUrl: "/" });/* pathname */
               sessionStorage.clear()
             }}
             disabled={!user}
@@ -197,8 +201,8 @@ export default function UserButtonHeader( { user }: { user: User | undefined } )
 
       <DropdownMenu>
         <DropdownMenuTrigger>
-          <div className='flex items-center justify-center w-9 h-9 rounded-full opacity-60 cursor-pointer duration-150 hover:opacity-85 active:bg-opacity-70'>
-            <IconMapaSitio size={26} color="#ffffff" />
+          <div className='flex items-center justify-center w-9 h-9 rounded-full opacity-60 cursor-pointer duration-150 hover:opacity-75 active:bg-opacity-60'>
+            <IconMapaSitio size={24} color="#ffffff" />
           </div>
         </DropdownMenuTrigger>
 
@@ -277,7 +281,7 @@ export default function UserButtonHeader( { user }: { user: User | undefined } )
                   {user?.role === "admin" ? (
                     <div className="w-full text-[13px] px-2 py-1"><span className='font-semibold h-8 text-[#39507f]'>ADMIN </span>Panel</div>
                   ) : (
-                    ''
+                    <div className="w-full text-[13px] px-2 py-1"><span className='font-semibold h-8 text-[#39507f]'>INFO </span>Panel</div>
                   )}
                 </div>
               </div>
@@ -291,8 +295,10 @@ export default function UserButtonHeader( { user }: { user: User | undefined } )
                   <div className="flex items-center gap-0 w-max rounded-md px-2 opacity-80 text-[#374151] group-hover:opacity-100">
                     {user?.role === "admin" ? (
                       <div className="w-full text-[13px] px-2 py-1"><span className='font-semibold h-8 text-[#39507f]'>ADMIN </span>Panel</div>
+                    ) : user?.role === "memberAccount" || user?.role === "memberVerified" || user?.role === "member" ? (
+                      <div className="w-full text-[13px] px-2 py-1"><span className='font-semibold h-8 text-[#39507f]'>INFO </span>Panel</div>
                     ) : (
-                      ''
+                      ""
                     )}
                   </div>
                 </div>
@@ -302,7 +308,7 @@ export default function UserButtonHeader( { user }: { user: User | undefined } )
 
           <DropdownMenuSeparator className="h-[1px] bg-[#37415122] m-[3px]" />
 
-          {pathname == '/realizar-consulta' || pathname.startsWith('/dashboard/consultas') ? (
+          {pathname == '/realizar-consulta' /* || pathname.startsWith('/dashboard/consultas') */ ? (
             <Link
               href={'#'}
             >
@@ -339,7 +345,7 @@ export default function UserButtonHeader( { user }: { user: User | undefined } )
             </Link>
           )}
 
-          {pathname.startsWith('/iniciar-tramite') || pathname.startsWith('/dashboard/tramites') ? (
+          {pathname.startsWith('/iniciar-tramite') /* || pathname.startsWith('/dashboard/tramites') */ ? (
             <Link
               href={'#'}
             >
@@ -402,7 +408,7 @@ export default function UserButtonHeader( { user }: { user: User | undefined } )
         </DropdownMenuContent>
       </DropdownMenu>
 
-       <div className={`fixed inset-0 bg-gray-600 bg-opacity-50 items-start justify-end ${isModalOpen ? "flex" : "hidden"}`}>
+      <div className={`fixed inset-0 bg-gray-600 bg-opacity-50 items-start justify-end ${isModalOpen ? "flex" : "hidden"}`}>
         <div className="relative w-[300px] mt-[64px] mr-10 bg-white rounded-md shadow-lg sm:mr-12 sm:mt-[76px] min-[1024px]:mr-[calc((100vw_-_928px)_/_2)]">
           <EditProfileImage user={user}  setIsModalOpen= {setIsModalOpen} />
         </div>

@@ -116,7 +116,7 @@ export default function TableTramiteAdmin({
                   </div>
         
                   <Button
-                    className="relative mb-auto h-[30px] rounded-md border border-[#d9dee8] min-h-[24px] w-[72px] justify-center bg-[#ffffffaa] !px-2.5 py-1 text-[13px] !font-normal text-[#020b1daa] hover:bg-[#ffffff] hover:text-[#020b1ddd] hover:border-[#c0c8d8] active:!bg-[#eee]"
+                    className="relative mb-auto h-[30px] rounded-md border border-[#548eff33] min-h-[24px] w-[72px] justify-center bg-[#ffffffaa] !px-2.5 py-1 text-[13px] !font-normal text-[#020b1daa] hover:bg-[#ffffff] hover:text-[#020b1ddd] hover:border-[#548eff66] active:!bg-[#eee]"
                     onClick={() => { handleToggle()}}
                     data-testid="edit-button"
                     data-active={state}

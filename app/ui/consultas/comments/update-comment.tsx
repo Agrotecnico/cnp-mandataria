@@ -19,7 +19,7 @@ export default function UpdateComment({  id } : {  id: string}) {
         onClick={() => {
           setIsModalOpen(true)
         }}
-        className={`px-2 ml-2 text-[13px] text-[#200b1d77] duration-150 rounded-full opacity-80 hover:text-[#ffffff] hover:bg-[#548eff] active:opacity-100 `}
+        className={`px-2 ml-2 text-[13px] text-[#200b1d80] bg-[#ffffff] duration-200 rounded-full opacity-80 hover:text-[#ffffff] hover:bg-[#548effaa] active:opacity-100 `}
       >
         eliminar
       </button>

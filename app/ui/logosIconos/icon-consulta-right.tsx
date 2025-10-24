@@ -6,8 +6,8 @@ export type IconProps = {
 } & React.SVGAttributes<SVGElement>
 
 const IconConsultaRight: React.FC<IconProps> = ({
-  size=40,
-  fill= "#b2439acc",
+  size= 40,
+  fill= "#548eff",
   ...attributes
 }) => {
   return (

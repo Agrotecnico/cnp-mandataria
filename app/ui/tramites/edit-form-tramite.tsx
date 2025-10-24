@@ -140,7 +140,7 @@ export default function EditTramiteForm({
       <Frente className="py-4 mb-2 px-3 text-sm sm:px-4" >
         <div className="w-full items-start flex gap-3 justify-end sm:items-center sm:mb-0">
           <div className={`flex items-center gap-4 w-full text-sm`}>
-            <IconAdjunto className="w-5" />
+            <IconAdjunto className="w-[18px]" />
             <p className=" text-[#39507F]">ADJUNTOS</p>
           </div>
 
@@ -166,8 +166,8 @@ export default function EditTramiteForm({
               }
             )}
           >
-            <div className={`flex flex-wrap mt-0 mb-3 text-[#020b1dcc] gap-4 ${state && "mt-4"}`}>
-              <div className="bg-[#ffffff] p-2 rounded-lg flex flex-col gap-2 flex-wrap justify-start sm:p-3">
+            <div className={`flex flex-col mt-0 mb-3 text-[#ffffffcc] gap-2 ${state && "mt-4"} sm:flex-row`}>
+              <div className="bg-[#020b1d] p-2 rounded-lg flex flex-col gap-2 flex-wrap justify-start sm:p-3 sm:w-1/2">
                 <div className="text-[15px] sm:text-base">
                   Documentos
                 </div>
@@ -198,21 +198,14 @@ export default function EditTramiteForm({
                 </div>
               </div>
 
-              <div className="bg-[#ffffffcc] p-2 rounded-lg flex flex-col gap-2 flex-wrap justify-start sm:p-3">
+              <div className="bg-[#020b1d] p-2 rounded-lg flex flex-col gap-2 flex-wrap justify-start sm:p-3 sm:w-1/2">
                 <div className="text-[15px] sm:text-base">
                   Información
                 </div>
                 <div className="flex flex-col gap-1 ">
-                  {/* {infoAdjuntos?.map((infoAdjunto, index) => (
-                    <div key={index } className=" text-sm  ">
-                      {infoAdjunto.startsWith("undefined") ? "" : infoAdjunto}
-                    </div> 
-                  ))} */}
-
-                    <div className=" text-sm  ">
-                      {infoAdjuntos}
-                    </div> 
-
+                  <div className=" text-sm  ">
+                    {infoAdjuntos}
+                  </div> 
                 </div>
               </div>
             </div>

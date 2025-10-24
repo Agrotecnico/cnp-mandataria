@@ -1,5 +1,5 @@
 import Form from '@/app/ui/tramites/edit-form-tramite';
-import Breadcrumbs from '@/app/ui/invoices/xxxbreadcrumbs';
+import Breadcrumbs from '@/app/ui/invoices/breadcrumbs';
 import { fetchTramiteById } from '@/app/lib/data';
 import { Metadata } from 'next';
 import { auth } from '@/auth';

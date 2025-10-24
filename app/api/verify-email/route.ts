@@ -11,7 +11,6 @@ export async function GET(request: NextRequest) {
   const token = searchParams.get("token");
   const page = searchParams.get("page");
 
-  console.log("token: ", token)
 
   if (!token) {
     return new Response("Token no encontrado", { status: 400 });
@@ -47,4 +46,7 @@ export async function GET(request: NextRequest) {
   // return Response.json({ token });
   // redirect("/login?verified=true");
   redirect(`/email-verified?verified=true&name=${user?.name}&email=${user?.email}&page=${page}`);
+  // redirect(`/login?verified=true&name=${user?.name}&email=${user?.email}&page=${page}`);
+  // redirect(`${page}?verified=true&role=${user?.role}`);
+
 }

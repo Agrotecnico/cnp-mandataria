@@ -1,4 +1,4 @@
-// import AcmeLogo from '@/app/ui/acme-logo';
+
 import LoginForm from '@/app/ui/login-form';
 import { Suspense } from 'react';
 import { auth } from 'auth';
@@ -14,14 +14,15 @@ export const metadata: Metadata = {
 export default async function LoginPage() {
 
   const session = await auth();
+
   if (session )
-    return redirect('/dashboard');
+    return redirect('/');
 
   return (
     <>
       <Header />
-      <main className="flex items-center justify-center md:h-screen">
-        <div className="relative mx-auto mt-12 flex w-full max-w-[460px] flex-col space-y-2.5 p-4 md:-mt-32">
+      <main className="flex items-start justify-center pt-16 md:h-screen ">
+        <div className="relative mt-16 flex w-full max-w-[460px] flex-col p-4">
           <Suspense>
             <LoginForm />
           </Suspense>

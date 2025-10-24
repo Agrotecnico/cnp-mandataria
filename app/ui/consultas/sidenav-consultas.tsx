@@ -13,7 +13,7 @@ export default async function SideNavConsultas() {
   const allPosts = getAllPosts();
   return (
     <div className="hidden h-max flex-col lg:flex lg:fixed">
-      <Fondo className="bg-[#548eff16] p-3 lg:w-72">
+      <Fondo className="!bg-[#d9e1f0] p-3 lg:w-72">
         <div className="mb-4 mt-2.5 w-full text-sm text-center font-medium ">
           CONSULTAS FRECUENTES
         </div>

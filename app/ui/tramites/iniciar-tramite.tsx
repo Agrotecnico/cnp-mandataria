@@ -295,7 +295,7 @@ export default function IniciarTramite( {
         </h1>
       </div>
 
-      <Frente className="!bg-[#548eff16] ">
+      <Frente className="!bg-[#d9e1f0] ">
         <Tabs.Root
           className="flex flex-col min-h-[332px]"
           defaultValue="tab1"
@@ -305,14 +305,14 @@ export default function IniciarTramite( {
             aria-label="Manage your account"
           >
             <Tabs.Trigger
-              className="flex bg-[#ffffff63] flex-1 duration-150 cursor-pointer select-none items-center justify-center py-3 px-2.5 leading-none  text-[#020b1d77] outline-none hover:text-[#020b1daa] data-[state=active]:bg-[#f1eef000] data-[state=active]:cursor-default data-[state=active]:text-[#020b1dcc]"
+              className="flex bg-[#e5ebf5] mt-[1px] flex-1 duration-150 cursor-pointer select-none items-center justify-center py-3 px-2.5 leading-none  text-[#020b1d77] outline-none hover:text-[#020b1daa] data-[state=active]:bg-[#f1eef000] data-[state=active]:cursor-default data-[state=active]:text-[#020b1dcc]"
               value="tab1"
             >
               Descripción<span className={`ml-1 font-semibold text-xs text-[#ff0000] ${tramiteMd.slug === "x-Otros" && tramite !== "" && "text-transparent"} ${tramiteMd.slug !== "x-Otros" && "text-transparent" } `}>*</span>
             </Tabs.Trigger>
 
             <Tabs.Trigger
-              className="border-x border-[#e6e0e3] flex bg-[#ffffff63] flex-1 duration-150 cursor-pointer select-none items-center justify-center py-3 px-2.5 leading-none  text-[#020b1d77] outline-none hover:text-[#020b1daa] data-[state=active]:bg-[#f1eef000] data-[state=active]:cursor-default data-[state=active]:text-[#020b1dcc]"
+              className="border-x border-[#d7dfef] flex bg-[#e5ebf5] mt-[1px] flex-1 duration-150 cursor-pointer select-none items-center justify-center py-3 px-2.5 leading-none  text-[#020b1d77] outline-none hover:text-[#020b1daa] data-[state=active]:bg-[#f1eef000] data-[state=active]:cursor-default data-[state=active]:text-[#020b1dcc]"
               value="tab2"
             >
               <div className='flex flex-wrap justify-center '>
@@ -322,7 +322,7 @@ export default function IniciarTramite( {
             </Tabs.Trigger>
 
             <Tabs.Trigger
-              className="flex bg-[#ffffff63] flex-1 duration-150 cursor-pointer select-none items-center justify-center py-3 px-2.5 leading-none  text-[#020b1d77] outline-none hover:text-[#020b1daa] data-[state=active]:bg-[#f1eef000] data-[state=active]:cursor-default data-[state=active]:text-[#020b1dcc]"
+              className="flex bg-[#e5ebf5] mt-[1px] flex-1 duration-150 cursor-pointer select-none items-center justify-center py-3 px-2.5 leading-none  text-[#020b1d77] outline-none hover:text-[#020b1daa] data-[state=active]:bg-[#f1eef000] data-[state=active]:cursor-default data-[state=active]:text-[#020b1dcc]"
               value="tab3"
             >
               Adjuntar Informacíon
@@ -386,14 +386,14 @@ export default function IniciarTramite( {
           </Tabs.Content>
 
           <Tabs.Content
-            className="grow rounded-b-md p-2 outline-none text-[13px] text-[#020b1dcc] sm:p-4 sm:text-[15px]"
+            className="grow rounded-b-md p-2 outline-none text-[#020b1dcc] sm:p-4"
             value="tab2"
           >
-            <p className="mb-3 mt-1 sm:mt-0">
+            <p className="mb-3 mt-1 sm:mt-0 text-[13px] sm:text-[15px] ">
                {tramiteMd.slug === "x-Otros" ? "Podés cargar dos comprobantes:" : "Cargá los siguientes comprobantes:" }  
             </p>
 
-            <div className="py-2 px-3 mb-3 rounded-sm bg-[#ffffffaa]">
+            <div className="py-2 px-3 mb-3 text-[12px] sm:text-sm rounded-sm bg-[#ffffffaa]">
               <ul className="list-none" >
                   {documentos?.map((documento, index) => (
                     <li key={index} className=" leading-[1.2] ">
@@ -423,19 +423,19 @@ export default function IniciarTramite( {
                 dragProps,
                 errors,
               }) => (
-                <div className={`flex flex-col bg-[#020b1da3] rounded-lg ${!images.length ? 'gap-0' : 'gap-[1px]'} $ `} >
+                <div className={`flex flex-col ${!images.length ? 'gap-0' : 'gap-1.5'} `} >
                   <button
                     type="button"
                     onClick={onImageUpload}
                     {...dragProps}
                     className={`group rounded-lg w-full disabled:!cursor-default `}
                   >
-                    <div className={`relative label-dnd  ${!images.length ? 'rounded-lg' : 'rounded-t-lg'} bg-[#020b1d] text-[#ffffffdd] w-full px-2 py-3 duration-150 text-sm flex flex-col justify-center items-center active:opacity-80 `}>
-                      <div className="flex items-center gap-3 text-[13px] duration-150 opacity-90 group-hover:opacity-100">
-                        <IconDragDrop className= "w-[30px] opacity-80  min-[512px]:mr-7" />
+                    <div className={`relative label-dnd  ${!images.length ? 'rounded-lg' : 'rounded-t-lg'} bg-[#ffffffd7] text-[#020b1ddd] w-[calc(100%_-_8px)] mx-auto px-2 py-3 duration-150 flex flex-col justify-center items-center `}>
+                      <div className="flex items-center gap-3 text-[13px] duration-150 sm:text-sm">
+                        <IconDragDrop className= "w-[30px]  min-[512px]:mr-7" />
                         <div className='leading-[1]'>
                           Elegí un archivo o arrastralo y sueltá aquí <br />
-                          <p className="text-xs mt-1.5 text-[#ffffffbb]"> archivos <b>jpg</b>, <b>png</b> o <b>pdf</b>
+                          <p className="text-xs mt-1.5 "> archivos <span className='font-medium'>jpg</span >, <span className='font-medium'>png</span > o <span className='font-medium' >pdf</span >
                           </p>
                         </div>
                       </div>
@@ -452,7 +452,9 @@ export default function IniciarTramite( {
                           )}
                         </div>
                       )}
-                      <div className={`absolute w-full h-full outline-1 duration-150 outline-offset-2 outline-dashed outline-[#00000003] ${!images.length ? 'rounded-lg' : 'rounded-t-lg'} ${isDragging ? ' hover:bg-[#ffffff55] ' : "hover:bg-[#ffffff31]"} hover:outline-[#000000ee] hover:border-b-1 hover:border-[#ffffff69] hover:border-dashed `}>
+                      <div 
+                        className={`absolute mx-auto w-[calc(100%_+_2px)] h-full bg-[#548eff10] outline-1 duration-150 outline-offset-2 outline-dashed outline-[#00000070] ${isDragging ? ' hover:bg-[#4369b566] rounded-lg hover:outline-[#000000ee] ' : !images.length ? " hover:bg-[#ffffff00] hover:outline-[#000000ee] rounded-lg  " : " hover:bg-[#ffffff00] hover:outline-[#000000ee] rounded-t-lg" }`}
+                        >
                       </div>
                     </div>
                   </button>
@@ -465,16 +467,16 @@ export default function IniciarTramite( {
 
                             {renderFilePreview( image.file! )} 
 
-                            <div className="flex flex-col text-[13px] justify-end gap-0.5 ">
+                            <div className="flex flex-col text-[12px] justify-end gap-[1px] ">
                               <div onClick={() => {
                                 onImageUpdate(index)
-                                }} className="border border-[#e9dae9] border-l-0 bg-[#d7d7d7] px-1.5 py-0.5 cursor-pointer rounded-e-md duration-200 text-[#1d0215aa] hover:border-[#d8c0d7] hover:text-[#1d0215dd]  hover:bg-[#ffffff] active:bg-[#ffffffaa]  "
+                                }} className="border border-[#e9dae9] border-l-0 bg-[#d7d7d7] px-1.5 cursor-pointer rounded-e-md duration-200 text-[#1d0215aa] hover:border-[#d8c0d7] hover:text-[#1d0215dd]  hover:bg-[#ffffff] active:bg-[#ffffffaa]  "
                               >
                                 Cambiar
                               </div>
                               <div onClick={() => {
                                 onImageRemove(index)
-                                }} className="border border-[#e9dae9] border-l-0 bg-[#d7d7d7] px-1.5 py-0.5 cursor-pointer rounded-e-md duration-200 text-[#1d0215aa] hover:text-[#1d0215dd] hover:border-[#d8c0d7] hover:bg-[#ffffff] active:bg-[#ffffffaa] "
+                                }} className="border border-[#e9dae9] border-l-0 bg-[#d7d7d7] px-1.5 cursor-pointer rounded-e-md duration-200 text-[#1d0215aa] hover:text-[#1d0215dd] hover:border-[#d8c0d7] hover:bg-[#ffffff] active:bg-[#ffffffaa] "
                                 >
                                 Eliminar
                               </div>
@@ -528,7 +530,7 @@ export default function IniciarTramite( {
 
       {/* registrar email tramite */}
       { !user ? (
-        <Frente className="`!px-2 py-3 mt-5 text-small-regular !bg-[#e8edf6ff] sm:!px-4 sm:py-2 `">
+        <Frente className="`!px-2 py-3 mt-5 text-small-regular !bg-[#e5ebf5ff] sm:!px-4 sm:py-2 `">
           <div className="flex items-start justify-between gap-3  sm:items-center sm:gap-5 ">
             <div className="mt-[2px] sm:mt-1.5  ">
               <IconRegistro className=" w-5 ml-1.5 sm:w-6 sm:ml-3" />
@@ -648,7 +650,7 @@ export default function IniciarTramite( {
           </div>
         </Frente>
       ) : isEmailVisitor ? (
-        <Frente className={`!px-2 py-3 mt-5 text-small-regular !bg-[#e8edf6ff] sm:!px-4 sm:py-2 `}>
+        <Frente className={`!px-2 py-3 mt-5 text-small-regular !bg-[#e5ebf5ff] sm:!px-4 sm:py-2 `}>
           <div className="flex items-start justify-between gap-3  sm:items-center sm:gap-5 ">
             <div className="mt-[2px] sm:mt-1.5  ">
               <IconRegistro className="w-5 ml-1.5 sm:w-6 sm:ml-3 " />
@@ -738,7 +740,7 @@ export default function IniciarTramite( {
           </div>
         </Frente>
       ) : (
-        <Frente className={`flex items-start gap-2.5 !py-3 px-2 mt-5 !bg-[#e8edf6] text-small-regular ${estado?.message === "tramiteIniciado" && "hidden"} sm:py-2 sm:px4 sm:gap-5 sm:items-center`}>
+        <Frente className={`flex items-start gap-2.5 !py-3 px-2 mt-5 !bg-[#d8edd99c] text-small-regular ${estado?.message === "tramiteIniciado" && "hidden"} sm:py-2 sm:px4 sm:gap-5 sm:items-center`}>{/* !bg-[#e5ebf5ff] */}
           <IconEnvioEmail className=" w-8 ml-1.5 mt-0.5 sm:w-10 sm:ml-3 sm:mt-0" />
           <div className={`w-full text-start text-[13px] text-[#2e4067] sm:text-sm `}>
             <p>Te enviaré el <b>presupuesto</b> por e-mail a<span className= "underline decoration-[#39507fdd] underline-offset-2 mx-1.5 ">{user.email} </span></p>
@@ -831,7 +833,7 @@ export default function IniciarTramite( {
         <input
           type="hidden"
           name="password"
-          value= "72cf0550-3f64-474d-b150-aa813c6b4b67"
+          value= {token} /* "72cf0550-3f64-474d-b150-aa813c6b4b67" */
           readOnly
         />
         <input type="hidden" name="redirectTo" value={pathname} readOnly/>

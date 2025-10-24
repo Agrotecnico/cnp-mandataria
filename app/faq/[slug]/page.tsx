@@ -43,7 +43,7 @@ export default async function PostPage({ params }: Params) {
 
   return (
     <>
-      <Fondo className="!rounded-lg !bg-[#548eff16] ">
+      <Fondo className="!rounded-lg !bg-[#d9e1f0] ">
         <article className="px-3 pb-6 pt-6 md:px-6">
           <h1 className="mb-3 text-xl font-bold sm:mb-6 md:text-2xl">
             {post.excerpt}
@@ -90,7 +90,6 @@ export default async function PostPage({ params }: Params) {
               dangerouslySetInnerHTML={{ __html: content }}
             />
           </div>
-
           <div className="mx-auto text-sm max-w-2xl sm:text-[15px]">
             <SessionProvider  session={session}>
               <ListComment user={user} post={post} comments={comments} commentLast={commentLast}  />

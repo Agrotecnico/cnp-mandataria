@@ -14,7 +14,7 @@ export type User = {
   name: string;
   email: string;
   password: string | undefined;
-  role: 'admin' | 'member' | 'memberAccount';
+  role: 'admin' | 'memberAccount' | 'memberVerified' | 'member' | 'visitor';
   image: string | undefined;
   email_verified: string | undefined;
   created_at: string;

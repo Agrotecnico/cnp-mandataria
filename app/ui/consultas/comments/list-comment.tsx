@@ -22,6 +22,7 @@ import { ButtonB, ButtonA } from '@/app/ui/button';
 import { InputCnp } from "@/app/ui/uiRadix/input-cnp";
 import { TextareaCnp } from "@/app/ui/uiRadix/textarea-cnp";
 
+
 const wait = () => new Promise((resolve) => setTimeout(resolve, 2000));
 
 export default function ListComment({ 
@@ -121,6 +122,7 @@ export default function ListComment({
     !user?.image && setTimeout(() => setCommentOk(!commentOk), 2000)
     console.log("Comentario creado")
   }
+  
   const actualizarComment= () => {
     !user?.image && setTimeout( handleClickButtonxx, 200) //updated img user
     setTimeout(() => setSpin(false), 2000)
@@ -133,7 +135,6 @@ export default function ListComment({
     e.preventDefault();
     try {
       crearComment();
-      console.log('11111111');
 
     } catch (error) {
       console.error(error);
@@ -248,7 +249,7 @@ export default function ListComment({
               ) : "Podés ampliar esta consulta"}
           </div>
           
-          <Frente className={`!p-2 w-full mt-2 mb-9 text-small-regular sm:!p-4 !bg-[#e8edf6ff]`}>
+          <Frente className={`!p-2 w-full mt-2 mb-9 text-small-regular sm:!p-4 !bg-[#e5ebf5]`}>
             <div className={`flex items-center justify-between gap-2.5 sm:gap-5 ${open && "mb-4"}`}>
               <div className="w-max">
                 <IconComments className="opacity-80 w-8 sm:w-10" />

@@ -52,7 +52,7 @@ export default function TableConsultaMember( {
       <div className="flex flex-col items-start " >
         <div className="w-full items-start flex gap-4 justify-between">
           <div className="relative">
-            <IconConsultaRight className="opacity-[0.55] text-[#50073a] w-8 "/>
+            <IconConsultaRight className="opacity-80 w-8 "/>
             <span className="text-white absolute -top-0.5 left-[20px] text-[11px]  ">
               ?
             </span>
@@ -61,23 +61,23 @@ export default function TableConsultaMember( {
           <div className="w-full mt-12 -ml-7 -mr-20 sm:px-1 sm:m-0 ">
             <div className="text-[#39507f] w-full mb-2 font-medium text-[13.5px] sm:text-[14.5px] ">
               CONSULTA
-              <span className={`ml-1 ${!consulta.respuesta && "hidden"}`}>
+              {/* <span className={`ml-1 ${!consulta.respuesta && "hidden"}`}>
                 respondida el
-                <span className="text-[#020b1dcc] text-[13px] bg-[#22ff0014] ml-1  px-1.5 py-0.5 rounded-lg "  >
+                <span className="text-[#020b1dcc] text-[13px] bg-[#ffffff] ml-1  px-1.5 py-0.5 rounded-lg "  >
                   {formatDateToLocal(consulta.updated_at)}
                 </span>
-              </span>
+              </span> */}
 
-              <span className={`ml-1 ${consulta.respuesta && "hidden"}`}>
+              <span className={`ml-1 text-[#020b1d77] `}>{/* ${consulta.respuesta && "hidden"} */}
                 realizada
-                <span className={` text-[13px] bg-[#ff000014] ml-1 px-1.5 py-0.5 rounded-lg ${consulta.respuesta && "hidden"}`}>
+                <span className={` text-[13px] bg-[#ffffff] ml-1 px-1.5 py-0.5 rounded-lg `}>{/* ${consulta.respuesta && "hidden"} */}
                   {distanceToNow(new Date(consulta.created_at))}
                 </span> 
               </span>
             </div>
 
             <div className={`mb-2`}>
-              <span className={` decoration-[#020b1d44] underline underline-offset-[3px] ${state && "underline-offset-0 no-underline"}`}>
+              <span className={` decoration-[#020b1d20] underline underline-offset-[3px] ${state && "underline-offset-0 no-underline"}`}>
                 {tituloConsulta.join(" ") }
               </span>
               <span className=" ">
@@ -90,7 +90,7 @@ export default function TableConsultaMember( {
           </div>
 
           <Button
-            className="relative h-[30px] rounded-md border border-[#e9dae9] min-h-[24px] w-[72px] justify-center bg-[#ffffffaa] !px-2.5 py-1 text-[13px] !font-normal hover:bg-[#ffffff] hover:text-[#020b1ddd] hover:border-[#d8c0d7] active:!bg-[#eee]"
+            className="relative text-[#020b1daa] h-[30px] rounded-md border border-[#548eff33] min-h-[24px] w-[72px] justify-center bg-[#ffffffaa] !px-2.5 py-1 text-[13px] !font-normal hover:bg-[#ffffff] hover:text-[#020b1ddd] hover:border-[#548eff66] active:!bg-[#eee]"
             onClick={() => { handleToggle()}}
             data-testid="edit-button"
             data-active={state}
@@ -112,15 +112,18 @@ export default function TableConsultaMember( {
         >
           <div className={`flex flex-col gap-4 mb-4 text-sm cursor-default transition-[visibility] duration-300 ease-in-out ${!state && "invisible"}`}>
             <div className="mt-4 text-[14.5px]">
-              <div className="text-[#39507f] mb-0.5 font-medium text-[13.5px] sm:text-[14.5px] ">
+              <div className="text-[#39507f] mb-1 font-medium text-[13.5px] sm:text-[14.5px] ">
                 RESPUESTA
+                <span className={` text-[13px] bg-[#ffffff] text-[#020b1d77] ml-1 px-1.5 py-0.5 rounded-lg `}>
+                  {consulta.updated_at ? distanceToNow(new Date(consulta.updated_at)) : "En proceso" } 
+                </span> 
               </div>
 
               <div>
                 { consulta.respuesta ? (
-                  <p className="p-1 border border-[#50073a22] bg-[#ffffffdd] rounded-[2px] sm:p-4">{ consulta.respuesta } </p>
+                  <p className="p-1 border border-[#39507f22] bg-[#ffffffe0] rounded-[2px] sm:p-4">{ consulta.respuesta } </p>
                 ) : (
-                  <p className="p-2 border text-[#39507fcc] border-[#50073a22] bg-[#ffffffdd] rounded-[2px] sm:p-4">
+                  <p className="p-2 border text-[#39507fcc] border-[#39507f22] bg-[#ffffffe0] rounded-[2px] sm:p-4">
                     <i>Recibimos la consulta.</i><br></br>
                     <i>Te enviaremos la respuesta en la mayor brevedad.</i>
                   </p>

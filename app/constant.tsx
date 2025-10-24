@@ -8,6 +8,7 @@ import {
   HomeIcon,
   InboxIcon,
 } from '@heroicons/react/24/outline';
+import iconResumen from "@/app/ui/logosIconos/icon-resumen";
 
 
 
@@ -221,28 +222,29 @@ export const linkMembers = [
   {
     name: 'Resumen',
     href: '/dashboard',
-    icon: QuestionMarkCircleIcon,
+    icon: iconResumen,
   },
   {
     name: 'Consultas',
     href: '/dashboard/consultas',
-    icon: QueueListIcon,
+    // icon: QueueListIcon,
+    icon: QuestionMarkCircleIcon,
   },
   {
     name: 'Trámites',
     href: '/dashboard/tramites',
     icon: ClipboardDocumentListIcon,
   },
-  { name: 'Editar Perfil',
-    href: '/dashboard/perfil',
-    icon: UserCircleIcon },
+  // { name: 'Editar Perfil',
+  //   href: '/dashboard/perfil',
+  //   icon: UserCircleIcon },
 ];
 
 export const links = [
-  { name: 'Resumen', href: '/dashboard', icon: HomeIcon, },
+  { name: 'Resumen', href: '/dashboard', icon: iconResumen, },
   // { name: 'Facturas', href: '/dashboard/invoices', icon: InboxIcon, },
   // { name: 'Clientes', href: '/dashboard/customers', icon: UserGroupIcon },
-  { name: 'Consultas', href: '/dashboard/consultas', icon: QueueListIcon },
+  { name: 'Consultas', href: '/dashboard/consultas', icon: QuestionMarkCircleIcon },
   { name: 'Trámites', href: '/dashboard/tramites', icon: ClipboardDocumentListIcon, },
   // { name: 'Editar Perfil', href: '/dashboard/perfil', icon: UserCircleIcon },
 ];

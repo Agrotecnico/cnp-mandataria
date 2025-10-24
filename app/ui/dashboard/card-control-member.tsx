@@ -4,8 +4,10 @@ import {
   UserGroupIcon,
   InboxIcon,
 } from '@heroicons/react/24/outline'
+import { auth } from '@/auth'
 
-import { fetchCardData } from '@/app/lib/data'
+import { fetchCardDataMember } from '@/app/lib/data'
+import { fetchUserById } from '@/app/lib/data';
 import { Frente, Fondo } from '@/app/ui/marcos'
 import  IconRespuesta  from "@/app/ui/logosIconos/icon-respuesta";
 import  IconConsulta  from "@/app/ui/logosIconos/icon-consulta";
@@ -20,17 +22,19 @@ const iconMap = {
   tramites: IconTramites,
 };
 
-export default async function CarControl() {
+export default async function CarControlMember({email}: {email: string | null | undefined}) {
+  // const session = await auth()
+  // const email = `${session?.user?.email}`
   const {
-    numberOfInvoices,
-    numberOfCustomers,
-    totalPaidInvoices,
-    totalPendingInvoices,
+    // numberOfInvoices,
+    // numberOfCustomers,
+    // totalPaidInvoices,
+    // totalPendingInvoices,
     numberOfConsultas,
     numberOfTramites,
     numberOfRespondidas,
     numberOfTerminados
-  } = await fetchCardData();
+  } = await fetchCardDataMember(email!);
 
   
   return (
@@ -48,7 +52,7 @@ export default async function CarControl() {
             <p>Sin responder</p>
             <p className="flex items-center justify-center rounded-full px-1 min-w-6 h-4 text-white bg-[#80a2e5]">{numberOfConsultas - numberOfRespondidas } </p>
           </div>
-
+          
           <div className="flex gap-2 items-center h-6">
             <p>Respondidas</p>
             <p className="flex items-center justify-center rounded-full px-1 min-w-6 h-4 text-white bg-[#39507fcc]">{ numberOfRespondidas}</p>

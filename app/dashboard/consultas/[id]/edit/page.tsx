@@ -1,5 +1,5 @@
 import Form from '@/app/ui/consultas/edit-form-consulta';
-import Breadcrumbs from '@/app/ui/invoices/xxxbreadcrumbs';
+import Breadcrumbs from '@/app/ui/invoices/breadcrumbs';
 import { fetchConsultaById } from '@/app/lib/data';
 import { Metadata } from 'next';
 import { auth } from '@/auth';

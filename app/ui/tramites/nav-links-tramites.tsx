@@ -18,14 +18,14 @@ export default function NavLinksTramites({allTramites }:{allTramites:TramiteMd[]
         Seleccioná un trámite
       </div>
       <div className="flex grow flex-row justify-between space-x-2 md:flex-col md:space-x-0 md:space-y-2">
-        <div className="flex md:flex-col bg-[#e8edf6ff] w-full">
+        <div className="flex md:flex-col w-full">
           {allTramites.map((tramite:TramiteMd) => (
             <Link
               as={`/iniciar-tramite/${tramite.slug}`}
               href="/iniciar-tramite/[slug]"
-              className={clsx('group w-full h-[33px] border-x border-[#39507f19] text-sm flex items-center justify-start first:rounded-t-md last:rounded-b-md [box-shadow:_inset_0_1px_#ffffff,inset_0_-1px_#0000001e] duration-150 text-[#020b1daa]  hover:bg-[#548eff17] hover:text-[#020b1ddd] active:opacity-80',
+              className={clsx('group w-full h-[33px] border-x border-[#39507f19] text-sm flex items-center justify-start first:rounded-t-md last:rounded-b-md [box-shadow:_inset_0_1px_#ffffff,inset_0_-1px_#0000001e] duration-150 bg-[#e5ebf5ff] text-[#020b1daa]  hover:bg-[#d3dceefe] hover:text-[#020b1ddd] active:opacity-80',
                 {
-                  'text-[#020b1ddc] bg-[#548eff16] ':  pathname === `/iniciar-tramite/${tramite.slug}`,
+                  'text-[#020b1ddc] bg-[#d3dceeff] ':  pathname === `/iniciar-tramite/${tramite.slug}`,
                 }
               )}
               key={tramite.slug} 

@@ -83,15 +83,13 @@
 #polo > .swiper2 > .swiper-wrapper > .swiper-slide:nth-child(2) {
   margin: 0 3px;
 }
-
-/* ////////// */
 .swiper3 .swiper-pagination-bullet {
   position: absolute;
   height: 20px;
-  width: 100%;
+  width: 94%;
   background: #0000;
   transition: 0.2s;
-  border-radius: 0;
+  border-radius: 4px;
   margin: 0 !important;
   cursor: pointer;
   top: 29.5vh;
@@ -108,26 +106,19 @@
   height: 6px;
 }
 .swiper3 .swiper-pagination-bullet > a {
-  color: #020b1dbb;
+  color: #020b1dae;
   font-size: 13px;
   cursor: pointer;
 }
-.swiper3 .swiper-pagination-bullet:hover > div > img {
-  width: 8px;
-  height: 8px;
-  transition: 0.2s;
-}
 .swiper3 .swiper-pagination-bullet:hover > a {
-  color: #020b1d;
+  color: #020b1ddd;
   transition: 0.2s;
+  background-color: #e5ebf5dd;
+  border-radius: 4px;
 }
 .swiper3 .swiper-pagination-bullet-active > div > img {
   width: 8px;
   height: 8px;
-  transition: 0.2s;
-}
-.swiper3 .swiper-pagination-bullet-active > a {
-  color: #020b1d;
   transition: 0.2s;
 }
 /* ////////// */
@@ -228,6 +219,7 @@
   padding: 2px 12px 2px 14px;
   position: absolute;
   width: 100%;
+  z-index: 10;
 }
 .swiper3 > .swiper-pagination > .swiper-pagination-bullet:nth-child(1) > div {
   top: 130px;

@@ -90,7 +90,8 @@ export default async function TableConsultaAdmin({
                       <div className={``}>
                         Respondida el
                         <span className={`text-[13px] px-1.5 py-0.5 mx-1 rounded-lg ${!AllConsulta.respuesta && "hidden"} `} >
-                          {formatDateToLocal(AllConsulta.updated_at)}
+                          {/* {formatDateToLocal(AllConsulta.updated_at)} */}
+                          {distanceToNow(new Date(AllConsulta.updated_at))}
                         </span>
                         <span className="text-[13px] px-1.5 py-0.5 rounded-lg bg-[#ffffff]">{distanceToNow(new Date(AllConsulta.updated_at))}</span>
                       </div>
