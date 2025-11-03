@@ -1,6 +1,4 @@
 import Image from 'next/image'
-import Link from 'next/link';
-import { PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
 
 import { formatDateToLocal } from '@/app/lib/utils';
 import { UpdateConsulta } from '@/app/ui/consultas/buttons';
@@ -12,7 +10,7 @@ import IconConsulta from '../logosIconos/icon-consulta';
 import IconRespuesta from '../logosIconos/icon-respuesta'
 
 
-export default async function TableConsultaAdmin({
+export default async function TableCommentAdmin({
   query,
   currentPage,
 }: {
@@ -21,6 +19,8 @@ export default async function TableConsultaAdmin({
 }) {
 
   const AllConsultas = await fetchFilteredConsultas(query, currentPage);
+
+  console.log("AllConsultas: ", AllConsultas[0].image)
   
 
   return (
@@ -36,7 +36,7 @@ export default async function TableConsultaAdmin({
             {AllConsultas?.map((AllConsulta, index) => (
               <div
                 key={AllConsulta.id}
-                className="mb-2 w-full text-sm rounded-lg p-3 bg-[#ffffff88] [box-shadow:inset_0_1px_#ffffff,inset_0_-1px_#0000002e] sm:p-4"
+                className="mb-2 w-full text-sm rounded-lg p-3 bg-[#ffffff94] [box-shadow:inset_0_1px_#ffffff,inset_0_-1px_#0000002e] sm:p-4"
               >
                 <div className="flex items-center mb-4">
                   <div className=" relative" data-testid="image-container">
@@ -55,7 +55,6 @@ export default async function TableConsultaAdmin({
                       </div>
                       )} 
                   </div>
-
                   <div className="flex flex-col justify-center items-start ml-4 w-full min-[800px]:items-start min-[800px]:my-1 ">
                     <h2 className="text-md font-semibold m-0" data-testid="username-test">
                       {AllConsulta?.name}
@@ -69,7 +68,7 @@ export default async function TableConsultaAdmin({
                   </div>
                 </div>
 
-                <div className="flex flex-col w-full text-[#020b1dbb] py-2 gap-2 border-t border-[#020b1d14]">
+                <div className="flex flex-col w-full  py-2 gap-2 border-y border-[#020b1d14]">
                   <div className={`flex items-center `}>
                     <IconConsulta color="#39507fcc"  color2="#ffffff" size="17"  className="mr-2"/>
                     <div className={``}>
@@ -84,35 +83,20 @@ export default async function TableConsultaAdmin({
                     </div>
                   </div>
 
-                  {AllConsulta.respuesta && 
-                    <div className={`flex items-center mb-2 -mt-2 `}>
-                      <div className='w-[17px] h-[17px] mr-2' ></div>
-                      <div className="font-semibold">
-                        Asunto: 
-                        <span className={`text-[12px] px-1 py-0.5 font-normal `} >
-                          {AllConsultas[index].consulta.slice(0, AllConsultas[index].consulta.search(": ")).toLocaleUpperCase() }
-                        </span>
-                      </div>
-                    </div>
-                  }
-                  
-
                   <div className={`flex items-center `}>
                     {AllConsulta.respuesta ? <IconRespuesta color="#ffffff" color2="#39507fdd" size="17"  className="mr-2"/> : <IconRespuesta color="#ffffff" color2="#548eff" size="17"  className="mr-2 scale-x-[-1]"/>}
 
                     { AllConsulta.respuesta  ? (
-                      <div className="flex justify-between items-center w-full">
-                        <p>
-                          Respondida
-                          <span className="text-[13px] px-1.5 py-0.5 rounded-lg bg-[#ffffff]">{distanceToNow(new Date(AllConsulta.updated_at))}</span>
-                        </p>
+                      <div className={``}>
+                        Respondida el
+                        <span className={`text-[13px] px-1.5 py-0.5 mx-1 rounded-lg ${!AllConsulta.respuesta && "hidden"} `} >
+                          {/* {formatDateToLocal(AllConsulta.updated_at)} */}
+                          {distanceToNow(new Date(AllConsulta.updated_at))}
+                        </span>
+                        <span className="text-[13px] px-1.5 py-0.5 rounded-lg bg-[#ffffff]">{distanceToNow(new Date(AllConsulta.updated_at))}</span>
                       </div>
-                    ) : (
-                      <div className="flex justify-between items-center w-full">
-                        <p className=' mr-2'>
-                          Enviar respuesta
-                        </p>
-                      </div>
+                      ) : (
+                        <div>Enviar respuesta</div>
                       ) }
                   </div>
                 </div>

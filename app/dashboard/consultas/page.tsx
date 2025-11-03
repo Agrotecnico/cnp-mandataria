@@ -1,17 +1,16 @@
+
 import { Metadata } from 'next';
 import { auth } from '@/auth';
 import { notFound } from 'next/navigation';
-import Link from 'next/link';
+// import { useSession } from "next-auth/react"
 
+import { Providers } from '@/app/dashboard/providers'
 import Pagination from '@/app/ui/invoices/pagination';
 import { fetchConsultasPages } from '@/app/lib/data';
 import TableConsultaAdmin from '@/app/ui/consultas/table-consulta-admin';
 import TableConsultaMember from '@/app/ui/consultas/table-consulta-member';
-import { fetchUserById } from '@/app/lib/data';
 import { fetchConsultasPagesM } from '@/app/lib/data';
 import { fetchFilteredConsultasM } from '@/app/lib/data';
-import IconPresupuesto from '@/app/ui/logosIconos/icon-presupuesto';
-import IconConsulta from '@/app/ui/logosIconos/icon-consulta';
 
 
 export const metadata: Metadata = {
@@ -26,30 +25,30 @@ export default async function Page({
     page?: string;
   };
 }) {
+  // const { data: session, update } = useSession()
   const session = await auth();
   const id= session?.user?.email
-  // const user = await fetchUserById(session?.user?.email);
 
   const query = searchParams?.query || '';
   const currentPage = Number(searchParams?.page) || 1;
 
   const totalPages = await fetchConsultasPages(query);
-
   const {totalPagesMember, countcon} = await fetchConsultasPagesM(id);
-
   const consultas = await fetchFilteredConsultasM( id, currentPage );
+
+  // console.log("session:", session)
 
 
   if (session?.user.role === "admin")
     return (
       <main>
-        <h1 className={` mb-4 text-xl lg:text-2xl`}>
+        <h1 className={` mb-4 mt-2 text-xl lg:text-2xl`}>
           Consultas
         </h1>
 
         <TableConsultaAdmin query={query} currentPage={currentPage} />
 
-        <div className="mt-2 mb-4 flex w-full justify-center">
+        <div className="mt-2 my-5 flex w-full justify-center">
           <Pagination totalPages={totalPages} />
         </div>
       </main>
@@ -62,13 +61,15 @@ export default async function Page({
         </h1>
         
         {consultas.length ? (
-          <div className=" flex flex-col gap-2 ">
+          <div className=" flex flex-col gap-3 ">
             {consultas?.map((consulta, idx) => (
               <div key={idx } className=" text-[13px] leading-[18px] ">
-                <TableConsultaMember consulta={consulta} />
+                <Providers /* session={session} */>
+                  <TableConsultaMember consulta={consulta} countcon={countcon} currentPage={currentPage} index={idx} />
+                </Providers>
               </div>
             ))}
-            <div className="-z-10 mt-5 flex w-full justify-center">
+            <div className="z-10 my-5 flex w-full justify-center">
               <Pagination totalPages={totalPagesMember} />
             </div>
           </div>
@@ -78,11 +79,8 @@ export default async function Page({
           </div>
         )}
 
-        {/* <div className="h-[50%] flex items-center justify-center ">
-          Página no disponble
-        </div> */}
+
       </main>
     );
-
     // return notFound();
 }

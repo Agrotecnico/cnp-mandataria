@@ -1,15 +1,10 @@
 
 import {
   QuestionMarkCircleIcon,
-  QueueListIcon,
-  UserCircleIcon,
   ClipboardDocumentListIcon,
-  UserGroupIcon,
-  HomeIcon,
-  InboxIcon,
+  ChatBubbleLeftEllipsisIcon,
 } from '@heroicons/react/24/outline';
 import iconResumen from "@/app/ui/logosIconos/icon-resumen";
-
 
 
 export const agrotecnico = [
@@ -217,7 +212,6 @@ export const tramites3 = [
 
 
 
-
 export const linkMembers = [
   {
     name: 'Resumen',
@@ -227,7 +221,6 @@ export const linkMembers = [
   {
     name: 'Consultas',
     href: '/dashboard/consultas',
-    // icon: QueueListIcon,
     icon: QuestionMarkCircleIcon,
   },
   {
@@ -235,16 +228,12 @@ export const linkMembers = [
     href: '/dashboard/tramites',
     icon: ClipboardDocumentListIcon,
   },
-  // { name: 'Editar Perfil',
-  //   href: '/dashboard/perfil',
-  //   icon: UserCircleIcon },
+  { name: 'Comentarios', href: '/dashboard/comments', icon: ChatBubbleLeftEllipsisIcon, },
 ];
 
 export const links = [
   { name: 'Resumen', href: '/dashboard', icon: iconResumen, },
-  // { name: 'Facturas', href: '/dashboard/invoices', icon: InboxIcon, },
-  // { name: 'Clientes', href: '/dashboard/customers', icon: UserGroupIcon },
   { name: 'Consultas', href: '/dashboard/consultas', icon: QuestionMarkCircleIcon },
   { name: 'Trámites', href: '/dashboard/tramites', icon: ClipboardDocumentListIcon, },
-  // { name: 'Editar Perfil', href: '/dashboard/perfil', icon: UserCircleIcon },
+  { name: 'Comentarios', href: '/dashboard/comments', icon: ChatBubbleLeftEllipsisIcon, },
 ];

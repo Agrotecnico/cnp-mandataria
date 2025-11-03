@@ -1,19 +1,17 @@
 
 import { Metadata } from 'next';
+import { useSession } from "next-auth/react"
 import { auth } from '@/auth';
 import { notFound } from 'next/navigation';
-import Link from 'next/link';
 
 import Pagination from '@/app/ui/invoices/pagination';
 import { fetchTramitesPages } from '@/app/lib/data';
 import TableTramiteAdmin from '@/app/ui/tramites/table-tramite-admin';
 import TableTramiteMember from '@/app/ui/tramites/table-tramite-member';
-import { fetchUserById } from '@/app/lib/data';
 import { fetchTramitesPagesM } from '@/app/lib/data';
 import { fetchFilteredTramitesM } from '@/app/lib/data';
 import { fetchFilteredTramites } from '@/app/lib/data';
 import Search from '@/app/ui/search';
-import IconPresupuesto from '@/app/ui/logosIconos/icon-presupuesto';
 
 
 export const metadata: Metadata = {
@@ -29,25 +27,21 @@ export default async function Page({
   };
 }) {
   const session = await auth();
-  // const user = await fetchUserById(session?.user?.email);
   const email= session?.user?.email
 
   const query = searchParams?.query || '';
   const currentPage = Number(searchParams?.page) || 1;
 
   const totalPages = await fetchTramitesPages(query);
-
   const AllTramites = await fetchFilteredTramites(query, currentPage);
-
   const {totalPagesMember, countcon} = await fetchTramitesPagesM(email);
-
-  const tramites = await fetchFilteredTramitesM( email, currentPage );
+  const tramitesMember = await fetchFilteredTramitesM( email, currentPage );
 
 
   if (session?.user.role === "admin")
     return (
       <main>
-        <h1 className={` mb-4 text-xl lg:text-2xl`}>
+        <h1 className={` mb-4 mt-2 text-xl lg:text-2xl`}>
           Trámites
         </h1>
 
@@ -61,7 +55,7 @@ export default async function Page({
           </div>
         ))}
 
-        <div className="mt-5 flex w-full justify-center">
+        <div className="my-5 flex w-full justify-center">
           <Pagination totalPages={totalPages} />
         </div>
       </main>
@@ -73,15 +67,15 @@ export default async function Page({
           Mis Trámites
         </h1>
        
-        {tramites.length ? (
-          <div className="text-[#1d0215dd] flex flex-col gap-2 ">
-            {tramites?.map((tramite, idx) => (
+        {tramitesMember.length ? (
+          <div className="text-[#020b1ddd] flex flex-col gap-2 ">
+            {tramitesMember?.map((tramite, idx) => (
               <div key={idx } className=" text-[13px] leading-[18px] ">
                 <TableTramiteMember tramite={tramite} />
               </div>
             ))}
 
-            <div className="mt-5 flex w-full justify-center">
+            <div className="z-10 my-5 flex w-full justify-center">
               <Pagination totalPages={totalPagesMember} />
             </div>
           </div>
@@ -90,11 +84,8 @@ export default async function Page({
             <p>Todavía no iniciaste un trámite</p>
           </div>
         )}
-        {/* <div className="h-[50%] flex items-center justify-center ">
-          Página no disponble
-        </div> */}
       </main>
     );
 
-  return notFound();
+  // return notFound();
 }

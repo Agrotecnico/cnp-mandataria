@@ -253,7 +253,7 @@ export default function CNPMandataria({
             href={"https://www.dnrpa.gov.ar/portal_dnrpa/mandatarios2.php?CONSULTAS2=true"} 
             target='_blank'
             className="text-[#020b1daa]">
-            <p className="flex justify-center items-center gap-3 px-4 h-7 rounded-lg bg-[#ffffff88] duration-200 text-sm font-normal [font-variant-caps:_small-caps] tracking-wide shadow-[0_10px_20px_#020b1d33] sm:text-[15px] hover:bg-[#ffffff] hover:text-[#020b1ddd]">
+            <p className="flex justify-center items-center gap-3 px-4 h-7 rounded-lg bg-[#ffffff88] duration-200 text-sm font-normal [font-variant-caps:_small-caps] shadow-[0_10px_20px_#020b1d33] sm:text-[15px] hover:bg-[#ffffff] hover:text-[#020b1ddd] ">
               Mandataria Nacional{' '}
               <span className="flex items-center text-[13px] sm:text-[14px] tracking-normal">
                 <span className='flex items-center h-[16px] tracking-wider text-[#ffffff] px-1 bg-[#548effbb] font-medium rounded-l-[4px] rounded-tr-[4px] text-[10px] sm:text-[11px]'>CUIT</span><span className="border-b border-[#548effaa] leading-[1.2] mr-2 pl-1 text-[13px] ">27 30615135 0

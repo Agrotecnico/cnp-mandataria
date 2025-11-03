@@ -6,26 +6,27 @@ import {
   UserIcon,
 } from '@heroicons/react/24/outline';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
-import { useActionState,  FormEvent, useEffect } from 'react';
+import { useActionState,  FormEvent } from 'react';
 import { useSearchParams, usePathname } from 'next/navigation';
 import { useRef, useState } from 'react';
 import { nanoid } from "nanoid";
 
 import { createUser, StateUser, authenticate2 } from '@/app/lib/actions';
 import { Fondo, Frente } from '@/app/ui/marcos';
-import { User } from "@/app/lib/definitions";
 import { ButtonA } from '@/app/ui/button';
 
 
 const wait = () => new Promise((resolve) => setTimeout(resolve, 2000));
 
 
-export default function LoginForm(/* { user }: { user: User | undefined} */) {
+export default function LoginForm() {
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
 
   const pathname = usePathname()
+
+  const shimmer2 ='before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_1.5s_cubic-bezier(0.42,_0,_0.58,_1)_infinite] before:bg-gradient-to-r before:from-transparent before:from-20% before:via-white/30 before:via-50%  before:to-transparent before:to-80%';
 
   const token= nanoid()
 
@@ -104,9 +105,8 @@ export default function LoginForm(/* { user }: { user: User | undefined} */) {
       
         {/* crear user */}
         <ButtonA
-          className={`${ (isPendingx || isPendingAuth)  && "before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_1s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/60 before:to-transparent "}  relative overflow-hidden !h-10 w-[calc(100%_-_32px)] !mt-3 mx-4 justify-center bg-[#071f50cc] text-base  text-[#ffffffcc] duration-150 hover:bg-[#071f50ee] hover:text-[#fff] active:!bg-[#071f50bb] disabled:hover:bg-[#071f50cc] disabled:hover:text-[#ffffffcc] disabled:!opacity-100 disabled:active:!bg-[#071f50cc] `}
+          className={`${(isPendingx || isPendingAuth)  && `${shimmer2} animate-pulse` } relative overflow-hidden  !h-10 w-[calc(100%_-_32px)] !mt-3 mx-4 justify-center bg-[#071f50cc] text-base  text-[#ffffffcc] duration-150 hover:bg-[#071f50ee] hover:text-[#fff] active:!bg-[#071f50bb] disabled:hover:bg-[#071f50cc] disabled:hover:text-[#ffffffcc] disabled:!opacity-100 disabled:active:!bg-[#071f50cc]      `}
           type="submit"
-          disabled={ name && email && isEmailValid(`${email}`) ? false : true }
           onClick={() => {
             setTimeout(handleClickButtonAuth, 200) 
           }}

@@ -530,7 +530,7 @@ export default function IniciarTramite( {
 
       {/* registrar email tramite */}
       { !user ? (
-        <Frente className="`!px-2 py-3 mt-5 text-small-regular !bg-[#e5ebf5ff] sm:!px-4 sm:py-2 `">
+        <Frente className="`!px-2 py-3 mt-5 text-small-regular !bg-[#e5ebf5] sm:!px-4 sm:py-2 `">
           <div className="flex items-start justify-between gap-3  sm:items-center sm:gap-5 ">
             <div className="mt-[2px] sm:mt-1.5  ">
               <IconRegistro className=" w-5 ml-1.5 sm:w-6 sm:ml-3" />
@@ -650,7 +650,7 @@ export default function IniciarTramite( {
           </div>
         </Frente>
       ) : isEmailVisitor ? (
-        <Frente className={`!px-2 py-3 mt-5 text-small-regular !bg-[#e5ebf5ff] sm:!px-4 sm:py-2 `}>
+        <Frente className={`!px-2 py-3 mt-5 text-small-regular !bg-[#e5ebf5] sm:!px-4 sm:py-2 `}>
           <div className="flex items-start justify-between gap-3  sm:items-center sm:gap-5 ">
             <div className="mt-[2px] sm:mt-1.5  ">
               <IconRegistro className="w-5 ml-1.5 sm:w-6 sm:ml-3 " />
@@ -740,7 +740,7 @@ export default function IniciarTramite( {
           </div>
         </Frente>
       ) : (
-        <Frente className={`flex items-start gap-2.5 !py-3 px-2 mt-5 !bg-[#d8edd99c] text-small-regular ${estado?.message === "tramiteIniciado" && "hidden"} sm:py-2 sm:px4 sm:gap-5 sm:items-center`}>{/* !bg-[#e5ebf5ff] */}
+        <Frente className={`flex items-start gap-2.5 !py-3 px-2 mt-5 !bg-[#d8edd966] text-small-regular ${estado?.message === "tramiteIniciado" && "hidden"} sm:py-2 sm:px4 sm:gap-5 sm:items-center`}>{/* !bg-[#e5ebf5ff] */}
           <IconEnvioEmail className=" w-8 ml-1.5 mt-0.5 sm:w-10 sm:ml-3 sm:mt-0" />
           <div className={`w-full text-start text-[13px] text-[#2e4067] sm:text-sm `}>
             <p>Te enviaré el <b>presupuesto</b> por e-mail a<span className= "underline decoration-[#39507fdd] underline-offset-2 mx-1.5 ">{user.email} </span></p>
@@ -749,10 +749,10 @@ export default function IniciarTramite( {
       )}
 
       {estado?.message === "tramiteIniciado" && (
-        <Frente className="!p-2 mt-5 !bg-[#d7e5d9] sm:!p-4 ">
-          <div className={`w-full text-start text-sm text-[#2e4067] transition-[opacity] duration-300 `}>
-            <p className="sm:text-center">Recibí el <b>pedido de presupuesto</b>, te responderé a la mayor brevedad.</p>
-            <p className={`mt-2 font-medium ${ user?.email_verified && "hidden"} sm:text-center`}>
+        <Frente className="!p-2 mt-5 !bg-[#ddebdf] sm:!p-4 ">
+          <div className={`w-full text-sm text-[#2e4067] transition-[opacity] duration-300 `}>
+            <p className="">Recibí el <b>pedido de presupuesto</b>, te responderé a la mayor brevedad.</p>
+            <p className={`mt-2 font-medium ${ user?.email_verified && "hidden"}`}>
               Por favor, revisá el correo electrónico <span className= "underline decoration-[#020b1d81] underline-offset-2 mx-1 ">{user?.email}</span> y enviá la verificación.
             </p>
           </div>
@@ -797,8 +797,8 @@ export default function IniciarTramite( {
                   }}
                 >
                   <IconCambio
-                    className={`${(spin || isPending || isPendingxx) && "animate-spin"} mr-2 w-[22px] h-[22px] `}
-                  />
+                  className={`${(spin || isPending || isPendingxx ) && "animate-spin"} fill-[#fff0] stroke-[#ffffff55] mr-2 w-[22px] h-[22px]`}
+                />
                   <p className="w-full" >Pedir presupuesto</p>
                 </ButtonA>
               </div>

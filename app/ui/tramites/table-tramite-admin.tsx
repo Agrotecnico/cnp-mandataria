@@ -3,11 +3,11 @@
 import { useState, useEffect } from 'react';
 import clsx from 'clsx';
 import { PencilIcon } from '@heroicons/react/24/outline';
+import Image from 'next/image'
 
 import { formatDateToLocal, formatCurrency } from '@/app/lib/utils';
 import { UpdateTramite } from '@/app/ui/tramites/buttons';
 import DeleteTramite from '@/app/ui/tramites/delete-tramite';
-import Image from 'next/image'
 import distanceToNow from '@/app/lib/dateRelative';
 import { Button } from '@/app/ui/button';
 import useToggleState from "@/app/lib/hooks/use-toggle-state"
@@ -49,10 +49,10 @@ export default function TableTramiteAdmin({
           <div className="overflow-hidden rounded-md">
             <div className="">
               <div
-                className="flex flex-col gap-3 mb-2 w-full text-sm rounded-lg p-3 bg-[#ffffff94] [box-shadow:inset_0_1px_#ffffff,inset_0_-1px_#0000002e] sm:p-4"
+                className="flex flex-col gap-3 mb-2 w-full text-sm rounded-lg p-3 bg-[#ffffff88] [box-shadow:inset_0_1px_#ffffff,inset_0_-1px_#0000002e] sm:p-4"
                 >
                 <div className="w-full items-center flex gap-3 justify-between sm:items-center sm:mb-0">
-                  <div className="flex flex-col items-start gap-3 w-full ">
+                  <div className="flex flex-col items-start gap-4 w-full ">
                     <div className="flex flex-wrap items-center gap-2 sm:gap-3">
                       <div className="" data-testid="image-container">
                         { AllTramite.image ? (
@@ -157,17 +157,20 @@ export default function TableTramiteAdmin({
                       </div>
           
                       <div className={`flex items-stretch gap-1.5 min-h-6`}>
-                        <div className={`flex items-center justify-center text-[11px] w-[18px] px-[5px] ${AllTramite.estado === "presupuestar" ? "text-[#ffffff] bg-[#548eff]" : "text-[#ffffff] bg-[#39507f]"}`}>2</div>
-                        { AllTramite.estado === "presupuestado" || AllTramite.estado === "iniciado" || AllTramite.estado === "cancelado" || AllTramite.estado === "terminado" ? (
-                        <div className={`flex items-center flex-wrap`}>
-                          Presupuestado
-                          <div className={`text-[13px] py-0.5 px-1 ${AllTramite.estado === "presupuestado" && "hidden"} `} >
-                              el<span className="ml-1.5 px-1 rounded-lg">{formatDateToLocal(AllTramite.budgeted_at!)}</span>
-                          </div>
-                          <div className={`text-[13px] py-0.5 px-1.5 ml-1 mr-2 rounded-lg text-[#020b1d] bg-[#ffffff] ${AllTramite.estado !== "presupuestado"  && "hidden"}`}>
-                            {distanceToNow(new Date(AllTramite.budgeted_at!))} 
-                          </div> 
+                        <div className={`flex items-center justify-center text-[11px] w-[18px] px-[5px] ${AllTramite.estado === "presupuestar" ? "text-[#ffffff] bg-[#548eff]" : "text-[#ffffff] bg-[#39507f]"}`}>
+                          2
                         </div>
+
+                        { AllTramite.estado === "presupuestado" || AllTramite.estado === "iniciado" || AllTramite.estado === "cancelado" || AllTramite.estado === "terminado" ? (
+                          <div className={`flex items-center flex-wrap`}>
+                            Presupuestado
+                            <div className={`text-[13px] py-0.5 px-1 ${AllTramite.estado === "presupuestado" && "hidden"} `} >
+                                el<span className="ml-1.5 px-1 rounded-lg">{formatDateToLocal(AllTramite.budgeted_at!)}</span>
+                            </div>
+                            <div className={`text-[13px] py-0.5 px-1.5 ml-1 mr-2 rounded-lg text-[#020b1d] bg-[#ffffff] ${AllTramite.estado !== "presupuestado"  && "hidden"}`}>
+                              {distanceToNow(new Date(AllTramite.budgeted_at!))} 
+                            </div> 
+                          </div>
                         ) : (
                           <div className="flex items-center">
                             <div>Calcular y enviar el presupuesto</div>

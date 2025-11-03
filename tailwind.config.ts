@@ -46,8 +46,13 @@ const config: Config = {
           to: { transform: "rotate(360deg)" },
         },
         pulse: {
-          "0%": { opacity: ".1" },
-          "50% ": { opacity: ".5" },
+          "0%": { opacity: "1" },
+          "50% ": { opacity: ".60" },
+          "100%" : { opacity: "1" },
+        },
+        pulse2: {
+          "0%": { opacity: "1" },
+          "50% ": { opacity: "0.25" },
           "100%" : { opacity: "1" },
         },
       },
@@ -59,8 +64,10 @@ const config: Config = {
         slideUpAndFade: "slideUpAndFade 400ms cubic-bezier(0.16, 1, 0.3, 1)",
         slideRightAndFade:
           "slideRightAndFade 400ms cubic-bezier(0.16, 1, 0.3, 1)",
-        ping: "1s cubic-bezier(0, 0, 0.2, 1) infinite",
-        pulse: "2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+        ping: "ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite",
+        pulse2: "pulse2 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+        pulse: "pulse 1.5s cubic-bezier(0.42, 0, 0.58, 1) infinite",
+        spin: "spin 1s cubic-bezier(0,0,1,1) infinite",
       },
     },
   },

@@ -6,6 +6,7 @@ import { Disclosure, DisclosurePanel } from '@headlessui/react';
 import clsx from 'clsx';
 import {  usePathname, useSearchParams, redirect  } from 'next/navigation';
 import 'react-toastify/dist/ReactToastify.css';
+import { nanoid } from "nanoid";
 
 import { createConsulta, createVerificationToken, StateConsulta, StateVerificationToken, updateUserEmail, StateUserEmail, updateCommentEmail, StateUpdateCommentEmail,  createUser, StateUser, authenticate, authenticate2, handleFormPedido } from '@/app/lib/actions';
 import { Frente } from '@/app/ui/marcos';
@@ -23,7 +24,6 @@ import ImageUploading from "@/app/ui/consultas/ImageUploading"
 import { ButtonB, ButtonA } from '@/app/ui/button';
 import { InputCnp } from "@/app/ui/uiRadix/input-cnp";
 import { TextareaCnp } from "@/app/ui/uiRadix/textarea-cnp";
-import { nanoid } from "nanoid";
 import { User } from '@/app/lib/definitions';
 
 
@@ -52,12 +52,6 @@ export default function RealizarConsulta({
   const [consultaDisabled, setConsultaDisabled] = useState(false);
 
   const pathname = usePathname();
-
-  // const searchParams = useSearchParams();
-  // const isVerified = searchParams.get('verified') === 'true' ? true : false;
-  // const callbackUrl = '/dashboard';
-
-
 
   const tokenx= nanoid()
   const isEmailVisitor= user?.email.slice(16) === "@cnpmandataria.com"
@@ -289,7 +283,7 @@ export default function RealizarConsulta({
               className=" ml-1.5 w-[18px] sm:ml-3 sm:w-[22px] " 
               color="#39507fcc" color2="#fffd"
             />
-            <p className="text-sm text-[#39507f]">Consulta <span className={` text-[#ff0000] ${consulta && "text-[#0000]"}`}>*</span></p>
+            <p className="text-sm text-[#39507f]">Consulta <span className={` text-[#ff0000] ${consulta && "hidden"}`}>*</span></p>
           </div>
           <ButtonB
             className={`h-8 text-[13px] w-max `}
@@ -467,7 +461,7 @@ export default function RealizarConsulta({
 
             <div className={`w-full text-start text-[#39507f] `}>
               <div className={` text-[13px] sm:text-[15px] `}>
-                <p>Enviame un e-mail para mandarte la respuesta<span className=" text-[#ff0000] ml-0.5">*</span></p> 
+                <p>Enviame un e-mail para mandarte la respuesta<span className={` text-[#ff0000] ml-0.5 ${email && name && "hidden"}`}>*</span></p> 
               </div>
             </div>
               
@@ -585,7 +579,7 @@ export default function RealizarConsulta({
 
             <div className={`w-full text-start text-[#39507f] `}>
               <div className={` text-[13px] sm:text-[15px] `}>
-                <p><b>{ user.name}</b>, enviame un e-mail para mandarte la respuesta<span className=" text-[#ff0000] ml-0.5">*</span></p>
+                <p><b>{ user.name}</b>, enviame un e-mail para mandarte la respuesta<span className={` text-[#ff0000] ml-0.5  ${email && user.name && "hidden"}`}>*</span></p>
               </div>
             </div>
               
@@ -667,19 +661,20 @@ export default function RealizarConsulta({
           </div>
         </Frente>
       ) : (
-        <Frente className={`flex items-start gap-2.5 !py-3 px-2 mt-5 !bg-[#d8edd99c] text-small-regular ${estado?.message === "consultaCreada" && "hidden"} sm:py-2 sm:px-4 sm:gap-5 sm:items-center`}>
+        <Frente className={`flex items-start gap-2.5 !py-3 px-2 mt-5 !bg-[#d8edd966] text-small-regular ${estado?.message === "consultaCreada" && "hidden"} sm:py-2 sm:px-4 sm:gap-5 sm:items-center`}>
           <IconEnvioEmail className=" w-8 ml-1.5 mt-0.5 sm:w-10 sm:ml-3 sm:mt-0" />
           <div className={`w-full text-start text-[13px] text-[#2e4067] sm:text-sm `}>
-            <p>Te enviaré la <b>respuesta</b> por e-mail a<span className= "underline decoration-[#39507fdd] underline-offset-2 mx-1.5 ">{user.email} </span></p>
+            <p>Te enviaré la <b>respuesta</b> por e-mail a<span className= "underline decoration-[#39507fdd] underline-offset-2 mx-1.5 ">{user.email} </span>
+            </p>
           </div>
         </Frente>
       )}
 
       {estado?.message === "consultaCreada" && (
         <Frente className="!p-2 mt-5 !bg-[#ddebdf] sm:!p-4 ">
-          <div className={`w-full text-start text-sm text-[#2e4067] transition-[opacity] duration-300 sm:text-[15px] `}>
-            <p className="sm:text-center">Recibí la <b>consulta</b>, te responderé a la mayor brevedad.</p>
-            <p className={`mt-2 ${ user?.email_verified && "hidden"} sm:text-center`}>
+          <div className={`w-full text-sm text-[#2e4067] transition-[opacity] duration-300 sm:text-[15px] `}>
+            <p className="">Recibí la <b>consulta</b>, te responderé a la mayor brevedad.</p>
+            <p className={`mt-2 ${ user?.email_verified && "hidden"}`}>
               Por favor, revisá el correo electrónico <span className= "underline decoration-[#39507fdd] underline-offset-2 mx-1 ">{user?.email}</span> y enviá la verificación.
             </p>
           </div>
@@ -702,7 +697,9 @@ export default function RealizarConsulta({
 
       {/*Boton Enviar consult */}
       <div className="w-full flex justify-between items-center">
-        <p className={`text-xs ml-2 ${consulta && user?.email && !isEmailVisitor  && "opacity-0" } sm:text-[13px]`}><span className=" text-[#ff0000]">*</span> Requeridos</p>
+
+        <p className={`text-xs ml-2 ${consulta && ( email || user?.email ) && (name || user?.name )  && "opacity-0" } sm:text-[13px]`}><span className=" text-[#ff0000]">*</span> Requeridos</p>
+
 
         {estado?.message !== "consultaCreada" ? (
           <form onSubmit={ files.length === 0 ? uploadToServer1 : uploadToServer2 } >
@@ -725,7 +722,7 @@ export default function RealizarConsulta({
                 }}
               >
                 <IconCambio
-                  className={`${(spin || isPending || isPendingxx ) && "animate-spin"} mr-2 w-[22px] h-[22px] `}
+                  className={`${(spin || isPending || isPendingxx ) && "animate-spin"} fill-[#fff0] stroke-[#ffffff55] mr-2 w-[22px] h-[22px]`}
                 />
                 <div className="w-full">
                   Enviar consulta

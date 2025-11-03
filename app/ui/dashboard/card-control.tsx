@@ -29,54 +29,62 @@ export default async function CarControl() {
     numberOfConsultas,
     numberOfTramites,
     numberOfRespondidas,
-    numberOfTerminados
+    numberOfTerminados,
+    numberOfComments,
   } = await fetchCardData();
 
   
   return (
     <>
-      <div className="flex flex-col justify-between ">
-        <div className="flex p-2 pl-0">
-          <h3 className="ml-2 text-sm font-medium sm:text-[15px]">
+      <div className='flex flex-col gap-4'>
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
+        <Frente className="w-full p-3  ">
+          <h3 className="text-sm pb-1.5 font-medium sm:text-[15px]">
             Total Consultas 
             <span className="ml-2 opacity-60">{numberOfConsultas}</span>
           </h3>
-        </div>
 
-        <Frente className={`truncate p-3 text-xs text-center sm:text-[13px] sm:p-5 `} >
-          <div className="flex gap-2 items-center h-6">
-            <p>Sin responder</p>
-            <p className="flex items-center justify-center rounded-full px-1 min-w-6 h-4 text-white bg-[#80a2e5]">{numberOfConsultas - numberOfRespondidas } </p>
-          </div>
+          <div className={`truncate pt-1.5 border-t border-[#39507f2a] text-xs text-center sm:text-[13px] `} >
+            <div className="flex gap-2 items-center h-6">
+              <p>Respondidas</p>
+              <p className="flex items-center justify-center rounded-full px-1 min-w-6 h-[18px] text-white bg-[#39507fcc]">{ numberOfRespondidas}</p>
+            </div>
 
-          <div className="flex gap-2 items-center h-6">
-            <p>Respondidas</p>
-            <p className="flex items-center justify-center rounded-full px-1 min-w-6 h-4 text-white bg-[#39507fcc]">{ numberOfRespondidas}</p>
+            <div className="flex gap-2 items-center h-6">
+              <p>En proceso...</p>
+              <p className="flex items-center justify-center rounded-full px-1 min-w-6 h-[18px] text-white bg-[#80a2e5]">{numberOfConsultas - numberOfRespondidas } </p>
+            </div>
           </div>
         </Frente>
-      </div>
 
-      <div className="flex flex-col justify-between ">
-        <div className="flex p-2  pl-0">
-          <h3 className="ml-2 text-sm font-medium sm:text-[15px]">
+        <Frente className="w-full p-3 ">
+          <h3 className="text-sm pb-1.5 font-medium sm:text-[15px]">
             Total Trámites 
             <span className="ml-2 opacity-60">{numberOfTramites}</span>
           </h3>
-        </div>
-        <Frente
-          className={`
-            truncate p-3 text-xs text-center sm:text-[13px] sm:p-5 `}
-        >
-          <div className="flex gap-2 items-center h-6">
-            <p>Sin terminar</p>
-            <p className="flex items-center justify-center rounded-full px-1 min-w-6 h-4 text-white bg-[#80a2e5]">{numberOfTramites - numberOfTerminados }</p>
-          </div>
-          <div className="flex gap-2 items-center h-6">
-            <p>Terminados</p>
-            <p className="flex items-center justify-center rounded-full px-1 min-w-6 h-4 text-white bg-[#39507fcc]">{numberOfTerminados}</p>
+
+          <div className={`truncate pt-1.5 border-t border-[#39507f2a] text-xs text-center sm:text-[13px] `}>
+            <div className="flex gap-2 items-center h-6">
+              <p>Terminados</p>
+              <p className="flex items-center justify-center rounded-full px-1 min-w-6 h-[18px] text-white bg-[#39507fcc]">{numberOfTerminados}</p>
+            </div>
+            <div className="flex gap-2 items-center h-6">
+              <p>En proceso...</p>
+              <p className="flex items-center justify-center rounded-full px-1 min-w-6 h-[18px] text-white bg-[#80a2e5]">{numberOfTramites - numberOfTerminados }</p>
+            </div>
           </div>
         </Frente>
       </div>
+
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-3 ">
+      <Frente  className="p-3 col-span-2 min-[428px]:col-span-1" >
+        <h3 className="text-sm font-medium sm:text-[15px]">
+          Total Comentarios
+          <span className="ml-2 opacity-60">{numberOfComments}</span>
+        </h3>
+      </Frente>
+      </div>
+    </div>
     </>
   );
 }

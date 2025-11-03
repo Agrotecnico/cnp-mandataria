@@ -10,11 +10,11 @@ import distanceToNow from '@/app/lib/dateRelative';
 import markdownStyles from '@/app/ui/consultas/markdown-styles.module.css';
 import ListComment from '@/app/ui/consultas/comments/list-comment';
 import { Frente, Fondo } from '@/app/ui/marcos'
-import { fetchUserById, fetchCommentLast } from '@/app/lib/data';
+import { fetchCommentLast } from '@/app/lib/data';
 import IconPresupuesto from '@/app/ui/logosIconos/icon-presupuesto';
 import IconConsulta from '@/app/ui/logosIconos/icon-consulta';
 import { fetchFilteredComments } from '@/app/lib/data';
-import { SessionProvider } from "next-auth/react"
+import { Providers } from '@/app/dashboard/providers';
 
 
 type Params = {
@@ -24,11 +24,7 @@ type Params = {
 };
 
 export default async function PostPage({ params }: Params) {
-
   const session = await auth();
-  const user = await fetchUserById(session?.user?.email)
-
-
   const post = getPostBySlug(params.slug);
 
   const slug= post.slug!
@@ -91,9 +87,9 @@ export default async function PostPage({ params }: Params) {
             />
           </div>
           <div className="mx-auto text-sm max-w-2xl sm:text-[15px]">
-            <SessionProvider  session={session}>
-              <ListComment user={user} post={post} comments={comments} commentLast={commentLast}  />
-            </SessionProvider>
+            <Providers >
+              <ListComment post={post} comments={comments} commentLast={commentLast}  />
+            </Providers>
           </div>
         </article>
       </Fondo>

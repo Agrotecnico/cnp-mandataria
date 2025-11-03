@@ -14,12 +14,12 @@ export default function UpdateComment({  id } : {  id: string}) {
   const updateCommentDeleteWithId = updateCommentDelete.bind(null, id);
 
   return (
-    <div className="group flex justify-center gap-4 ">
+    <div className="group flex justify-center gap-4 mb-auto">
       <button
         onClick={() => {
           setIsModalOpen(true)
         }}
-        className={`px-2 ml-2 text-[13px] text-[#200b1d80] bg-[#ffffff] duration-200 rounded-full opacity-80 hover:text-[#ffffff] hover:bg-[#548effaa] active:opacity-100 `}
+        className={`px-1 pb-[2px] ml-4 text-[13px] leading-[1.1] border border-[#020b1d1c] text-[#020b1d88] bg-[#ffffff44] duration-200 rounded-full hover:bg-[#ffffff] hover:text-[#020b1ddd] active:opacity-60 `}
       >
         eliminar
       </button>
@@ -34,7 +34,7 @@ export default function UpdateComment({  id } : {  id: string}) {
                 setIsModalOpen(false)
               }}
               className="bg-[#b7becc] duration-150 text-white px-4 py-2 rounded mr-2 hover:bg-[#9ca4b5]"
-            >{/* bg-gray-400 */}
+            >
               Cancelar
             </button>
 

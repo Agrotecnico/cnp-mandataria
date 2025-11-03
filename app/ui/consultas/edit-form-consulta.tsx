@@ -36,12 +36,13 @@ export default function EditConsultaForm({
   const [consultaAsunto, setConsultaAsunto] = useState("")
   const [respuesta, setRespuesta] = useState("")
 
+
   const archivosAdjuntos= consulta.archivos_url
   const archivos: string[] = JSON.parse(`${archivosAdjuntos}`)
 
   const consultaA:string[] | undefined= consulta.consulta.split(": ")
 
-  const consultaEmail= `${consultaAsunto}:  ${consulta.consulta}`
+  const consultaEmail= `${consultaAsunto}:: ${consulta.consulta}`
   const extrConsulta= consultaEmail.slice(0, 150)
 
   const id= consulta.id
@@ -59,13 +60,13 @@ export default function EditConsultaForm({
   return (
     <>
       <div className="flex flex-col justify-between rounded-xl ">
-        <div className="flex items-center mb-6 ">
+        <div className="flex items-center mb-6 ml-4 ">
           <div className=" relative mr-4" data-testid="image-container">
             {userMember?.image ? (
                 <img
                   decoding="async" 
                   src= {userMember?.image}
-                  className="rounded-full bg-cover h-14 bject-cover w-full " alt="header-image-profile">
+                  className="rounded-full bg-cover h-10 object-cover w-full " alt="header-image-profile">
                   
                 </img>
               ) : (
@@ -106,9 +107,9 @@ export default function EditConsultaForm({
 
           <div
             className={clsx(
-              "transition-[max-height,opacity] duration-300 ease-in-out overflow-visible p-3 bg-[#020b1d] rounded-lg ",
+              "transition-[max-height,opacity] duration-300 ease-in-out overflow-visible bg-[#020b1d] rounded-lg ",
               {
-                "max-h-[1000px] opacity-100 mt-4 ": estadoAdjunto,
+                "max-h-[1000px] opacity-100 mt-4 p-3 ": estadoAdjunto,
                 "max-h-0 opacity-0 mt-0 p-0 ": !estadoAdjunto,
                 "invisible": !estadoAdjunto,
               }

@@ -1,14 +1,13 @@
 "use client"
 
 import Image from 'next/image';
-import { usePathname } from 'next/navigation'
+import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { FormEvent, useState, useEffect, useRef, useActionState  } from 'react';
 import { ExclamationCircleIcon } from '@heroicons/react/24/outline';
 import clsx from 'clsx';
 import { nanoid } from "nanoid";
-import { useSession } from "next-auth/react"
 
-import { CommentsPost, Post, Comment } from "@/app/lib/definitions";
+import { User, CommentsPost, Post, Comment } from "@/app/lib/definitions";
 import  distanceToNow  from "@/app/lib/dateRelative";
 import { Fondo, Frente } from "@/app/ui/marcos";
 import UpdateComment from '@/app/ui/consultas/comments/update-comment';
@@ -29,14 +28,14 @@ const wait = () => new Promise((resolve) => setTimeout(resolve, 2000));
 export default function ListComment({ 
   comments,
   commentLast,
+  user,
   post
   }: {
   comments: CommentsPost[]
   commentLast: Comment
+  user: User | undefined
   post: Post
   }) {
-
-  const { data: session, update } = useSession()
   
   const [nombre, setNombre] = useState("");
   const [images, setImages] = useState<ImageListType>([]);
@@ -52,7 +51,7 @@ export default function ListComment({
 
   const pathname = usePathname();
   
-  const id= session?.user.id!
+  const id= user?.id!
 
   const onChange = (imageList: ImageListType, addUpdateIndex: Array<number> | undefined) => {
   setImages(imageList);
@@ -115,17 +114,17 @@ export default function ListComment({
 
   const crearComment= () => {
     setTimeout(() => handleClickButton(), 200) //create comment
-    !session && setTimeout(() => handleClickButtonx(), 200) //create user
+    !user && setTimeout(() => handleClickButtonx(), 200) //create user
     setTimeout(() => setSpin(true), 200)
     setTimeout(() => setSpin(false), 2000)
     setTimeout(() => setOpen(!open), 2000)
-    !session?.user.image && setTimeout(() => setComme(!comme), 2000)
-    !session?.user.image && setTimeout(() => setCommentOk(!commentOk), 2000)
+    !user?.image && setTimeout(() => setComme(!comme), 2000)
+    !user?.image && setTimeout(() => setCommentOk(!commentOk), 2000)
     console.log("Comentario creado")
   }
   
   const actualizarComment= () => {
-    !session?.user.image && setTimeout( handleClickButtonxx, 200) //updated img user
+    !user?.image && setTimeout( handleClickButtonxx, 200) //updated img user
     setTimeout(() => setSpin(false), 2000)
     setTimeout(() => location.reload(), 2000) 
   }
@@ -156,7 +155,7 @@ export default function ListComment({
     const reader = new FileReader();
     reader.onload = () => {
       const base64 = reader.result as string;
-      !session?.user.image && sessionStorage.setItem('imgVisitor', base64);
+      !user?.image && sessionStorage.setItem('imgVisitor', base64);
     };
     reader.readAsDataURL(files[0]);
 
@@ -245,8 +244,8 @@ export default function ListComment({
         {/* Form Crear comment */}
         <div className={` ${commentOk === true || imgVisitor  ? "block" : "hidden"}`}>
           <div className={` text-sm sm:text-[15px] `}>
-              { session ? (
-                <p><b>{session.user.name}</b>, podés ampliar esta consulta</p>
+              { user ? (
+                <p><b>{user.name}</b>, podés ampliar esta consulta</p>
               ) : "Podés ampliar esta consulta"}
           </div>
           
@@ -285,7 +284,7 @@ export default function ListComment({
             >
               {/*  Crear comment  */}
               <div className={` ${!open && "invisible"}`} > 
-                <fieldset className={` grid-cols items-center gap-2 sm:grid-cols-2 md:flex-row md:gap-4 ${ session?.user.name ? "hidden" : "grid" }`}>
+                <fieldset className={` grid-cols items-center gap-2 sm:grid-cols-2 md:flex-row md:gap-4 ${ user?.name ? "hidden" : "grid" }`}>
                   <InputCnp
                     className={`text-sm h-8 mb-4 !w-full placeholder:text-[#000000aa] placeholder:text-[13px]  ${!open && "invisible"}`}
                     id="nombre"
@@ -339,7 +338,7 @@ export default function ListComment({
                     <ButtonA
                       type="submit"
                       className={`${spin && "before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_1s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/60 before:to-transparent"}  relative overflow-hidden h-8 text-[13px] w-max `}
-                      disabled={ comment && (nombre || session?.user.name )  ? false : true }
+                      disabled={ comment && (nombre || user?.name )  ? false : true }
                       onClick={() => {
                         wait().then(() =>{ 
                           handleClickButtonAuth()
@@ -483,7 +482,7 @@ export default function ListComment({
             )}
           </ImageUploading>
 
-          { !session ?
+          { !user ?
           <div className={`absolute top-[118px] right-4 z-30 `}>
             <UpdateComment id={commentLast.id } />
           </div> : ""
@@ -494,8 +493,8 @@ export default function ListComment({
         <div className='relative '>
           {comments &&
             comments.map((comment, index) => {
-              const isAuthor = session && session.user.email === comment.email_id;
-              const isAdmin =session && session.user.role === "admin";
+              const isAuthor = user && user.email === comment.email_id;
+              const isAdmin =user && user.role === "admin";
               // const isVisitor= comment.email_id === user?.email 
 
               return (
@@ -615,7 +614,7 @@ export default function ListComment({
           <input
             type="hidden"
             name="nombre"
-            value= { session?.user.name ? session?.user.name : nombre ? nombre : "" }
+            value= { user?.name ? user?.name : nombre ? nombre : "" }
             readOnly
           />
           <input
@@ -633,13 +632,13 @@ export default function ListComment({
           <input
             type="hidden"
             name="avatar"
-            value= { session?.user.image ? session.user.image : imgUrlSession ? imgUrlSession : "" }
+            value= { user?.image ? user.image : imgUrlSession ? imgUrlSession : "" }
             readOnly
           />
           <input
             type="hidden"
             name="email_id"
-            value= {session?.user.email ? session.user.email : ""}
+            value= {user?.email ? user?.email : ""}
             readOnly
           />
           <input

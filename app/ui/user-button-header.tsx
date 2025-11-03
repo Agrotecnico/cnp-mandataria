@@ -308,7 +308,7 @@ export default function UserButtonHeader( { user }: { user: User | undefined } )
 
           <DropdownMenuSeparator className="h-[1px] bg-[#37415122] m-[3px]" />
 
-          {pathname == '/realizar-consulta' /* || pathname.startsWith('/dashboard/consultas') */ ? (
+          {pathname == '/realizar-consulta' ? (
             <Link
               href={'#'}
             >
@@ -345,7 +345,7 @@ export default function UserButtonHeader( { user }: { user: User | undefined } )
             </Link>
           )}
 
-          {pathname.startsWith('/iniciar-tramite') /* || pathname.startsWith('/dashboard/tramites') */ ? (
+          {pathname.startsWith('/iniciar-tramite') ? (
             <Link
               href={'#'}
             >
@@ -382,7 +382,7 @@ export default function UserButtonHeader( { user }: { user: User | undefined } )
 
           <DropdownMenuSeparator className="h-[1px] bg-[#37415122] m-[3px]" />
 
-          {/* {pathname == '/' ? ( */}
+          {pathname == '/dashboard/comments' ? (
             <Link
               href={'#'}
             >
@@ -392,19 +392,19 @@ export default function UserButtonHeader( { user }: { user: User | undefined } )
                 </div>
               </div>
             </Link>
-          {/* ) : (
+          ) : (
             <Link
-              href={'/'}
+              href={'/dashboard/comments'}
             >
               <DropdownMenuItem>
                 <div className="group cursor-pointer flex justify-start text-sm gap-4 h-8 w-full !font-normal text-start rounded-[4px] px-0 hover:bg-[#548eff16]" >
                   <div className="flex items-center gap-0 w-max rounded-md px-2 opacity-80 text-[#374151]   group-hover:opacity-100">
-                    <div className="w-full px-2 py-1"><span className='font-semibold text-[13px] text-[#39507f]'>CNP </span>mandataria</div>
+                    <div className="w-full px-2 py-1">ver<span className='ml-1 font-semibold text-[13px] text-[#39507f]'>COMENTARIOS </span></div>
                   </div>
                 </div>
               </DropdownMenuItem>
             </Link>
-          )} */}
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
 

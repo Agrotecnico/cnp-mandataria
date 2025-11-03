@@ -39,7 +39,6 @@ const FormSchemaUser = z.object({
   name: z.string().min(2, { message: "Must be 2 or more characters long" }),
   email: z.string().email({ message: "Invalid email address" }),
   password: z.string().min(5, { message: "Must be 5 or more characters long" }),
-  // confirmPassword: z.string().min(5, { message: "Must be 5 or more characters long" }),
   role: z.enum(['admin', 'memberAccount', 'memberVerified', 'member', 'visitor'], {
     invalid_type_error: 'Seleccione un rol de usuario.',
   }),
@@ -98,11 +97,8 @@ const FormSchemaVerificationToken = z.object({
 
 const CreateInvoice = FormSchema.omit({ id: true, date: true });
 const CreateCustomer = FormSchemaCustomer.omit({ id: true });
-
 const CreateUser = FormSchemaUser.omit({ id: true, role: true, password: true, email_verified: true, created_at: true, updated_at: true });
-
 const CreateUserAccount = FormSchemaUser.omit({ id: true, role: true, email_verified: true, created_at: true, updated_at: true });
-
 const CreateConsulta = FormSchemaConsulta.omit({ created_at: true, respuesta: true,  id: true,  updated_at: true });
 const CreateTramite = FormSchemaTramite.omit({ id: true, presupuesto: true, created_at: true, budgeted_at: true, started_at: true, canceled_at: true, finished_at: true, estado: true });
 const CreateComment = FormSchemaComment.omit({ id: true, created_at: true, deleted_at: true });
@@ -858,23 +854,6 @@ export async function updateUserEmailVerified(
     return { message: 'Database Error: No se pudo actualizar a el Usuario.' };
   }
 }
-// export async function updateUserEmailVerifiedx(
-//   identifier: string,
-//   email_verified: string,
-// ) {
-//   // const newDate= new Date().toISOString()
-//   let role
-//   email_verified === "null" ? role = "member" : role = "memberAccount"
-//   try {
-//     await sql`
-//       UPDATE users
-//       SET role = ${role}
-//       WHERE email = ${identifier}
-//     `;
-//   } catch (error) {
-//     return { message: 'Database Error: No se pudo actualizar a el Usuario.' };
-//   }
-// }
 
 
 export async function createComment(prevStateComment: StateComment, formData: FormData) {
@@ -926,6 +905,72 @@ export async function createComment(prevStateComment: StateComment, formData: Fo
   revalidatePath(`${pathname}`);
   redirect(`${pathname}`);
 
+}
+export async function updateCommentDelete(id: string) {
+  const newDate= new Date().toISOString()
+  try {
+    await sql`
+      UPDATE comments
+      SET deleted_at = ${newDate}
+      WHERE id = ${id}
+    `;
+  } catch (error) {
+    return { message: 'Database Error: No se pudo actualizar el comentario.' };
+  }
+}
+export async function deleteComment(id: string) {
+  // throw new Error('Failed to Delete Comment');
+  try {
+    await sql`DELETE FROM comments WHERE id = ${id}`;
+    revalidatePath('/faq');
+    return { message: 'Comentario eliminado' };
+  } catch (error) {
+    return { message: 'Database Error: Failed to Delete Comment.' };
+  }
+}
+
+export async function updateComment(
+  id2: string,
+  prevStateStateComment: StateUpdateComment,
+  formData: FormData,
+) {
+  const validatedFields = UpdateComment.safeParse({
+    email_id: formData.get('email_id'),
+    post_slug: formData.get('post_slug'),
+    // deleted_at: formData.get('deleted_at'),
+    // nombre: formData.get('nombre'),
+    avatar: formData.get('avatar'),
+  });
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Missing Fields. Failed to Update Comment.',
+    };
+  }
+
+  const { email_id, post_slug,/* deleted_at, nombre, */ avatar } = validatedFields.data;
+
+  // const date = new Date(deleted_at).toISOString();
+
+  try {
+    await sql`
+
+    UPDATE comments
+    SET avatar = ${avatar},
+        email_id = ${email_id},
+        
+    WHERE comment = ${id2} 
+
+    `;
+  } catch (error) {
+    return { message: 'Database Error: Failed to Update Comment.' };
+  }
+
+  // revalidatePath('/dashboard/consultas');
+  // redirect('/dashboard/consultas');
+  revalidatePath(`/faq/${post_slug}`);
+  redirect(`/faq/${post_slug}`);
 }
 export async function updateCommentEmail(
   id: string,
@@ -996,66 +1041,6 @@ export async function updateCommentAvatar(
   revalidatePath(`/faq/${post_slug}`);
   redirect(`/faq/${post_slug}`);
 }
-
-export async function updateComment(
-  id2: string,
-  prevStateStateComment: StateUpdateComment,
-  formData: FormData,
-) {
-  const validatedFields = UpdateComment.safeParse({
-    email_id: formData.get('email_id'),
-    post_slug: formData.get('post_slug'),
-    // deleted_at: formData.get('deleted_at'),
-    // nombre: formData.get('nombre'),
-    avatar: formData.get('avatar'),
-  });
-
-  if (!validatedFields.success) {
-    return {
-      errors: validatedFields.error.flatten().fieldErrors,
-      message: 'Missing Fields. Failed to Update Comment.',
-    };
-  }
-
-  const { email_id, post_slug,/* deleted_at, nombre, */ avatar } = validatedFields.data;
-
-  // const date = new Date(deleted_at).toISOString();
-
-  try {
-    await sql`
-
-    UPDATE comments
-    SET avatar = ${avatar},
-        email_id = ${email_id},
-        
-    WHERE comment = ${id2} 
-
-    `;
-  } catch (error) {
-    return { message: 'Database Error: Failed to Update Comment.' };
-  }
-
-  // revalidatePath('/dashboard/consultas');
-  // redirect('/dashboard/consultas');
-  revalidatePath(`/faq/${post_slug}`);
-  redirect(`/faq/${post_slug}`);
-}
-export async function updateCommentDelete(
-  id: string
-) {
-  const newDate= new Date().toISOString()
-  try {
-    await sql`
-      UPDATE comments
-      SET deleted_at = ${newDate}
-      WHERE id = ${id}
-    `;
-  } catch (error) {
-    return { message: 'Database Error: No se pudo actualizar el comentario.' };
-  }
-}
-
-
 export async function updateCommentComment(
   id: string
 ) {
@@ -1112,17 +1097,6 @@ export async function updateCommentxxxx(
   revalidatePath(`/faq/${post_slug}`);
   redirect(`/faq/${post_slug}`);
 }
-export async function deleteComment(id: string) {
-  // throw new Error('Failed to Delete Comment');
-  try {
-    await sql`DELETE FROM comments WHERE id = ${id}`;
-    revalidatePath('/faq');
-    return { message: 'Comentario eliminado' };
-  } catch (error) {
-    return { message: 'Database Error: Failed to Delete Comment.' };
-  }
-}
-
 export async function updateCommentAvatarMenu(
   id: string,
   prevStateUpdateCommentAvatarMenu: StateUpdateCommentAvatarMenu,
@@ -1161,6 +1135,7 @@ export async function updateCommentAvatarMenu(
   revalidatePath(post_slug);
   redirect(post_slug);
 }
+
 
 export async function authenticate(
   prevState: string | undefined,
