@@ -4,11 +4,10 @@ import { FormEvent, useState, useEffect, useRef, useActionState } from 'react';
 import { ExclamationCircleIcon } from '@heroicons/react/24/outline'
 import { Disclosure, DisclosurePanel } from '@headlessui/react';
 import clsx from 'clsx';
-import {  usePathname, useSearchParams, redirect  } from 'next/navigation';
-import 'react-toastify/dist/ReactToastify.css';
-import { nanoid } from "nanoid";
+import { usePathname, useSearchParams } from 'next/navigation';
+import { ToastContainer, toast, Zoom, Flip } from 'react-toastify';
 
-import { createConsulta, createVerificationToken, StateConsulta, StateVerificationToken, updateUserEmail, StateUserEmail, updateCommentEmail, StateUpdateCommentEmail,  createUser, StateUser, authenticate, authenticate2, handleFormPedido } from '@/app/lib/actions';
+import { createConsulta, createVerificationToken, StateConsulta, StateVerificationToken, updateUserEmail, StateUserEmail, updateCommentEmail, StateUpdateCommentEmail, createUser2, StateUser, authenticate3, authenticate, authenticate2, handleFormPedido } from '@/app/lib/actions';
 import { Frente } from '@/app/ui/marcos';
 import useToggleState from "@/app/lib/hooks/use-toggle-state";
 import IconConsulta from "@/app/ui/logosIconos/icon-consulta"
@@ -17,14 +16,18 @@ import IconDragDrop from '@/app/ui/logosIconos/icon-drag-drop';
 import IconCuenta from "@/app/ui/logosIconos/icon-cuenta"
 import IconEmail2 from "@/app/ui/logosIconos/icon-email2"
 import IconRegistro from "@/app/ui/logosIconos/icon-registro"
-import IconEnvioEmail from '@/app/ui/logosIconos/icon-envio-email';
 import IconAdjunto from '@/app/ui/logosIconos/icon-adjunto';
 import { ImageListType } from "@/app/ui/consultas/typings";
 import ImageUploading from "@/app/ui/consultas/ImageUploading"
 import { ButtonB, ButtonA } from '@/app/ui/button';
 import { InputCnp } from "@/app/ui/uiRadix/input-cnp";
 import { TextareaCnp } from "@/app/ui/uiRadix/textarea-cnp";
+import { nanoid } from "nanoid";
 import { User } from '@/app/lib/definitions';
+import 'react-toastify/dist/ReactToastify.css';
+import NotifyVerified from '@/app/ui/consultas/notify-verified';
+import NotifyVerify from '@/app/ui/consultas/notify-verify';
+import './styles.css';
 
 
 const wait = () => new Promise((resolve) => setTimeout(resolve, 1000));
@@ -42,6 +45,8 @@ export default function RealizarConsulta({
   const [imageUrl, setImageUrl] = useState<string>("");
   const [images, setImages] = useState<ImageListType>([]);
 
+  const [nameVisitor, setNameVisitor] = useState("");
+
   const [spin, setSpin] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -52,7 +57,6 @@ export default function RealizarConsulta({
   const [consultaDisabled, setConsultaDisabled] = useState(false);
 
   const pathname = usePathname();
-
   const tokenx= nanoid()
   const isEmailVisitor= user?.email.slice(16) === "@cnpmandataria.com"
   const id= user?.email!
@@ -62,6 +66,9 @@ export default function RealizarConsulta({
     const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(?:\.[a-zA-Z]{2,})?$/;
     return regex.test(email);
   }
+
+  const searchParams = useSearchParams();
+  const isVerified = searchParams.get('verified')
 
   const files: File[]= []
   images.map((image) => {
@@ -237,15 +244,27 @@ export default function RealizarConsulta({
       ); 
     }
   }
-  
 
   useEffect(() => {
     if (successState) {
       close()
     }
-
     setToken(tokenx)
 
+    isVerified && toast(<NotifyVerified /> , {
+      autoClose: undefined,
+      closeButton:  false ,
+      transition: Flip,
+      className: `!w-full !min-h-min !mt-0 !p-0 !shadow-[0px_4px_12px_#a0b8e996] !bg-transparent !mb-0`,
+    });
+
+    !user || !isEmailVisitor && !isVerified && 
+    toast(<NotifyVerify isEmailVisitor= {isEmailVisitor} consulta={consulta} email={email} user={user} />, {
+      customProgressBar: true,
+      hideProgressBar: true,
+      transition: Flip,
+      className: '!w-full !min-h-min !mt-8 !p-0 !shadow-[0_10px_20px_#c0cde7] ',
+    });
   }, [])
 
   const onChange = (imageList: ImageListType, addUpdateIndex: Array<number> | undefined) => {
@@ -253,7 +272,7 @@ export default function RealizarConsulta({
   };
 
   const initialStatex: StateUser = { message: null, errors: {} };
-  const [estadox, formActionx, isPendingx] = useActionState(createUser, initialStatex);
+  const [estadox, formActionx, isPendingx] = useActionState(createUser2, initialStatex);
 
   const initialState: StateConsulta = { message: null, errors: {} };
   const [estado, formAction, isPending] = useActionState(createConsulta, initialState);
@@ -261,7 +280,7 @@ export default function RealizarConsulta({
   const initialStatexx: StateVerificationToken  = { message: null, errors: {} };
   const [estadoxx, formActionxx, isPendingxx] = useActionState(createVerificationToken, initialStatexx);
 
-  const [errorMessage, formActionAuth, isPendingAuth] = useActionState(authenticate2, undefined, );
+  const [errorMessage, formActionAuth, isPendingAuth] = useActionState(authenticate3, undefined, );
 
   const initialStatexxx: StateUserEmail = { message: null, errors: {} };
   const updateUserEmailWithId = updateUserEmail.bind(null, id);
@@ -271,32 +290,38 @@ export default function RealizarConsulta({
   const updateCommentEmailWithId = updateCommentEmail.bind(null, id);
   const [estadoxxxx, formActionxxxx, isPendingxxxx] = useActionState(updateCommentEmailWithId, initialStatexxxx);
 
-  // console.log("isVerified", isVerified)
 
+  const limpiarNotificaciones = () => {
+      toast.dismiss();
+    };
+  const notifyVerify = () =>
+    toast(<NotifyVerify isEmailVisitor= {isEmailVisitor} consulta={consulta} user={user} email={email} />, {
+      autoClose: undefined,
+      closeButton:  false ,
+      transition: Flip,
+      className: `!w-full !min-h-min !mt-8 !p-0 !shadow-[0px_4px_12px_#a0b8e996] bg-transparent items-start mb-0`,
+    });
 
   return (
     <>
-      <Frente className=" p-2 text-small-regular sm:p-4 !bg-[#d9e1f0] ">
+      <Frente className=" p-2 text-small-regular sm:p-4 !bg-[#548eff16] ">
         <div className="flex items-center justify-between sm:flex-row" >
           <div className="relative flex items-center gap-2.5 sm:gap-5">
             <IconConsulta 
               className=" ml-1.5 w-[18px] sm:ml-3 sm:w-[22px] " 
               color="#39507fcc" color2="#fffd"
             />
-            <p className="text-sm text-[#39507f]">Consulta <span className={` text-[#ff0000] ${consulta && "hidden"}`}>*</span></p>
+            <p className="text-sm text-[#39507f]">Consulta <span className={` text-[#ff0000] ${consulta && "text-[#0000]"}`}>*</span></p>
           </div>
           <ButtonB
             className={`h-8 text-[13px] w-max `}
             onClick={() => { 
               setConsulta('')
-              // setOpenConsulta(!openConsulta)
             }}
             data-testid="edit-button"
             type='button'
             disabled= {!consulta}
           >
-            {/* {openConsulta ? ( 'Cancelar' ) : ( <div> {' '} Realizar <span className="text-xs uppercase">Consulta</span>
-              </div> )} */}
             Cancelar
           </ButtonB>
         </div>
@@ -323,7 +348,9 @@ export default function RealizarConsulta({
       </Frente>
 
       {/* adjuntar archivos */}
-      <Frente className=" p-2 mt-2 text-small-regular sm:p-4 !bg-[#d9e1f0] ">
+      <Frente 
+       className=" p-2 mt-2 text-small-regular sm:p-4 !bg-[#548eff16] "
+      >
         <div className="flex items-center justify-between sm:flex-row" >
           <div className="relative flex items-center gap-2.5 sm:gap-5">
             <IconAdjunto className=" ml-1.5 w-[22px] sm:ml-3 sm:w-[27px]" />
@@ -377,13 +404,12 @@ export default function RealizarConsulta({
                 dragProps,
                 errors,
               }) => (
-                <div className={`flex flex-col ${!images.length ? 'gap-0' : 'gap-1.5'} ${!state && "invisible"}`} >
+                <div className={`flex flex-col ${!images.length ? 'gap-0' : 'gap-1.5'} `} >
                   <button
                     type="button"
                     onClick={onImageUpload}
                     {...dragProps}
                     className={`group rounded-lg w-full disabled:!cursor-default `}
-                    disabled= {!state}
                   >
                     <div className={`relative label-dnd  ${!images.length ? 'rounded-lg' : 'rounded-t-lg'} bg-[#ffffffd7] text-[#020b1ddd] w-[calc(100%_-_8px)] mx-auto px-2 py-3 duration-150 flex flex-col justify-center items-center `}>
                       <div className="flex items-center gap-3 text-[13px] duration-150 sm:text-sm">
@@ -415,7 +441,7 @@ export default function RealizarConsulta({
                   </button>
 
                   <div className= "flex flex-col rounded-b-lg bg-[#020b1d] ">
-                    <div className= {`flex items-baseline justify-start px-3 gap-x-2 flex-wrap text-sm w-full cursor-default max-[512px]:justify-center sm:px-9 sm:gap-x-4 `}>
+                    <div className= {`flex items-baseline justify-start px-3 gap-x-4 flex-wrap text-sm w-full cursor-default max-[512px]:justify-center sm:px-9 sm:gap-x-4 `}>
                       { images.map((image, index) => (
                         <div key={index} className="flex flex-col items-start pb-2 pt-2.5">
                           <div className="image-item flex justify-start">
@@ -437,7 +463,7 @@ export default function RealizarConsulta({
                               </div>
                             </div>
                           </div>
-                          <div className="text-xs break-words w-36 text-[#ffffffee] mt-[3px] opacity-60 text-start ">
+                          <div className="text-xs break-words text-[#ffffffee] mt-[3px] opacity-60 text-start ">
                             {image.file?.name } 
                           </div>
                         </div>
@@ -447,21 +473,22 @@ export default function RealizarConsulta({
                 </div>
               )}
             </ImageUploading>
+
           </DisclosurePanel>
         </Disclosure>
       </Frente>
 
       {/* registrar email consulta */}
       { !user ? (
-        <Frente className={`!px-2 py-3 mt-5 text-small-regular !bg-[#e5ebf5] sm:!px-4 sm:py-2 `}>
-          <div className="flex items-start justify-between gap-3 sm:items-center sm:gap-5 ">
-            <div className="mt-[2px] sm:mt-1.5 ">
-              <IconRegistro className="w-5 ml-1.5 sm:w-6 sm:ml-3 " />
+        <Frente className="!p-2  mt-2 text-small-regular !bg-[#548eff16] sm:!px4 ">
+          <div className="flex items-start justify-between gap-3  sm:items-center sm:gap-5 ">
+            <div className="mt-[2px] sm:mt-1.5  ">
+              <IconRegistro className=" w-5 ml-1.5 sm:w-6 sm:ml-3" />
             </div>
-
+            
             <div className={`w-full text-start text-[#39507f] `}>
               <div className={` text-[13px] sm:text-[15px] `}>
-                <p>Enviame un e-mail para mandarte la respuesta<span className={` text-[#ff0000] ml-0.5 ${email && name && "hidden"}`}>*</span></p> 
+                <p>Envíame un Email para que pueda mandarte la respuesta<span className=" text-[#ff0000] ml-0.5">*</span></p>
               </div>
             </div>
               
@@ -494,7 +521,7 @@ export default function RealizarConsulta({
               <form action={formActionx}>
                 <fieldset className={`mb-2 grid grid-cols-1 items-center gap-2 md:grid-cols-2 md:mb-4 md:flex-row md:gap-4`}>
                   <InputCnp
-                    className={`text-sm h-8 !bg-[#ffffff] `}
+                    className={`text-sm h-8 !bg-[#ffffff]`}
                     id="email"
                     type="email"
                     name="email"
@@ -513,33 +540,47 @@ export default function RealizarConsulta({
                     <IconEmail2  className="absolute w-[14px] left-[9px] top-[9px] " color="#39507faa" />
                   </InputCnp>
                   
-                  <InputCnp
-                    className={`text-sm h-8 !bg-[#ffffff]`}
-                    id="name"
-                    type="text"
-                    name="name"
-                    minLength={3}
-                    maxLength={100}
-                    value={ name }
-                    placeholder= "Nombre"
-                    required
-                    disabled={ !open }
-                    onChange={(e) => {
-                      setName(e.target.value);
-                    }} >
-                    <div className="absolute rounded-l-[4px] h-[32px] w-[32px] left-0 top-0 bg-[#020b1d0b]" >
-                    </div>
-                    <IconCuenta  className="absolute w-[14px] left-[9px] top-[9px] " color="#39507faa" />
-                  </InputCnp>
+                  <div className={` ${nameVisitor   && "hidden"}`}>
+                    <InputCnp
+                      className={`text-sm h-8 !bg-[#ffffff]`}
+                      id="name"
+                      type="text"
+                      name="name"
+                      minLength={2}
+                      maxLength={100}
+                      value={ name /* ? name : nameVisitor ? nameVisitor : "" */ }
+                      placeholder= "Nombre"
+                      required
+                      disabled={ !open }
+                      onChange={(e) => {
+                        setName(e.target.value);
+                      }} >
+                      <div className="absolute rounded-l-[4px] h-[32px] w-[32px] left-0 top-0 bg-[#020b1d0b]" >
+                      </div>
+                      <IconCuenta  className="absolute w-[14px] left-[9px] top-[9px] " color="#39507faa" />
+                    </InputCnp>
+                  </div>
 
                   <input
                     type="hidden"
                     id="image"
                     name="image"
-                    value={ "" }
+                    value={ /* imagen ? imagen : imageUrl ? imageUrl : */ "" }
                     readOnly
                   />
-                  <input type="hidden" name="pathname" value={pathname} readOnly />
+                  {/* <input
+                    type="hidden"
+                    name="password"
+                    value= {"72cf0550-3f64-474d-b150-aa813c6b4b67" }
+                    readOnly
+                  /> */}
+                  <input
+                    type="hidden"
+                    name="token"
+                    value= {token }
+                    readOnly
+                  />
+                  {/* <input type="hidden" name="pathname" value={pathname} readOnly /> */}
                 </fieldset>
 
                 {/* Massages erros */}
@@ -548,7 +589,7 @@ export default function RealizarConsulta({
                   aria-live="polite"
                   aria-atomic="true"
                 >
-                  {estadox?.message && (
+                  {estadox?.message && estadox.message !== "usuario" && (
                     <>
                       <ExclamationCircleIcon className="absolute top-4 h-5 w-5 text-red-500" />
                       <p className="pt-4 text-sm text-red-500">{estadox?.message}</p>
@@ -558,9 +599,10 @@ export default function RealizarConsulta({
 
                 {/* button submit */}
                 <ButtonA
-                  className={`${(isPendingx || isPendingAuth) && "before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_1s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/30 before:to-transparent"}  relative overflow-hidden  h-8 text-[13px] w-max ml-auto ${!open && "hidden"} disabled:!opacity-60`}
+                  className={`${(isPendingx || isPendingAuth) && "before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_1s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/30 before:to-transparent"}  relative overflow-hidden w-32 h-8 text-[13px] ml-auto ${!open && "hidden"} disabled:!opacity-60`}
                   onClick={() => { 
-                    setTimeout(handleClickButtonAuth, 200) 
+                    setTimeout(handleClickButtonAuth, 200)
+                    setTimeout(notifyVerify, 2000)
                   }}
                   disabled= {( name) && email && isEmailValid(`${email}`) ? false : true}
                 >
@@ -570,16 +612,16 @@ export default function RealizarConsulta({
             </div>
           </div>
         </Frente>
-      ) : isEmailVisitor ? (
-        <Frente className={`!px-2 py-3 mt-5 text-small-regular !bg-[#e5ebf5] sm:!px-4 sm:py-2 `}>
+      ) : isEmailVisitor && (
+        <Frente className={`!p-2 mt-2 text-small-regular !bg-[#548eff16] sm:!p-4 `}>
           <div className="flex items-start justify-between gap-3  sm:items-center sm:gap-5 ">
-            <div className="mt-[2px] sm:mt-1.5 ">
-              <IconRegistro className="w-5 sm:w-6 sm:ml-3 md:ml-1.5 " />
+            <div className="mt-[2px] sm:mt-1.5  ">
+              <IconRegistro className="w-5 ml-1.5 sm:w-6 sm:ml-3 " />
             </div>
 
             <div className={`w-full text-start text-[#39507f] `}>
               <div className={` text-[13px] sm:text-[15px] `}>
-                <p><b>{ user.name}</b>, enviame un e-mail para mandarte la respuesta<span className={` text-[#ff0000] ml-0.5  ${email && user.name && "hidden"}`}>*</span></p>
+                <p><b>{ user.name}</b>, enviame un e-mail para mandarte la respuesta<span className=" text-[#ff0000] ml-0.5">*</span></p>
               </div>
             </div>
               
@@ -587,7 +629,7 @@ export default function RealizarConsulta({
               className={`h-8 text-[13px]  w-max`}
               onClick={() => { 
                 setOpen(!open); 
-                // setEmail(""); 
+                setEmail(""); 
                 setName("");
               }}
 
@@ -645,12 +687,13 @@ export default function RealizarConsulta({
                 )}
               </div>
 
-              <form onSubmit={ uploadToServer3 }>
+              <form onSubmit={  uploadToServer3  }>
                 <ButtonA
                   type="submit"
-                  className={`${(isPendingx || isPendingAuth) && "before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_1s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/30 before:to-transparent"}  relative overflow-hidden  h-8 text-[13px] w-max ml-auto ${!open && "hidden"} disabled:!opacity-60`}
+                  className={`${(isPendingx || isPendingAuth) && "before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_1s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/30 before:to-transparent"}  relative overflow-hidden w-32 h-8 text-[13px] ml-auto ${!open && "hidden"} !disabled:!opacity-100`}
                   onClick={() => { 
                     setTimeout(handleClickButtonAuth, 2000) 
+                    setTimeout(notifyVerify, 3000) 
                   }}
                   disabled= {( user?.name || name) && email && isEmailValid(`${email}`) ? false : true}
                 >
@@ -660,28 +703,20 @@ export default function RealizarConsulta({
             </div>
           </div>
         </Frente>
-      ) : (
-        <Frente className={`flex items-start gap-2.5 !py-3 px-2 mt-5 !bg-[#d8edd966] text-small-regular ${estado?.message === "consultaCreada" && "hidden"} sm:py-2 sm:px-4 sm:gap-5 sm:items-center`}>
-          <IconEnvioEmail className=" w-8 ml-1.5 mt-0.5 sm:w-10 sm:ml-3 sm:mt-0" />
-          <div className={`w-full text-start text-[13px] text-[#2e4067] sm:text-sm `}>
-            <p>Te enviaré la <b>respuesta</b> por e-mail a<span className= "underline decoration-[#39507fdd] underline-offset-2 mx-1.5 ">{user.email} </span>
-            </p>
-          </div>
-        </Frente>
       )}
 
-      {estado?.message === "consultaCreada" && (
+      {/* Massages error consult */}
+      {/* {estado?.message === "consultaCreada" && (
         <Frente className="!p-2 mt-5 !bg-[#ddebdf] sm:!p-4 ">
-          <div className={`w-full text-sm text-[#2e4067] transition-[opacity] duration-300 sm:text-[15px] `}>
-            <p className="">Recibí la <b>consulta</b>, te responderé a la mayor brevedad.</p>
-            <p className={`mt-2 ${ user?.email_verified && "hidden"}`}>
+          <div className={`w-full text-start text-sm text-[#2e4067] transition-[opacity] duration-300 sm:text-[15px] `}>
+            <p className="sm:text-center">Recibí la <b>consulta</b>, te responderé a la mayor brevedad.</p>
+            <p className={`mt-2 ${ user?.email_verified && "hidden"} sm:text-center`}>
               Por favor, revisá el correo electrónico <span className= "underline decoration-[#39507fdd] underline-offset-2 mx-1 ">{user?.email}</span> y enviá la verificación.
             </p>
           </div>
         </Frente> 
-      )}
-      
-      {/* Massages error consult */}
+      )} */}
+
       <div
         className="mb-3 mt-3 flex items-end space-x-1"
         aria-live="polite"
@@ -696,10 +731,8 @@ export default function RealizarConsulta({
       </div>
 
       {/*Boton Enviar consult */}
-      <div className="w-full flex justify-between items-center">
-
-        <p className={`text-xs ml-2 ${consulta && ( email || user?.email ) && (name || user?.name )  && "opacity-0" } sm:text-[13px]`}><span className=" text-[#ff0000]">*</span> Requeridos</p>
-
+      <div className="mt-6 w-full flex justify-between items-center">
+        <p className={`text-xs ml-2 ${consulta && user?.email && !isEmailVisitor  && "opacity-0" } sm:text-[13px]`}><span className=" text-[#ff0000]">*</span> Requeridos</p>
 
         {estado?.message !== "consultaCreada" ? (
           <form onSubmit={ files.length === 0 ? uploadToServer1 : uploadToServer2 } >
@@ -709,20 +742,22 @@ export default function RealizarConsulta({
               </div>
 
               <ButtonA
-                className={`h-8 !px-4 text-sm !justify-start`}
+                className={`h-8 !px-4 text-sm !justify-start disabled:!opacity-100 `}
                 type="submit"
                 disabled={ consulta && user?.email && !isEmailVisitor ? false : true }
                 onClick={() => {
                   setSpin(true);
                   user?.role === "member" && handleClickButtonVerification()
                   user?.role === "member" && handleClickButtonPedido()
+                  limpiarNotificaciones()
                   wait().then(() => {
                     setConsultaDisabled(true)
+                    notifyVerify()
                   })
                 }}
               >
                 <IconCambio
-                  className={`${(spin || isPending || isPendingxx ) && "animate-spin"} fill-[#fff0] stroke-[#ffffff55] mr-2 w-[22px] h-[22px]`}
+                  className={`${(spin || isPending || isPendingxx ) && "animate-spin"} fill-[#fff0] stroke-[#ffffff55] mr-2 w-[22px] h-[22px] `}
                 />
                 <div className="w-full">
                   Enviar consulta
@@ -745,7 +780,8 @@ export default function RealizarConsulta({
         )}
       </div>
       
-
+      {/* <ToastContainer  className={!isVerified  ? "foo" : "" } /> */}
+      <ToastContainer  className={ !isVerified  ? "foo" : "foo2" } autoClose={false} />
 
 
       {/* authentication */}
@@ -854,8 +890,7 @@ export default function RealizarConsulta({
         <input
           type="hidden"
           name="content" 
-          // value="/realizar-consulta"
-          value={pathname}
+          value="/realizar-consulta"
           readOnly
         />
         <input

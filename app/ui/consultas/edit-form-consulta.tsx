@@ -115,7 +115,7 @@ export default function EditConsultaForm({
               }
             )}
           >
-            <div className={`flex flex-wrap gap-2`}>{/*  ${estadoAdjunto && "mt-4"} */}
+            <div className={`flex flex-wrap gap-2`}>
               <div className="text-[#020b1ddd] bg-[#020b1d] rounded flex gap-5 items-baseline ">
                 {archivos?.map((archivo, index) => (
                   <div key={index } className=" text-[13px] leading-[18px] opacity-80 hover:opacity-100 ">
@@ -305,7 +305,7 @@ export default function EditConsultaForm({
 
         {/* Email Consulta */}
         {!consulta.respuesta && (
-          <Frente className={`hidden py-4 mb-4 px-4 text-sm sm:px-4 `} >
+          <Frente className={`block py-4 mb-4 px-4 text-sm sm:px-4 `} >
             <div className="w-full items-start flex gap-3 justify-end sm:items-center sm:mb-0">
               <div className={`flex items-center gap-4 w-full text-[15px] sm:text-base`}>
                 <IconEnvioEmail  className="w-9 h-4 fill-[#50073aaa]" size={32} />

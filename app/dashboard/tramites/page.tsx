@@ -75,7 +75,7 @@ export default async function Page({
               </div>
             ))}
 
-            <div className="z-10 my-5 flex w-full justify-center">
+            <div className="z-[5] my-5 flex w-full justify-center">
               <Pagination totalPages={totalPagesMember} />
             </div>
           </div>

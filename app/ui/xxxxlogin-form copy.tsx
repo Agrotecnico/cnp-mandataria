@@ -1,0 +1,438 @@
+'use client';
+
+import {
+  AtSymbolIcon,
+} from '@heroicons/react/24/outline';
+import { ArrowRightIcon } from '@heroicons/react/20/solid';
+import { useActionState, useEffect, HTMLAttributes } from 'react';
+import { usePathname, useSearchParams } from 'next/navigation';
+import { useState } from 'react';
+import Link from 'next/link';
+import { ToastContainer, toast, Zoom, Flip, ToastContentProps } from 'react-toastify';
+import { nanoid } from "nanoid";
+
+import { authenticate4, authenticate2 } from '@/app/lib/actions';
+import { Fondo, Frente } from '@/app/ui/marcos';
+import { ButtonA } from '@/app/ui/button';
+import { signIn } from 'next-auth/react';
+import IconGoogle from '@/app/ui/logosIconos/icon-google';
+import IconFlecha from '@/app/ui//logosIconos/icon-flecha';
+import IconError from '@/app/ui/logosIconos/icon-error';
+import NotifyVerified from '@/app/ui/consultas/notify-verified';
+import IconAviso from '@/app/ui/logosIconos/icon-aviso';
+import IconCheck from '@/app/ui/logosIconos/icon-check';
+
+
+const wait = () => new Promise((resolve) => setTimeout(resolve, 8000));
+
+export default function LoginForm() {
+
+  const [email, setEmail] = useState("");
+  const [errorMessagexx, setErrorMessagexx] = useState<string | undefined>(undefined);
+
+  const isEmailValid= (email: string) => {
+    const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(?:\.[a-zA-Z]{2,})?$/;
+    return regex.test(email);
+  }
+  const emailValid= isEmailValid(email)
+
+  const shimmer2 ='before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_1.5s_cubic-bezier(0.42,_0,_0.58,_1)_infinite] before:bg-gradient-to-r before:from-transparent before:from-20% before:via-white/30 before:via-50%  before:to-transparent before:to-80%';
+
+  const searchParams = useSearchParams();
+  const isVerified = searchParams.get('verified') === "true"
+
+  const [errorMessage, formActionAuth, isPendingAuth] = useActionState(authenticate4, undefined, );
+
+  useEffect(() => {
+    errorMessage === undefined ? "" : errorMessage === "Por favor, revisá tu correo electrónico y enviá la verificación." ? notifyEmailVerify() : notifyError()
+    
+    // isVerified && toast(<NotifyVerified /> , {
+    //   autoClose: false,
+    //   position: "bottom-right",
+    //   closeButton: false,
+    //   className: '!w-screen !h-screen !bg-[#020b1d66] !m-0 !-mb-4 !-mr-4 !p-0 max-[482px]:!-m-0',
+    // });
+
+    // const notifyEmailVerifyed = () => {
+    isVerified && toast(<NotifyEmailVerifyed />, {
+      autoClose: false,
+      transition: Flip,
+      closeButton:  false ,
+      className: '!w-screen !h-screen items-start !top-0 !bg-[#39507f33] !m-0 -mr-4  !-mb-4  !p-0 min-[480px]:!-mx-4 min-[480px]:!-top-4',/* !max-[480px]:!-m-0  !min-[480px]:!-mr-4*/
+      // data: {
+      //   message: `${errorMessagexx}`,
+      // },
+      // className: '!w-full !min-h-min !mt-8 !p-0 !shadow-[0px_4px_12px_#a0b8e996] !items-start',
+    });
+  // };
+
+    // isVerified && notifyEmailVerifyed()
+
+  }, [errorMessage, errorMessage]);
+
+  const notifyError = () => {
+    errorMessage !== undefined &&
+    toast(NotifyError, {
+      autoClose: 6000,
+      customProgressBar: true ,
+      hideProgressBar: false,
+      closeButton:  false ,
+      pauseOnHover: false,
+      transition: Flip,
+      data: {
+        message: `${errorMessage}`,
+      },
+      className: '!w-full !min-h-min !mt-8 !p-0 !shadow-[0px_4px_12px_#a0b8e996] ',
+    });
+    setTimeout(() => location.reload(), 6000) 
+  };
+
+  const notifyEmailVerify = () => {
+    toast(NotifyEmailVerify, {
+      autoClose: undefined,
+      closeButton:  false ,
+      transition: Flip,
+      data: {
+        message: `${errorMessagexx}`,
+      },
+      className: '!w-full !min-h-min !mt-8 !p-0 !shadow-[0px_4px_12px_#a0b8e996] ',
+    });
+  };
+
+  const notifyValidateEmail = () => {
+    toast(NotifyValidateEmail, {
+      autoClose: 4000,
+      customProgressBar: true,
+      hideProgressBar: false,
+      closeButton:  false ,
+      transition: Flip,
+      className: '!w-full !min-h-min !mt-8 !p-0 !shadow-[0px_4px_12px_#a0b8e996] ',
+    });
+  };
+
+  // const notifyEmailVerifyed = () => {
+  //   toast(NotifyEmailVerifyed, {
+  //     autoClose: undefined,
+  //     closeButton:  false ,
+  //     transition: Flip,
+  //     data: {
+  //       message: `${errorMessagexx}`,
+  //     },
+  //     className: '!w-full !min-h-min !mt-8 !p-0 !shadow-[0px_4px_12px_#a0b8e996] !items-start',
+  //     // className: '!w-screen !h-screen !bg-[#020b1d66] !m-0 !-mb-4 !-mr-4 !p-0 max-[482px]:!-m-0',
+  //   });
+  // };
+
+  return (
+    <>
+      <h1 className={`mt-4 mb-3 text-center text-3xl sm:text-4xl`}>Acceso</h1>
+      <form action={ emailValid ? formActionAuth : notifyValidateEmail }  className="" >
+        <Fondo className=" px-3 py-4 mx-0 sm:py-6 sm:px-4 sm:mx-1.5 ">
+          <div className="flex flex-col ">
+            <Frente className="flex h-10 !rounded-[3px]  hover:bg-[#ffffffcc] hover:[box-shadow:_0_0_0_1px_#3767c847] ">
+              <div
+                // onClick={async () => {
+                //   await signIn('google', {
+                //     callbackUrl: '/dashboard',
+                //   });
+                // }}
+                className="relative w-full flex cursor-pointer place-items-center items-center justify-start px-10 duration-200  "
+              >
+                <IconGoogle className="absolute top-2.5 left-3 w-[18px]" />
+                <div className="flex items-center text-[#020b1d88] text-[14px] ml-1.5">con google</div>
+              </div>
+            </Frente>
+
+            <div className="flex w-full items-center gap-2 py-2 text-sm">
+              <div className="h-px w-full bg-slate-300"></div>O
+              <div className="h-px w-full bg-slate-300"></div>
+            </div>
+
+            <Frente className={`!rounded-[4px] hover:!bg-[#ffffffcc] ${errorMessage === "Por favor, revisá tu correo electrónico y enviá la verificación." && "hover:!bg-[#ffffff88] " }`}>
+              <div className={`relative `}>
+                <input
+                  className="!hover:bg-transparent rounded-[3px] peer block w-full border border-transparent bg-transparent py-0 duration-150 pl-[46px] text-sm h-10 outline-2 placeholder:text-[#020b1d88]  hover:[box-shadow:_0_0_0_1px_#3767c847] focus:[box-shadow:_0_0_0_1px_#548eff] focus:bg-[#ffffffbb] focus:border-transparent focus:outline-1 focus:outline-[#548eff66] disabled:opacity-50 disabled:hover:shadow-none "/* hover:bg-[#ffffff3d] [0_0_0_1px_#3767c847]*/
+                  id="email"
+                  type="email"
+                  name="email"
+                  value={email}
+                  placeholder="con email"
+                  disabled= {errorMessage === "Por favor, revisá tu correo electrónico y enviá la verificación." && true }
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                  }} 
+                />
+                <AtSymbolIcon className="pointer-events-none absolute left-3 top-1/2 h-[21px] w-[21px] stroke-2 -translate-y-1/2 text-[#548effcc]" />
+              </div>
+            </Frente>
+          </div>
+        </Fondo>
+
+        <ButtonA
+          className={`${( isPendingAuth)  && `${shimmer2} animate-pulse` } relative overflow-hidden !h-9 w-full !mt-3 justify-center bg-[#071f50cc] text-base  text-[#ffffffcc] duration-150 hover:bg-[#071f50ee] hover:text-[#fff] active:!bg-[#071f50dd] disabled:hover:bg-[#071f50cc] disabled:hover:text-[#ffffffcc] disabled:!opacity-100 disabled:active:!bg-[#071f50cc] `}
+          type="submit"
+          disabled= {errorMessage === "Por favor, revisá tu correo electrónico y enviá la verificación." && true }
+        >
+          Continuar <ArrowRightIcon className="ml-auto h-5 w-5 text-gray-50" />
+        </ButtonA>
+      </form>
+
+      <div className={` ${errorMessage === "Por favor, revisá tu correo electrónico y enviá la verificación." && "opacity-50"} flex justify-end gap-2 mr-4 mt-1.5 text-[13px]`}>
+        <p className="text-[#020b1d88] ">No tenés acceso?</p>
+
+        <Link
+          href= { errorMessage !== "Por favor, revisá tu correo electrónico y enviá la verificación." ? '/register' : ""}
+          className={` flex items-center justify-center rounded-x  ${errorMessage === "Por favor, revisá tu correo electrónico y enviá la verificación." ? "opacity-50 cursor-default" : "group "}`}
+        >
+          <p className="text-[#3171edcc] font-medium duration-200 group-hover:text-[#3171ed]">
+          Verificá tu email
+          </p>
+          <IconFlecha className="fill-[#3171ed99] ml-1 w-4 duration-200 group-hover:fill-[#3171ed]" />
+        </Link> 
+      </div>
+
+      <ToastContainer  className={!isVerified  ? "foo" : "" } autoClose={false} />
+    </>
+  );
+}
+
+
+
+function NotifyError({
+  closeToast,
+  isPaused,
+  toastProps,
+  data,
+}: ToastContentProps<{ message: string }>) {
+  const strokeDash = 565.48;
+  const attributes: HTMLAttributes<SVGCircleElement> = {};
+
+  attributes.className = 'animate';
+  attributes.style = {
+    animationDuration: `${toastProps.autoClose}ms`,
+    animationPlayState: isPaused ? 'paused' : 'running',
+  };
+
+  attributes.onAnimationEnd = () => {
+    closeToast();
+  };
+
+  return (
+    <div
+      className=" flex items-center w-full"
+      aria-live="polite"
+      aria-atomic="true"
+    >
+      <Frente className=" w-full pl-3 pr-3 py-2 !rounded-md  ![box-shadow:_inset_0_1px_#ffffff,inset_0_-1px_#00000046] flex flex-col items-start gap-1 !bg-[#548effdd]">
+        <div className='min-h-5 w-full flex items-center justify-between gap-5'>
+          <div className='flex items-center gap-4 '>
+            <IconError className={`mb-auto h-[19px] w-[19px] fill-[#ffffffcc]`} />
+            <p className="text-sm text-[#fff] sm:text-[15px]">{data.message}</p>
+          </div>
+          
+          <svg
+            width="22"
+            height="22"
+            viewBox="-25 -25 250 250"
+            version="1.1"
+            xmlns="http://www.w3.org/2000/svg"
+            className="-rotate-90"
+          >
+            <circle
+              r="90"
+              cx="100"
+              cy="100"
+              fill="transparent"
+              stroke="#e0e0e0"
+              stroke-width="6"
+              stroke-dasharray={`${strokeDash}px`}
+              stroke-dashoffset="0"
+            />
+            <circle
+              r="90"
+              cx="100"
+              cy="100"
+              stroke="#ffffffbe"
+              stroke-width="26px"
+              stroke-linecap="round"
+              fill="transparent"
+              stroke-dasharray={`${strokeDash}px`}
+              {...attributes}
+            />
+          </svg>
+        </div> 
+      </Frente>
+    </div>
+  );
+}
+
+function NotifyEmailVerify() {
+
+  return (
+    <div
+      className=" flex items-center w-full"
+      aria-live="polite"
+      aria-atomic="true"
+    >
+        <Frente className="w-full p-3 !pr-0 !rounded-md  ![box-shadow:_inset_0_1px_#ffffff,inset_0_-1px_#00000046] flex flex-col items-start gap-1 !bg-[#548effee]">
+          <div className='min-h-5 w-full flex items-stretch justify-between'>
+            <div className='flex items-center gap-5'>
+              <IconAviso className={`mb-auto h-[19px] w-[19px] fill-[#ffffffcc]`} />
+
+              <p className="text-[15px] text-[#fff] sm:text-base">Por favor, revisá tu correo electrónico y enviá la verificación</p>
+            </div>
+
+            <button 
+              onClick={() => location.reload()}
+              className='text-white text-xl flex leading-[0.8] items-start justify-center font-semibold pr-3 pl-4 opacity-60 hover:opacity-100'
+              >
+              x
+            </button>
+          </div> 
+        </Frente>
+    </div>
+  );
+}
+
+function NotifyValidateEmail({
+  closeToast,
+  isPaused,
+  toastProps,
+  data,
+}: ToastContentProps<{ message: string }>) {
+  const strokeDash = 565.48;
+  const attributes: HTMLAttributes<SVGCircleElement> = {};
+
+  attributes.className = 'animate';
+  attributes.style = {
+    animationDuration: `${toastProps.autoClose}ms`,
+    animationPlayState: isPaused ? 'paused' : 'running',
+  };
+
+  attributes.onAnimationEnd = () => {
+    closeToast();
+  };
+
+  return (
+    <div
+      className=" flex items-center w-full"
+      aria-live="polite"
+      aria-atomic="true"
+    >
+        <Frente className="w-full pl-3 pr-8 py-2 !rounded-md  ![box-shadow:_inset_0_1px_#ffffff,inset_0_-1px_#00000046] flex flex-col items-start gap-1 !bg-[#548effee]">
+          <div className='min-h-5 w-full flex items-center justify-between gap-5'>
+            <div className='flex items-center gap-4 '>
+              <IconError className={`mb-auto h-[19px] w-[19px] fill-[#ffffffcc]`} />
+              <p className="text-sm text-[#fff] sm:text-[15px]">Correo electrónico no válido</p>
+            </div>
+            
+            <svg
+              width="22"
+              height="22"
+              viewBox="-25 -25 250 250"
+              version="1.1"
+              xmlns="http://www.w3.org/2000/svg"
+              className="-rotate-90"
+            >
+              <circle
+                r="90"
+                cx="100"
+                cy="100"
+                fill="transparent"
+                stroke="#e0e0e0"
+                stroke-width="6"
+                stroke-dasharray={`${strokeDash}px`}
+                stroke-dashoffset="0"
+              />
+              <circle
+                r="90"
+                cx="100"
+                cy="100"
+                stroke="#ffffffbe"
+                stroke-width="32px"
+                stroke-linecap="round"
+                fill="transparent"
+                stroke-dasharray={`${strokeDash}px`}
+                {...attributes}
+              />
+            </svg>
+          </div> 
+        </Frente>
+    </div>
+  );
+}
+
+function NotifyEmailVerifyed() {
+
+  const shimmer2 ='before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_1.5s_cubic-bezier(0.42,_0,_0.58,_1)_infinite] before:bg-gradient-to-r before:from-transparent before:from-20% before:via-white/30 before:via-50%  before:to-transparent before:to-80%';
+  
+    const searchParams = useSearchParams();
+    const callbackUrl: string = '/dashboard/consultas' ;
+  
+    const token= nanoid()
+
+  const [errorMessage, formActionAuth, isPendingAuth] = useActionState(
+      authenticate2,
+      undefined,
+    );
+
+  return (
+    <div
+      className="w-[92%] flex items-center mx-auto  max-w-[440px] mt-[466px] shadow-[0_10px_20px_#39507f50] min-[480px]:ml-[calc((100vw_-_440px)_/_2)] "
+      aria-live="polite"
+      aria-atomic="true"
+    >
+        <Frente className={`${ isPendingAuth  && `${shimmer2} animate-pulse2` } relative overflow-hidden !shadow-[0_10px_20px_#020b1d33] w-full !rounded-md  ![box-shadow:_inset_0_1px_#ffffffee,inset_0_-1px_#00000036] flex flex-col items-start gap-1 !bg-[#548effee] duration-200 hover:!bg-[#4881f3] active:!bg-[#548eff] min-[480px]:min-w-[440px] min-[480px]:w-[92%]`}>
+          {/* <div className='min-h-5 w-full flex items-stretch justify-between'>
+            <div className='flex items-center gap-5'>
+              <IconAviso className={`mb-auto h-[19px] w-[19px] fill-[#ffffffcc]`} />
+
+              <p className="text-sm text-[#fff] sm:text-[15px]">Por favor, revisá tu correo electrónico y enviá la verificación</p>
+            </div>
+
+            <button 
+              onClick={() => location.reload()}
+              className='text-white text-lg flex leading-[0.8] items-start justify-center font-semibold px-3 opacity-70 hover:opacity-100'
+              >
+              x
+            </button>
+          </div>  */}
+          <form action={ formActionAuth } className="w-full">{/* w-max */}
+            <input
+                id="email"
+                type="hidden"
+                name="email"
+                value={`${searchParams.get("email")}`}
+                readOnly
+            />
+            <input
+                id="password"
+                type="hidden"
+                name="password"
+                value= {token}
+                readOnly
+            />
+            <input type="hidden" name="redirectTo" value={callbackUrl} />
+
+            <button
+                type= "submit" 
+                className="w-full duration-150 p-2 rounded sm:p-3"
+                >
+                {/* <div className='flex justify-center mb-2'>
+                  <IconCheck color="#ffffffcc" size="18" />
+                </div> */}
+                <p className="text-[14px] sm:text-[16px] text-[#ffffffcc] font-medium [font-variant-caps:_small-caps]"> Correo Electrónico Verificado<span className='inline-flex  justify-center mb-2 ml-3'>
+                  <IconCheck color="#ffffffcc" size="16" />
+                </span></p>
+
+                {/* <p className="text-[#ffffffcc] text-[13px] sm:text-[15px]">Continuar <span className="text-base font-semibold ml-2">{">"}</span></p> */}
+                <div className='flex items-center justify-center'>
+                  <p className="text-[#ffffffcc] text-[13px] sm:text-[15px]">Continuar</p>
+                  <p className="text-[#ffffffcc] text-base font-semibold ml-2 mt-0.5">{">"}</p>
+                </div>
+            </button>
+          </form>
+        </Frente>
+    </div>
+  );
+}

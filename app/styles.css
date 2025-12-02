@@ -18,9 +18,10 @@
   align-items: center;
 }
 .swiper2 > .swiper-wrapper > .swiper-slide {
-  backdrop-filter: blur(1px);
+  /* backdrop-filter: blur(1px);
   border-radius: 12px;
-  flex-direction: column;
+  flex-direction: column; */
+  border-right: 8px solid #0000;
 }
 .swiper1 > .swiper-wrapper {
   width: 92%;
@@ -80,9 +81,9 @@
 #polo > .swiper2 > .swiper-wrapper > .swiper-slide .swiper3 .swiper-wrapper {
   border-radius: 12px;
 }
-#polo > .swiper2 > .swiper-wrapper > .swiper-slide:nth-child(2) {
+/* #polo > .swiper2 > .swiper-wrapper > .swiper-slide:nth-child(2) {
   margin: 0 3px;
-}
+} */
 .swiper3 .swiper-pagination-bullet {
   position: absolute;
   height: 20px;

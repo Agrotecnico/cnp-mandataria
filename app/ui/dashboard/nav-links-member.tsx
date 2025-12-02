@@ -36,14 +36,15 @@ export default function NavLinksMember() {
             <Link
               key={linkMember.name}
               href={linkMember.href}
-              className={clsx('w-full text-[13px] flex items-center justify-start first:rounded-t-md last:rounded-b-md  duration-200 text-[#020b1dbb] bg-[#ffffff88] [box-shadow:_inset_0_1px_#ffffff,inset_0_-1px_#0000002e] hover:bg-[#ffffffe3] hover:text-[#020b1d] sm:text-sm md:first:rounded-bl-none md:last:rounded-tr-none md:first:rounded-t-md md:last:rounded-b-md',
+              className={clsx(' w-full text-[13px] flex items-center justify-start first:rounded-t-md last:rounded-b-md  duration-200 text-[#020b1dbb] bg-[#ffffff88] [box-shadow:_inset_0_1px_#ffffff,inset_0_-1px_#0000002e] hover:bg-[#ffffffe3] hover:text-[#020b1d] sm:text-sm md:first:rounded-bl-none md:last:rounded-tr-none md:first:rounded-t-md md:last:rounded-b-md',
                 {
                   'text-[#020b1d] bg-[#ffffffe3] ':  pathname === linkMember.href,
+                  'disabled-link ':  linkMember.name === "Mi cuenta",
                 }
               )}
             >
               <button className="w-full h-8 px-2.5 gap-2 flex items-center justify-start sm:h-9 sm:flex-row sm:justify-start" >
-                <LinkIcon className="w-[17px] text-[#39507f] md:w-18" />
+                <LinkIcon className={` w-[17px] ${linkMember.name === "Mi cuenta" && " !w-5 fill-[#548eff] "} text-[#39507f] md:w-18`} />
                 <p className="text-start ">
                 {linkMember.name}
                 </p>

@@ -17,7 +17,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="h-full">
-      <body className={`${inter.className} h-full overflow-x-hidden antialiased bg-[#39507f1a] text-[#020b1ddd]`}>{/*  bg-[#b7becc44] */}
+      <body className={`${inter.className} h-full overflow-x-hidden antialiased bg-[#548eff16] text-[#020b1ddd]`}>
         {children}
         {/* <ToastContainer /> */}
       </body>

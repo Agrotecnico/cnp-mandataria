@@ -22,7 +22,7 @@ export default async function LoginPage() {
     <>
       <Header />
       <main className="flex items-start justify-center pt-16 md:h-screen ">
-        <div className="relative mt-16 flex w-full max-w-[460px] flex-col p-4">
+        <div className="relative mt-16 flex w-full max-w-[472px] flex-col p-3 sm:p-4">
           <Suspense>
             <LoginForm />
           </Suspense>

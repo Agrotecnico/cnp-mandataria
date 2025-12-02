@@ -16,11 +16,11 @@ export default async function Header( ) {
   const allPosts = getAllPosts();
 
   return (
-    <header className="fixed left-0 z-10 flex h-[68px] w-[100vw] items-center justify-center bg-[#39507f]  sm:h-20 ">
+    <header className="fixed left-0 z-10 flex h-[68px] w-[100vw] items-center justify-center bg-[#39507f] sm:h-20 ">
       <div className="mx-auto flex w-full max-w-5xl items-center justify-between px-4 sm:px-6">
         <div className="flex items-center gap-4 ">
           <Link
-            className="flex items-center justify-between rounded-md leading-6 md:items-end"
+            className="flex items-center justify-between rounded-md leading-6 md:items-end duration-150 opacity-85 hover:opacity-100"
             href="/"
           >
             <div className="-ml-3 w-full text-white">

@@ -1,0 +1,46 @@
+
+.Toastify__toast-container {
+  position: fixed !important;
+  transform: none !important;
+  width: 100% !important;
+}
+.foo {
+  position: static !important;
+  transform: none !important;
+  width: 100% !important;
+}
+
+.Toastify__progress-bar--wrp {
+    bottom: 1px;
+    height: 2px;
+}
+.Toastify__progress-bar-theme--light {
+    background: #325b3888 ;
+}
+.Toastify__progress-bar--controlled {
+    background-color: #fff0;
+}
+.Toastify__progress-bar {
+  transform-origin: right;
+}
+
+
+
+
+
+
+@media (min-width: 680px) {
+  /* .faa {
+    width: 660px !important;
+    left: calc((100% - 660px) / 2);
+    top: 80vh;
+  } */
+}
+@media (min-width: 1024px) {
+  /* .faa {
+    width: calc(1024px - 388px) !important;
+    left: calc(((100vw - 1024px) / 2 ) + 340px );
+    top: 80vh;
+  } */
+}
+

@@ -13,8 +13,8 @@ export default function NavLinksTramites({allTramites }:{allTramites:TramiteMd[]
   const pathname = usePathname();
   
   return (
-    <div className="hidden h-full flex-col min-[900px]:flex">
-      <div className="flex items-center text-[#39507f] text-base font-medium text-center pb-2.5 pr-2">
+    <Frente className="hidden !bg-[#548eff16] h-full flex-col min-[900px]:flex">
+      <div className="mt-0.5 text-sm flex justify-center bg-[#548effd6] rounded-t-md text-[#ffffffee]  sm:text-[15px] text-center py-1 [text-shadow:_1px_1px_#3d61ad] ">
         Seleccioná un trámite
       </div>
       <div className="flex grow flex-row justify-between space-x-2 md:flex-col md:space-x-0 md:space-y-2">
@@ -23,9 +23,9 @@ export default function NavLinksTramites({allTramites }:{allTramites:TramiteMd[]
             <Link
               as={`/iniciar-tramite/${tramite.slug}`}
               href="/iniciar-tramite/[slug]"
-              className={clsx('group w-full h-[33px] border-x border-[#39507f19] text-sm flex items-center justify-start first:rounded-t-md last:rounded-b-md [box-shadow:_inset_0_1px_#ffffff,inset_0_-1px_#0000001e] duration-150 bg-[#e5ebf5ff] text-[#020b1daa]  hover:bg-[#d3dceefe] hover:text-[#020b1ddd] active:opacity-80',
+              className={clsx('group mx-[3px] w-[calc(100%_-_6px)] h-[33px] flex items-center justify-start first:rounded-t-none last:rounded-b-md last:mb-[3px]  duration-150 text-[#020b1da2]  hover:bg-[#ffffff88] hover:text-[#020b1dd9] active:opacity-80',
                 {
-                  'text-[#020b1ddc] bg-[#d3dceeff] ':  pathname === `/iniciar-tramite/${tramite.slug}`,
+                  'text-[#020b1dd8] bg-[#ffffff89] ':  pathname === `/iniciar-tramite/${tramite.slug}`,
                 }
               )}
               key={tramite.slug} 
@@ -43,13 +43,13 @@ export default function NavLinksTramites({allTramites }:{allTramites:TramiteMd[]
                   )} 
                 />
               </div>
-              <p className="text-[14px] text-start md:text-[15px] ">
+              <p className="text-[13px] text-start md:text-[14px] ">
                 {tramite.tramite}
               </p>
             </Link>
           ))}
         </div>
       </div>
-    </div>
+    </Frente>
   );
 }

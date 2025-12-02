@@ -3,14 +3,12 @@
 import { useState, useEffect } from 'react';
 import { Disclosure, DisclosurePanel } from '@headlessui/react'
 import clsx from 'clsx';
-import Link from 'next/link';
 
 import { Comment } from '@/app/lib/definitions';
 import { Button } from '@/app/ui/button';
 import { Frente } from '@/app/ui/marcos';
 import IconConsultaRight from "@/app/ui/logosIconos/icon-consulta-right"
 import useToggleState from "@/app/lib/hooks/use-toggle-state"
-import { formatDateToLocal } from '@/app/lib/utils';
 import distanceToNow from '@/app/lib/dateRelative';
 
 
@@ -20,14 +18,9 @@ export default function TableCommentMember( {
   comment: Comment;
 } ) {
   
-  // const [palabrasConsulta, setTextconsulta] = useState(consulta.consulta.split(" "))
   const [successState, setSuccessState] = useState(false)
 
   const { state, close, toggle } = useToggleState()
-
-
-  // const archivosAdjuntos= consulta?.archivos_url
-  // const archivos: string[] = JSON.parse(archivosAdjuntos!)
 
   const clearState = () => {
     setSuccessState(false)
@@ -43,8 +36,6 @@ export default function TableCommentMember( {
       close()
     }
   }, [successState, close])
-
-  // const tituloConsulta= palabrasConsulta.slice(0, 12)
 
 
   return (
@@ -68,18 +59,6 @@ export default function TableCommentMember( {
                 </span> 
               </span>
             </div>
-
-            {/* <div className={`mb-2`}>
-              <span className={` decoration-[#020b1d20] underline underline-offset-[3px] ${state && "underline-offset-0 no-underline"}`}>
-                {tituloConsulta.join(" ") }
-              </span>
-              <span className=" ">
-                { tituloConsulta.length < 12 ? "" :
-                  !state ? " ... " :
-                  ` ${palabrasConsulta.slice(12).join(" ")}` 
-                }
-              </span>
-            </div> */}
           </div>
 
           <Button
@@ -108,65 +87,8 @@ export default function TableCommentMember( {
 
               <p className="p-1 border border-[#39507f22] bg-[#ffffffe0] rounded-[2px] sm:p-4">{ comment.comment } </p>
 
-
-              {/* <div className="text-[#39507f] mb-1 font-medium text-[13.5px] sm:text-[14.5px] ">
-                RESPUESTA
-                <span className={` text-[13px] bg-[#ffffff] text-[#020b1d77] ml-1 px-1.5 py-0.5 rounded-lg `}>
-                  {consulta.updated_at ? distanceToNow(new Date(consulta.updated_at)) : "En proceso" } 
-                </span> 
-              </div> */}
-
-              {/* <div>
-                { consulta.respuesta ? (
-                  <p className="p-1 border border-[#39507f22] bg-[#ffffffe0] rounded-[2px] sm:p-4">{ consulta.respuesta } </p>
-                ) : (
-                  <p className="p-2 border text-[#39507fcc] border-[#39507f22] bg-[#ffffffe0] rounded-[2px] sm:p-4">
-                    <i>Recibimos la consulta.</i><br></br>
-                    <i>Te enviaremos la respuesta en la mayor brevedad.</i>
-                  </p>
-                )}
-              </div> */}
             </div>
           </div>
-
-          {/* <div className={`flex flex-col items-center transition-[visibility] duration-300 ease-in-out ${!state && "invisible"} `}>
-            <div className="mb-1.5 text-base">Archivos Adjuntos</div>
-            <div className="w-full bg-[#020b1d] pt-6 pb-4 px-3 rounded-lg flex gap-6 flex-wrap justify-center">
-
-
-              <div className="">
-                {archivos ? (
-                  <div className=" flex gap-5 items-baseline ">
-                    {archivos?.map((archivo, index) => (
-                      <div key={index } className=" text-[13px] leading-[18px] opacity-80 hover:opacity-100 ">
-                        
-                        <Link 
-                          href={archivo.slice(-4) === ".pdf" ? 
-                            archivo.replace(".pdf", ".png") 
-                            : 
-                            archivo
-                          } 
-                          target="_blank">
-                          <img 
-                            src={archivo.slice(-4) === ".pdf" ? 
-                              archivo.replace(".pdf", ".png") 
-                              : 
-                              archivo
-                            } 
-                            alt="imagen archivo"
-                            width={96}
-                            height={96}
-                            className="rounded w-16 border border-[#777] " />
-                        </Link>
-                      </div> 
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-[#ffffffaa] ">No tiene archivos adjuntos</div>
-                )}
-              </div>
-            </div>
-          </div> */}
         </DisclosurePanel>
       </Disclosure>
     </Frente>

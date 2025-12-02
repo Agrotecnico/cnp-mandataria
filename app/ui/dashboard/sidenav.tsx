@@ -21,7 +21,6 @@ export default async function SideNav() {
       </div>
 
       <div className="flex grow flex-row justify-between gap-2 md:gap-0 md:flex-col">
-        {/* <NavLinks /> */}
         <div className="flex flex-col w-full md:gap-0">
           {session?.user.role === "admin" ? (
             <NavLinksAdmin />
@@ -31,15 +30,15 @@ export default async function SideNav() {
         </div>
 
         {session?.user.role !== "admin" && (
-          <div className={` hidden flex-col mt-8 mb-2 text-[13px] rounded-md shadow-[box-shadow:_inset_0 1px_#ffffff,_inset_0_-1px_#0000002e] sm:text-sm md:flex`}>
+          <div className={` hidden flex-col mt-2 text-[13px] rounded-md shadow-[box-shadow:_inset_0 1px_#ffffff,_inset_0_-1px_#0000002e] sm:text-sm md:flex`}>
             <Link 
               href={session?.user.role === "admin" ? '/dashboard/tramites' : '/iniciar-tramite/cambio-de-radicacion'} 
               className= 'w-full h-9 flex items-center justify-start first:rounded-l-md last:rounded-r-md duration-200 text-[#020b1dbb] bg-[#ffffff88] [box-shadow:_inset_0_1px_#ffffff,inset_0_-1px_#0000002e] hover:bg-[#ffffffe3] hover:text-[#020b1d] md:first:rounded-bl-none md:last:rounded-tr-none md:first:rounded-t-md md:last:rounded-b-md'>
                 
               <IconPresupuesto 
                 color='#fff0' 
-                color2='#548eff' 
-                className="mr-2 ml-3 w-[16px] h-[16px] duration-150 rounded-[3px] border border-[#548eff88] group-hover:opacity-100 sm:w-[18px] sm:h-[18px]"/>
+                color2='#39507faa' 
+                className="mr-2 ml-3 w-[16px] h-[16px] duration-150 rounded-[3px] border border-[#39507f88] group-hover:opacity-100 sm:w-[18px] sm:h-[18px]"/>
               
               <p className="text-[#020b1dcc] duration-150 group-hover:text-[#020b1d]">{session?.user.role === "admin" ? 'Ver trámites' : 'Pedí presupuesto'}</p>
             </Link>
@@ -48,8 +47,8 @@ export default async function SideNav() {
               className= 'w-full h-9 flex items-center justify-start first:rounded-l-md last:rounded-r-md duration-200 text-[#020b1dbb] bg-[#ffffff88] [box-shadow:_inset_0_1px_#ffffff,inset_0_-1px_#0000002e] hover:bg-[#ffffffe3] hover:text-[#020b1d] md:first:rounded-bl-none md:last:rounded-tr-none md:first:rounded-t-md md:last:rounded-b-md'>
               <IconConsulta 
                 color='#fff0' 
-                color2='#548eff' 
-                className="mr-2 ml-3 w-[16px] h-[16px] duration-150 rounded-full border border-[#548eff88] group-hover:opacity-100 sm:w-[18px] sm:h-[18px]"/>
+                color2='#39507faa' 
+                className="mr-2 ml-3 w-[16px] h-[16px] duration-150 rounded-full border border-[#39507f88] group-hover:opacity-100 sm:w-[18px] sm:h-[18px]"/>
               <p className="text-[#020b1dcc] duration-150 group-hover:text-[#020b1d]">{session?.user.role === "admin" ? 'Ver consultas' : 'Realizá tu consulta'}</p>
             </Link>
           </div>

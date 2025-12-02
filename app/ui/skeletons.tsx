@@ -486,39 +486,6 @@ export function ConsultasSkeleton() {
         </div>
       </Frente>
 
-      <Frente  className="mb-3 p-2.5 text-[13px] sm:p-4 sm:text-sm !bg-[#ffffff44]" >
-        <div className="flex flex-col items-start " >
-          <div className="w-full items-end flex gap-2 justify-between sm:gap-4">
-            <div className="flex items-center flex-wrap text-[#39507f] opacity-60">
-              <p className="font-medium text-sm mr-2 sm:text-[15px]">
-                <span className="text-[13px] sm:text-[14px]">CONSULTA</span>
-                <span className="bg-[#548effdd] ml-1 px-1 text-xs text-[#ffffff] rounded-md sm:text-[13px]">000</span>
-              </p>
-              <p className="flex flex-nowrap items-center">
-                <span className="">realizada el </span>
-  
-                <time className={`${shimmer} before:via-[#39507f21] relative overflow-hidden w-20 h-[17px] text-[#39507f99] leading-[1.2] ml-1 rounded-lg px-1.5 bg-[#ffffff] sm:w-[88px] sm:h-[19px]`}></time>
-              </p>
-            </div>
-  
-            <Button
-              className="mb-auto relative text-[#020b1daa] h-[30px] rounded-md border border-[#548eff33] min-h-[24px] w-[72px] justify-center bg-[#ffffffaa] !px-2.5 py-1 text-[13px] opacity-60"
-            >
-              <div><span className="text-[12px] uppercase">Ver</span></div>
-            </Button>
-          </div>
-
-          <div className="mt-3 w-full">
-            <div className={`w-full h-5 `}>
-              <div className={`${shimmer} relative overflow-hidden w-full h-[14px] bg-[#cbd5e1] opacity-80 rounded-md mb-1`}></div>
-            </div>
-            <div className={`w-3/4 h-5`}>
-              <div className={`${shimmer} relative overflow-hidden w-full h-[14px] bg-[#cbd5e1] opacity-80 rounded-md mb-1`}></div>
-            </div>
-          </div>
-        </div>
-      </Frente>
-
       <div className="z-10 my-5 flex w-full justify-center">
         <div className="inline-flex items-center gap-3">
           <IconFlecha className={`w-[14px] scale-[-1] fill-[#39507f30] `} />
@@ -670,39 +637,6 @@ export function CommentsSkeleton() {
       <h1 className={` mb-[22px] mt-1.5 text-xl lg:text-2xl`}>
         Mis Comentarios
       </h1>
-
-      <div className='relative '>
-        <div className={`flex flex-col mb-3 gap-[2px]`}>
-          <Frente className="flex flex-col text-[#020b1dbb] w-full p-3 !bg-[#ffffff44] !rounded-[6px] sm:p-4 ">
-            <div className="w-full flex items-center justify-between">
-              <div className="flex items-center flex-wrap gap-[2px] opacity-60">
-                <div className="flex items-center font-medium text-[13px] mr-2 sm:text-sm ">
-                  <p>COMENTARIO</p>
-                  <p className="bg-[#548effdd] ml-1 px-1 text-[13px] text-[#ffffff] rounded-md">000</p>
-                </div>
-                <p className="flex flex-nowrap items-center">
-                  <span className="text-[14px] mb-0.5">realizado</span>
-                  <time className={`${shimmer} before:via-[#39507f21] relative overflow-hidden w-20 h-[17px] text-[#39507f99] leading-[1.2] ml-1 rounded-lg px-1.5 bg-[#ffffffdd] sm:w-[88px] sm:h-[19px]`}></time>
-                </p>
-              </div> 
-
-              <div className='relative h-[30px] flex items-center gap-0 mb-auto opacity-60'>
-                <div className="px-1 mb-auto text-[13px] pb-0.5 border border-[#020b1d2c] text-[#020b1d88] bg-[#ffffff88] rounded-full leading-[1.1]">eliminar</div>
-              </div>
-            </div>
-
-            <div className="mt-3 mx-2 lg:mx-4">
-              <div className={`w-full h-5 `}>
-                <div className={`${shimmer} relative overflow-hidden w-full h-[14px] bg-[#cbd5e1] opacity-80 rounded-md mb-1`}></div>
-              </div>
-
-              <div className={`w-3/4 h-5`}>
-                <div className={`${shimmer} relative overflow-hidden w-full h-[14px] bg-[#cbd5e1] opacity-80 rounded-md mb-1`}></div>
-              </div>
-            </div>
-          </Frente>
-        </div>
-      </div>
 
       <div className='relative '>
         <div className={`flex flex-col mb-3 gap-[2px]`}>

@@ -5,6 +5,7 @@ import {
   ChatBubbleLeftEllipsisIcon,
 } from '@heroicons/react/24/outline';
 import iconResumen from "@/app/ui/logosIconos/icon-resumen";
+import IconCuenta from "@/app/ui/logosIconos/icon-cuenta";
 
 
 export const agrotecnico = [
@@ -229,6 +230,7 @@ export const linkMembers = [
     icon: ClipboardDocumentListIcon,
   },
   { name: 'Comentarios', href: '/dashboard/comments', icon: ChatBubbleLeftEllipsisIcon, },
+  { name: 'Mi cuenta', href: '/dashboard/cuenta', icon: IconCuenta, },
 ];
 
 export const links = [

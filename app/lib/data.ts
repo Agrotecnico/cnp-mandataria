@@ -758,16 +758,7 @@ export async function fetchFilteredCommentsA(query: String, currentPage: number,
 }
 
 
-export async function fetchUserById(email: string | null | undefined): Promise<User | undefined> {
-  try {
-    const user = await sql<User>`SELECT * FROM users WHERE email=${email}`;
-    return user.rows[0];
-  } catch (error) {
-    console.error('Failed to fetch user:', error);
-    throw new Error('Failed to fetch user.');
-  }
-}
-export async function fetchUserByEmail(id: string | null | undefined): Promise<User | undefined> {
+export async function fetchUserById(id: string | null | undefined): Promise<User | undefined> {
   try {
     const user = await sql<User>`SELECT * FROM users WHERE email=${id}`;
     return user.rows[0];
@@ -776,6 +767,25 @@ export async function fetchUserByEmail(id: string | null | undefined): Promise<U
     throw new Error('Failed to fetch user.');
   }
 }
+export async function fetchUserByEmail(email: string | null | undefined): Promise<User | undefined> {
+  try {
+    const user = await sql<User>`SELECT * FROM users WHERE email=${email}`;
+    return user.rows[0];
+  } catch (error) {
+    console.error('Failed to fetch user:', error);
+    throw new Error('Failed to fetch user.');
+  }
+}
+export async function fetchUserById2(id: string | null | undefined): Promise<User | undefined> {
+  try {
+    const user = await sql<User>`SELECT * FROM users WHERE email=${id}`;
+    return user.rows[0];
+  } catch (error) {
+    console.error('Failed to fetch user:', error);
+    throw new Error('Failed to fetch user.');
+  }
+}
+
 export async function fetchUserByIdentifier(identifier: string | null | undefined): Promise<User | undefined> {
   try {
     const user = await sql<User>`SELECT * FROM users WHERE email=${identifier}`;
@@ -822,6 +832,22 @@ export async function fetchVerificationToken(email: string | null | undefined) {
     throw new Error('Failed to fetch all customers.');
   }
 }
+export async function fetchVerificationToken2(email: string | null | undefined) {
+  noStore()
+  try {
+    const data = await sql<VerificationToken>`
+      SELECT *
+      FROM verification_token
+      WHERE email=${email}
+    `;
+
+    return data.rows[0];
+  } catch (err) {
+    console.error('Database Error:', err);
+    // throw new Error('Failed to fetch all customers.');
+  }
+}
+
 export async function fetchToken(token: string | null | undefined) {
   noStore()
   try {

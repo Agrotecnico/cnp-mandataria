@@ -122,7 +122,7 @@ export default function CNPMandataria({
             <h1 className="font-bold text-3xl mx-auto mb-1.5 sm:mb-5 sm:mt-4">
               CNP mandataria
             </h1>
-            <Frente className=" mx-2 !rounded-xl max-w-[700px] sm:mx-auto sm:w-full sm:rounded-lg">
+            <Frente className="!bg-[#548eff0b] mx-2 !rounded-xl max-w-[700px] sm:mx-auto sm:w-full sm:rounded-lg">
               <p className="text-sm px-3 leading-snug py-2 text-center sm:px-4 sm:py-3 sm:text-[15px]">
               Un servicio con la facultad en representación legal, asesoramiento y gestión en la compra/venta de vehículos automotor y náutico. 
               Esto incluye la transferencia de dominio, cédula de identificación y otros trámites.
@@ -253,7 +253,7 @@ export default function CNPMandataria({
             href={"https://www.dnrpa.gov.ar/portal_dnrpa/mandatarios2.php?CONSULTAS2=true"} 
             target='_blank'
             className="text-[#020b1daa]">
-            <p className="flex justify-center items-center gap-3 px-4 h-7 rounded-lg bg-[#ffffff88] duration-200 text-sm font-normal [font-variant-caps:_small-caps] shadow-[0_10px_20px_#020b1d33] sm:text-[15px] hover:bg-[#ffffff] hover:text-[#020b1ddd] ">
+            <p className="flex justify-center items-center gap-3 px-4 h-7 rounded-lg bg-[#548eff0b] duration-200 text-sm font-normal [font-variant-caps:_small-caps] shadow-[0_10px_20px_#020b1d33] sm:text-[15px] hover:bg-[#ffffff] hover:text-[#020b1ddd] ">
               Mandataria Nacional{' '}
               <span className="flex items-center text-[13px] sm:text-[14px] tracking-normal">
                 <span className='flex items-center h-[16px] tracking-wider text-[#ffffff] px-1 bg-[#548effbb] font-medium rounded-l-[4px] rounded-tr-[4px] text-[10px] sm:text-[11px]'>CUIT</span><span className="border-b border-[#548effaa] leading-[1.2] mr-2 pl-1 text-[13px] ">27 30615135 0
@@ -423,7 +423,7 @@ export default function CNPMandataria({
                     width={960}
                     height={720}
                     className="absolute pt-0.5 object-cover h-[28vh] top-[0px] flex w-full items-center justify-center rounded-t-xl sm:h-[30vh]"
-                  >{/*  border-x-1 border-white */}
+                  >
                   </Image>
 
                 </SwiperSlide>
@@ -538,10 +538,10 @@ export default function CNPMandataria({
             </SwiperSlide>
           </Swiper>
 
-          <div className="flex flex-col gap-0.5 text-sm rounded-lg shadow-[0_10px_20px_#020b1d33] sm:text-[15px] sm:flex-row">
+          <div className="flex flex-col text-sm rounded-lg shadow-[0_10px_20px_#020b1d33] sm:text-[15px] sm:flex-row">
             <Link 
               href={session?.user.role === "admin" ? '/dashboard/tramites' : '/iniciar-tramite/cambio-de-radicacion'} 
-              className="group h-7 flex items-center rounded-t-lg px-3 bg-[#ffffff88] duration-150 justify-start sm:rounded-tr-none sm:rounded-l-lg sm:h-8 opacity-90 group-hover:opacity-100 hover:bg-white active:opacity-80">
+              className="group h-7 flex items-center rounded-t-lg px-3 bg-[#548eff0b] duration-150 justify-start sm:rounded-tr-none sm:rounded-l-lg sm:h-8 opacity-90 group-hover:opacity-100 hover:bg-white active:opacity-80">
               <IconPresupuesto 
                 className="mr-2 w-[15px] h-[15px] duration-150 sm:w-[16px] sm:h-[16px]"
                 />
@@ -549,7 +549,7 @@ export default function CNPMandataria({
             </Link>
             <Link 
               href={session?.user.role === "admin" ? '/dashboard/consultas' : '/realizar-consulta'} 
-              className="group h-7 flex items-center rounded-b-lg px-3 bg-[#ffffff88] duration-150 justify-start sm:rounded-bl-none sm:rounded-r-lg sm:h-8 opacity-90 group-hover:opacity-100 hover:bg-white active:opacity-80">
+              className="group h-7 flex items-center rounded-b-lg px-3 bg-[#548eff0b] duration-150 justify-start sm:rounded-bl-none sm:rounded-r-lg sm:h-8 opacity-90 group-hover:opacity-100 hover:bg-white active:opacity-80">
               <IconConsulta 
                 className="mr-2 w-[15px] h-[15px] duration-150 sm:w-[16px] sm:h-[16px]"
                 />
@@ -562,7 +562,7 @@ export default function CNPMandataria({
       {/* Consultas */}
       <SwiperSlide id="cp" className="" >
         <div className="flex flex-col items-center justify-center w-full h-[70vh] gap-[7%]">
-          <Fondo className="!bg-[#d9e1f0] p-2 mx-2 sm:p-4">
+          <Fondo className=" p-2 mx-2 sm:p-4">
             <div className="mb-1.5 w-full text-[17px] text-center font-medium sm:text-xl sm:mt-2.5 sm:mb-4">
               CONSULTAS FRECUENTES
             </div>
@@ -573,7 +573,7 @@ export default function CNPMandataria({
                   <Link
                     as={`/faq/${linkDato.slug}`}
                     href="/faq/[slug]"
-                    className="bg-[#e8edf6] text-[#020b1dbb] rounded-none duration-150 [box-shadow:_inset_0_1px_#ffffff,inset_0_-1px_#0000002e] hover:bg-[#ffffffa4] hover:text-[#020b1ddd] first:rounded-t-lg last:rounded-b-lg active:opacity-80 "
+                    className="bg-[#ffffff66] text-[#020b1dbb] rounded-none duration-150 [box-shadow:_inset_0_1px_#ffffff,inset_0_-1px_#0000002e] hover:bg-[#ffffffbb] hover:text-[#020b1ddd] first:rounded-t-lg last:rounded-b-lg active:opacity-80 "
                     key={linkDato.slug}
                   >
                     <div className="py-1 px-3 gap-5 flex justify-between items-center sm:px-4 sm:py-3">
@@ -592,10 +592,10 @@ export default function CNPMandataria({
             </div>
           </Fondo>
 
-          <div className="flex flex-col gap-0.5 text-sm rounded-lg shadow-[0_10px_20px_#020b1d33] sm:text-[15px] sm:mt-12 sm:flex-row">
+          <div className="flex flex-col text-sm rounded-lg shadow-[0_10px_20px_#020b1d33] sm:text-[15px] sm:mt-12 sm:flex-row">
             <Link 
               href={session?.user.role === "admin" ? '/dashboard/tramites' : '/iniciar-tramite/cambio-de-radicacion'} 
-              className="group h-7 flex items-center rounded-t-lg px-3 bg-[#ffffff88] duration-150 justify-start sm:rounded-tr-none sm:rounded-l-lg sm:h-8 opacity-90 group-hover:opacity-100 hover:bg-white active:opacity-80">
+              className="group h-7 flex items-center rounded-t-lg px-3 bg-[#548eff0b] duration-150 justify-start sm:rounded-tr-none sm:rounded-l-lg sm:h-8 opacity-90 group-hover:opacity-100 hover:bg-white active:opacity-80">
               <IconPresupuesto 
                 className="mr-2 w-[15px] h-[15px] duration-150 sm:w-[16px] sm:h-[16px]"
                 />
@@ -603,7 +603,7 @@ export default function CNPMandataria({
             </Link>
             <Link 
               href={session?.user.role === "admin" ? '/dashboard/consultas' : '/realizar-consulta'} 
-              className="group h-7 flex items-center rounded-b-lg px-3 bg-[#ffffff88] duration-150 justify-start sm:rounded-bl-none sm:rounded-r-lg sm:h-8 opacity-90 group-hover:opacity-100 hover:bg-white active:opacity-80">
+              className="group h-7 flex items-center rounded-b-lg px-3 bg-[#548eff0b] duration-150 justify-start sm:rounded-bl-none sm:rounded-r-lg sm:h-8 opacity-90 group-hover:opacity-100 hover:bg-white active:opacity-80">
               <IconConsulta 
                 className="mr-2 w-[15px] h-[15px] duration-150 sm:w-[16px] sm:h-[16px]"
                 />

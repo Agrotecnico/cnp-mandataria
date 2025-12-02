@@ -88,7 +88,7 @@ export default async function TableConsultaAdmin({
                     <div className={`flex items-center mb-2 -mt-2 `}>
                       <div className='w-[17px] h-[17px] mr-2' ></div>
                       <div className="font-semibold">
-                        Asunto: 
+                        Trámite: 
                         <span className={`text-[12px] px-1 py-0.5 font-normal `} >
                           {AllConsultas[index].consulta.slice(0, AllConsultas[index].consulta.search(": ")).toLocaleUpperCase() }
                         </span>

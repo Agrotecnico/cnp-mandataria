@@ -5,14 +5,13 @@ import { ExclamationCircleIcon, ArrowPathIcon } from '@heroicons/react/24/outlin
 import clsx from 'clsx';
 import * as Tabs  from '@radix-ui/react-tabs';
 import Image from 'next/image'
-import { usePathname  } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { nanoid } from "nanoid";
-import fs from 'fs';
-
+import { ToastContainer, toast, Zoom, Flip } from 'react-toastify';
 
 
 import { User } from '@/app/lib/definitions';
-import { createTramite, StateCreateTramite, createVerificationToken, StateVerificationToken, updateUserEmail, StateUserEmail, updateCommentEmail, StateUpdateCommentEmail,createUser, StateUser, authenticate, authenticate2, handleFormPedido  } from '@/app/lib/actions';
+import { createTramite, StateCreateTramite, createVerificationToken, StateVerificationToken, updateUserEmail, StateUserEmail, updateCommentEmail, StateUpdateCommentEmail,createUser2, StateUser, authenticate, authenticate3, handleFormPedido  } from '@/app/lib/actions';
 import { Frente } from '@/app/ui/marcos';
 import IconCambio from '@/app/ui/logosIconos/icon-cambio';
 import IconDragDrop from '@/app/ui/logosIconos/icon-drag-drop';
@@ -29,6 +28,13 @@ import { InputCnp } from "@/app/ui/uiRadix/input-cnp";
 import { TextareaCnp } from "@/app/ui/uiRadix/textarea-cnp";
 import { TramiteMd } from "@/app/lib/definitions"
 import { PDFDocument } from 'pdf-lib';
+import 'react-toastify/dist/ReactToastify.css';
+// import NotifyVerified from '@/app/ui/consultas/notify-verified-consulta';
+import NotifyVerifiedTramite from '@/app/ui/tramites/notify-verified-tramite';
+import NotifyVerifyTramite from '@/app/ui/tramites/notify-verify-tramite';
+import './styles.css';
+
+const wait = () => new Promise((resolve) => setTimeout(resolve, 1000));
 
 
 export default function IniciarTramite( {
@@ -54,6 +60,9 @@ export default function IniciarTramite( {
   const [info, setInfo] = useState<string | undefined>("")
 
   const [token, setToken] = useState("");
+
+  const searchParams = useSearchParams();
+  const isVerified = searchParams.get('verified') === "true"
 
   const pathname = usePathname()
 
@@ -251,7 +260,25 @@ export default function IniciarTramite( {
     user?.name ? setName(`${user.name}`) : setName(`${sessionStorage.getItem('nameVisitor')}`)
     sessionStorage.getItem('nameVisitor') && setNameVisitor(`${sessionStorage.getItem('nameVisitor')}`)
     user?.image ? setImageUrl(`${user.image}`) : sessionStorage.getItem('imgUrlSession') && setImageUrl(`${sessionStorage.getItem('imgUrlSession')}`)
+
     setToken(tokenx)
+
+    isVerified && toast(<NotifyVerifiedTramite /> , {
+      autoClose: undefined,
+      closeButton:  false ,
+      transition: Flip,
+      // className: '!w-screen !h-screen !bg-[#020b1d66] !m-0 !-mb-4 !-mr-4 !p-0 max-[482px]:!-m-0',
+      className: `!w-full !min-h-min !mt-0 !p-0 !shadow-[0px_4px_12px_#a0b8e996] !bg-transparent !mb-0`,
+    });
+
+    !user || !isEmailVisitor && !isVerified && 
+    toast(<NotifyVerifyTramite isEmailVisitor= {isEmailVisitor} tramite={tramite} email={email} user={user} />, {
+      customProgressBar: true,
+      position: "bottom-center",
+      transition: Flip,
+      className: '!w-full !min-h-min mt-6 !mb-8 !p-0 !shadow-[0_10px_20px_#c0cde7] ',
+    });
+
   }, [ ])
 
   const onChange = (imageList: ImageListType, addUpdateIndex: Array<number> | undefined) => {
@@ -259,7 +286,7 @@ export default function IniciarTramite( {
   };
 
   const initialStatex: StateUser = { message: null, errors: {} };
-  const [estadox, formActionx, isPendingx] = useActionState(createUser, initialStatex);
+  const [estadox, formActionx, isPendingx] = useActionState(createUser2, initialStatex);
 
   const initialState: StateCreateTramite = { message: null, errors: {} };
   const [estado, formAction, isPending] = useActionState(createTramite, initialState);
@@ -267,7 +294,7 @@ export default function IniciarTramite( {
   const initialStatexx: StateVerificationToken  = { message: null, errors: {} };
   const [estadoxx, formActionxx, isPendingxx] = useActionState(createVerificationToken, initialStatexx);
 
-  const [errorMessage, formActionAuth, isPendingAuth] = useActionState(authenticate2, undefined, );
+  const [errorMessage, formActionAuth, isPendingAuth] = useActionState(authenticate3, undefined, );
 
   const initialStatexxx: StateUserEmail = { message: null, errors: {} };
   const updateUserEmailWithId = updateUserEmail.bind(null, id);
@@ -277,8 +304,19 @@ export default function IniciarTramite( {
   const updateCommentEmailWithId = updateCommentEmail.bind(null, id);
   const [estadoxxxx, formActionxxxx, isPendingxxxx] = useActionState(updateCommentEmailWithId, initialStatexxxx);
 
-  // console.log("ancho, alto: ", img.width)
-  // console.log("ancho, alto: ", height)
+  const limpiarNotificaciones = () => {
+    toast.dismiss();
+  };
+  const notifyVerifyTramite = () =>
+    toast(<NotifyVerifyTramite isEmailVisitor= {isEmailVisitor} tramite={tramite} user={user} email={email} />, {
+      customProgressBar: true,
+      // autoClose: 5000,
+      position: "bottom-center",
+      transition: Flip,
+      pauseOnHover: false,
+      className: '!w-full !min-h-min !mb-8 !mt-6 !p-0 !shadow-[0_10px_20px_#c0cde7]',
+    });
+
 
   return (
     <>
@@ -288,16 +326,16 @@ export default function IniciarTramite( {
           alt="icono trámites" 
           width={26} 
           height={26}
-          className="opacity-80 h-[14px] w-[14px] mr-2.5 sm:h-[16px] sm:w-[16px]"
+          className="opacity-80 mb-[3px] h-3 w-3 mr-2.5 sm:h-3.5 sm:w-3.5"
         />
-        <h1 className=" text-start text-lg text-[#39507fcc] font-semibold leading-tight tracking-tighter sm:text-[22px] md:leading-none ">
+        <h1 className=" text-start text-[17px] text-[#39507fcc] font-semibold leading-tight tracking-tighter sm:text-[19px] md:leading-none ">
           {tramiteMd.tramite}
         </h1>
       </div>
 
-      <Frente className="!bg-[#d9e1f0] ">
+      <Frente className="!bg-[#548eff16] ">
         <Tabs.Root
-          className="flex flex-col min-h-[332px]"
+          className="flex flex-col min-h-[362px]"
           defaultValue="tab1"
         >
           <Tabs.List
@@ -305,14 +343,14 @@ export default function IniciarTramite( {
             aria-label="Manage your account"
           >
             <Tabs.Trigger
-              className="flex bg-[#e5ebf5] mt-[1px] flex-1 duration-150 cursor-pointer select-none items-center justify-center py-3 px-2.5 leading-none  text-[#020b1d77] outline-none hover:text-[#020b1daa] data-[state=active]:bg-[#f1eef000] data-[state=active]:cursor-default data-[state=active]:text-[#020b1dcc]"
+              className="flex bg-[#ffffff66] mt-[1px] flex-1 duration-150 cursor-pointer select-none items-center justify-center py-3 px-2.5 leading-none  text-[#020b1d77] outline-none hover:text-[#020b1daa] data-[state=active]:bg-[#f1eef000] data-[state=active]:cursor-default data-[state=active]:text-[#020b1dcc]"
               value="tab1"
             >
               Descripción<span className={`ml-1 font-semibold text-xs text-[#ff0000] ${tramiteMd.slug === "x-Otros" && tramite !== "" && "text-transparent"} ${tramiteMd.slug !== "x-Otros" && "text-transparent" } `}>*</span>
             </Tabs.Trigger>
 
             <Tabs.Trigger
-              className="border-x border-[#d7dfef] flex bg-[#e5ebf5] mt-[1px] flex-1 duration-150 cursor-pointer select-none items-center justify-center py-3 px-2.5 leading-none  text-[#020b1d77] outline-none hover:text-[#020b1daa] data-[state=active]:bg-[#f1eef000] data-[state=active]:cursor-default data-[state=active]:text-[#020b1dcc]"
+              className="border-x border-[#d7dfef] flex bg-[#ffffff66] mt-[1px] flex-1 duration-150 cursor-pointer select-none items-center justify-center py-3 px-2.5 leading-none  text-[#020b1d77] outline-none hover:text-[#020b1daa] data-[state=active]:bg-[#f1eef000] data-[state=active]:cursor-default data-[state=active]:text-[#020b1dcc]"
               value="tab2"
             >
               <div className='flex flex-wrap justify-center '>
@@ -322,7 +360,7 @@ export default function IniciarTramite( {
             </Tabs.Trigger>
 
             <Tabs.Trigger
-              className="flex bg-[#e5ebf5] mt-[1px] flex-1 duration-150 cursor-pointer select-none items-center justify-center py-3 px-2.5 leading-none  text-[#020b1d77] outline-none hover:text-[#020b1daa] data-[state=active]:bg-[#f1eef000] data-[state=active]:cursor-default data-[state=active]:text-[#020b1dcc]"
+              className="flex bg-[#ffffff66] mt-[1px] flex-1 duration-150 cursor-pointer select-none items-center justify-center py-3 px-2.5 leading-none  text-[#020b1d77] outline-none hover:text-[#020b1daa] data-[state=active]:bg-[#f1eef000] data-[state=active]:cursor-default data-[state=active]:text-[#020b1dcc]"
               value="tab3"
             >
               Adjuntar Informacíon
@@ -333,7 +371,7 @@ export default function IniciarTramite( {
             className="grow rounded-b-md p-2 outline-none text-[13px] text-[#020b1dcc] sm:p-4 sm:text-[15px]"
             value="tab1"
           >
-            <div className="flex flex-col justify-between min-h-[259px]">
+            <div className="flex flex-col justify-between min-h-[288px]">
               <div className="flex flex-col">
                 <p className="mb-3 mt-1 sm:mt-0 ">
                   {tramiteMd.slug === "x-Otros" ? "Describí el trámite" : "Descripción general del trámite" }  
@@ -358,7 +396,7 @@ export default function IniciarTramite( {
                       />
                     </div>
                   ) : (
-                    <div className="bg-[#ffffffaa]">
+                    <div className="bg-[#ffffffaa] text-[13px] sm:text-sm">
                       <div
                       className={`rounded-sm pt-2 px-3  ${markdownStyles['markdown']}`}
                       dangerouslySetInnerHTML={{ __html: content }}
@@ -530,7 +568,7 @@ export default function IniciarTramite( {
 
       {/* registrar email tramite */}
       { !user ? (
-        <Frente className="`!px-2 py-3 mt-5 text-small-regular !bg-[#e5ebf5] sm:!px-4 sm:py-2 `">
+        <Frente className="!p-2  mt-2 text-small-regular !bg-[#548eff16] sm:!px4 ">
           <div className="flex items-start justify-between gap-3  sm:items-center sm:gap-5 ">
             <div className="mt-[2px] sm:mt-1.5  ">
               <IconRegistro className=" w-5 ml-1.5 sm:w-6 sm:ml-3" />
@@ -538,7 +576,7 @@ export default function IniciarTramite( {
             
             <div className={`w-full text-start text-[#39507f] `}>
               <div className={` text-[13px] sm:text-[15px] `}>
-                <p>Enviame un e-mail para mandarte el presupuesto<span className=" text-[#ff0000] ml-0.5">*</span></p>
+                <p>Envíame un Email para que pueda mandarte el presupuesto<span className=" text-[#ff0000] ml-0.5">*</span></p>
               </div>
             </div>
               
@@ -618,6 +656,12 @@ export default function IniciarTramite( {
                     value={ /* imagen ? imagen : imageUrl ? imageUrl : */ "" }
                     readOnly
                   />
+                  <input
+                    type="hidden"
+                    name="password"
+                    value= {"72cf0550-3f64-474d-b150-aa813c6b4b67" }
+                    readOnly
+                  />
                   <input type="hidden" name="pathname" value={pathname} readOnly />
                 </fieldset>
 
@@ -637,9 +681,10 @@ export default function IniciarTramite( {
 
                 {/* button submit */}
                 <ButtonA
-                  className={`${(isPendingx || isPendingAuth) && "before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_1s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/30 before:to-transparent"}  relative overflow-hidden  h-8 text-[13px] w-max ml-auto ${!open && "hidden"} disabled:!opacity-60`}
+                  className={`${(isPendingx || isPendingAuth) && "before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_1s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/30 before:to-transparent"}  relative overflow-hidden w-32  h-8 text-[13px] ml-auto ${!open && "hidden"} disabled:!opacity-60`}
                   onClick={() => { 
                     setTimeout(handleClickButtonAuth, 200) 
+                    setTimeout(notifyVerifyTramite, 2000) 
                   }}
                   disabled= {( name) && email && isEmailValid(`${email}`) ? false : true}
                 >
@@ -649,8 +694,8 @@ export default function IniciarTramite( {
             </div>
           </div>
         </Frente>
-      ) : isEmailVisitor ? (
-        <Frente className={`!px-2 py-3 mt-5 text-small-regular !bg-[#e5ebf5] sm:!px-4 sm:py-2 `}>
+      ) : isEmailVisitor && (
+        <Frente className={`!p-2 mt-2 text-small-regular !bg-[#548eff16] sm:!p-4 `}>
           <div className="flex items-start justify-between gap-3  sm:items-center sm:gap-5 ">
             <div className="mt-[2px] sm:mt-1.5  ">
               <IconRegistro className="w-5 ml-1.5 sm:w-6 sm:ml-3 " />
@@ -727,9 +772,10 @@ export default function IniciarTramite( {
               <form onSubmit={  uploadToServer3  }>
                 <ButtonA
                   type="submit"
-                  className={`${(isPendingx || isPendingAuth) && "before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_1s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/30 before:to-transparent"}  relative overflow-hidden  h-8 text-[13px] w-max ml-auto ${!open && "hidden"} disabled:!opacity-60`}
+                  className={`${(isPendingx || isPendingAuth) && "before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_1s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/30 before:to-transparent"}  relative overflow-hidden w-32 h-8 text-[13px] ml-auto ${!open && "hidden"} disabled:!opacity-60`}
                   onClick={() => { 
                     setTimeout(handleClickButtonAuth, 2000) 
+                    setTimeout(notifyVerifyTramite, 3000) 
                   }}
                   disabled= {( user?.name || name) && email && isEmailValid(`${email}`) ? false : true}
                 >
@@ -739,42 +785,22 @@ export default function IniciarTramite( {
             </div>
           </div>
         </Frente>
-      ) : (
-        <Frente className={`flex items-start gap-2.5 !py-3 px-2 mt-5 !bg-[#d8edd966] text-small-regular ${estado?.message === "tramiteIniciado" && "hidden"} sm:py-2 sm:px4 sm:gap-5 sm:items-center`}>{/* !bg-[#e5ebf5ff] */}
-          <IconEnvioEmail className=" w-8 ml-1.5 mt-0.5 sm:w-10 sm:ml-3 sm:mt-0" />
-          <div className={`w-full text-start text-[13px] text-[#2e4067] sm:text-sm `}>
-            <p>Te enviaré el <b>presupuesto</b> por e-mail a<span className= "underline decoration-[#39507fdd] underline-offset-2 mx-1.5 ">{user.email} </span></p>
-          </div>
-        </Frente>
       )}
 
-      {estado?.message === "tramiteIniciado" && (
-        <Frente className="!p-2 mt-5 !bg-[#ddebdf] sm:!p-4 ">
-          <div className={`w-full text-sm text-[#2e4067] transition-[opacity] duration-300 `}>
-            <p className="">Recibí el <b>pedido de presupuesto</b>, te responderé a la mayor brevedad.</p>
-            <p className={`mt-2 font-medium ${ user?.email_verified && "hidden"}`}>
-              Por favor, revisá el correo electrónico <span className= "underline decoration-[#020b1d81] underline-offset-2 mx-1 ">{user?.email}</span> y enviá la verificación.
-            </p>
-          </div>
-        </Frente> 
-      )}
 
       {/* Massages error tramite */}
-      <div
-        className="my-1.5 flex items-end space-x-1 sm:my-3"
-        aria-live="polite"
-        aria-atomic="true"
-      >
-        {estado?.message && estado?.message !== "tramiteIniciado" && (
-          <>
-            <ExclamationCircleIcon className="h-5 w-5 text-red-500" />
-            <p className="text-sm text-red-500">{estado?.message}</p>
-          </>
-        )}
-      </div>
+      {estado?.message && estado?.message !== "tramiteIniciado" && (
+        <div 
+          className="py-3 px-2 flex items-end space-x-1 sm:px-4"
+          aria-live="polite"
+          aria-atomic="true">
+          <ExclamationCircleIcon className="h-5 w-5 text-red-500" />
+          <p className="text-sm text-red-500">{estado?.message}</p>
+        </div>
+      )}
 
       {/* Boton Enviar tramite */}
-      <div className=" w-full flex justify-between items-center">
+      <div className="mt-6 w-full flex justify-between items-center">
         <p className={`text-xs ml-2 ${tramite && user?.email && !isEmailVisitor && (images.length === documentos?.length || tramiteMd.slug === "x-Otros") && "opacity-0" } sm:text-[13px]`}><span className=" text-[#ff0000]">*</span> Requeridos</p>
 
         <div className="flex gap-4">
@@ -787,13 +813,17 @@ export default function IniciarTramite( {
                 </div>
 
                 <ButtonA
-                  className={`h-8 !px-4 text-sm !justify-start`}
+                  className={`h-8 !px-4 text-sm !justify-start disabled:!opacity-100`}
                   type="submit"
                   disabled={ tramite && user?.email && !isEmailVisitor && (images.length === documentos?.length || tramiteMd.slug === "x-Otros") ? false : true }
                   onClick={() => {
                     setSpin(true);
                     user?.role === "member" && handleClickButtonVerification()
                     user?.role === "member" && handleClickButtonPedido()
+                    limpiarNotificaciones()
+                    wait().then(() => {
+                    notifyVerifyTramite()
+                  })
                   }}
                 >
                   <IconCambio
@@ -820,6 +850,17 @@ export default function IniciarTramite( {
         </div>
       </div>
 
+      {/* <ToastContainer  className={!isVerified  ? "foo" : "" } /> */}
+      <ToastContainer  className={ !isVerified  ? "foo" : "foo2" } autoClose={false} />
+      {/* <NotifyVerifyTramite  isEmailVisitor= {isEmailVisitor} tramite={tramite} user={user} email={email}  /> */}
+      {/* <Frente className={`mt-6 !bg-[#548effee] w-full ${ isVerified && "hidden"}`}>
+        <div className=" flex items-start gap-4 pl-4 pb-1 pt-1.5 pr-7  sm:pr-7 sm:gap-5">
+          <IconEnvioEmail fill="#ffffff88" filla="#ffffffdd" className=" w-8 mt-1 mb-auto sm:w-9" />
+          <p className={` w-full text-start gap-1.5 text-[15px] text-[#ffffff] sm:text-base [text-shadow:_1px_1px_#3d61ad] `}>
+            Enviaré el presupuesto a tu correo electrónico <span className= "underline decoration-[#ffffffdd] underline-offset-[3] mx-1 ">{isEmailVisitor ? email : user?.email ? user.email : email}</span>
+          </p>
+        </div>
+      </Frente> */}
 
 
       {/* authentication */}
@@ -833,7 +874,7 @@ export default function IniciarTramite( {
         <input
           type="hidden"
           name="password"
-          value= {token} /* "72cf0550-3f64-474d-b150-aa813c6b4b67" */
+          value= "72cf0550-3f64-474d-b150-aa813c6b4b67" 
           readOnly
         />
         <input type="hidden" name="redirectTo" value={pathname} readOnly/>

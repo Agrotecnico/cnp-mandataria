@@ -124,8 +124,8 @@ export default function TableConsultaMember( {
           )}
         >
           <div className={`flex flex-col gap-4 mb-2.5 text-sm cursor-default transition-[visibility] duration-300 ease-in-out ${!state && "invisible"}`}>
-            <div className="mt-2 pt-5 text-[13px] sm:text-sm">
-              <p className="text-[#39507f] px-3 mb-2 font-medium sm:px-6 text-sm sm:text-[15px] ">
+            <div className={`mt-7 mx-5 pl-2 border-l-[3px] ${!consulta.respuesta ? "border-[#39507f88]" : "border-[#548effaa]"}  text-[13px] sm:text-sm`}>
+              <p className="text-[#39507f] mb-2 font-medium text-sm sm:text-[15px] ">
                 <span className='text-[13px] sm:text-[14px]'>RESPUESTA</span>
                 {consulta.updated_at ? 
                 <span className='text-[#38507f] ml-1 text-[13px] font-normal sm:text-sm'>enviada<span className={`leading-[1.2] text-[13px] sm:text-sm bg-[#ffffff] text-[#39507f99] ml-1 px-1.5 py-0.5 rounded-lg `}>{distanceToNow(new Date(consulta.updated_at))}</span>
@@ -134,9 +134,9 @@ export default function TableConsultaMember( {
               </p>
 
               { consulta.respuesta ? (
-                <p className="text-sm px-3 sm:text-[15px] sm:px-6">{ consulta.respuesta } </p>
+                <p className="text-sm sm:text-[15px] ">{ consulta.respuesta } </p>
               ) : (
-                <p className="text-sm px-3 text-[#39507fcc] sm:text-[15px] sm:px-6">
+                <p className="text-sm text-[#39507fcc] sm:text-[15px] ">
                   <i>Recibimos la consulta. </i>
                   <i>Te enviaremos la respuesta en la mayor brevedad.</i>
                 </p>

@@ -22,6 +22,7 @@ import { createComment, StateComment, updateUserImage, StateUserImage, createUse
 import { ButtonB, ButtonA } from '@/app/ui/button';
 import { InputCnp } from "@/app/ui/uiRadix/input-cnp";
 import { TextareaCnp } from "@/app/ui/uiRadix/textarea-cnp";
+import { User } from '@/app/lib/definitions';
 
 
 const wait = () => new Promise((resolve) => setTimeout(resolve, 2000));
@@ -29,13 +30,16 @@ const wait = () => new Promise((resolve) => setTimeout(resolve, 2000));
 export default function ListComment({ 
   comments,
   commentLast,
-  post
+  post,
+  user
   }: {
   comments: CommentsPost[]
   commentLast: Comment
   post: Post
+  user: User | undefined
   }) {
 
+  // const { data: session, update } = useSession()
   const { data: session, update } = useSession()
   
   const [nombre, setNombre] = useState("");
@@ -237,6 +241,9 @@ export default function ListComment({
   const updateUserImageWithId = updateUserImage.bind(null, id );
   const [estadoxx, formActionxx ] = useActionState(updateUserImageWithId, initialStatexx);
 
+  console.log("session:", session)
+  // console.log("user", user)
+
   
   return (
     <>
@@ -250,7 +257,7 @@ export default function ListComment({
               ) : "Podés ampliar esta consulta"}
           </div>
           
-          <Frente className={`!p-2 w-full mt-2 mb-9 text-small-regular sm:!p-4 !bg-[#e5ebf5]`}>
+          <Frente className={`!p-2 w-full mt-2 mb-9 text-small-regular sm:!p-4 !bg-[#ffffff66]`}>
             <div className={`flex items-center justify-between gap-2.5 sm:gap-5 ${open && "mb-4"}`}>
               <div className="w-max">
                 <IconComments className="opacity-80 w-8 sm:w-10" />
@@ -356,7 +363,7 @@ export default function ListComment({
         </div>
 
         {/* Actualizar avatar comment */}
-        <div className={` ${images.length != 0 ? "absolute -top-[56px]" : "absolute -top-[56px]"} -left-[5px] w-full gap-1 flex flex-col mb-3 } ${comme === true || imgVisitor  ? "hidden" : "block" } `}>
+        <div className={` ${images.length != 0 ? "absolute -top-[54px]" : "absolute -top-[54px]"} -left-[5px] w-full gap-1 flex flex-col mb-3 } ${comme === true || imgVisitor  ? "hidden" : "block" } `}>
           <ImageUploading
             multiple= {false}
             value={images}
@@ -499,7 +506,7 @@ export default function ListComment({
               // const isVisitor= comment.email_id === user?.email 
 
               return (
-                <div key={index} className={`flex flex-col mb-3 gap-[2px]`}>
+                <div key={index} className={`flex flex-col mb-3 gap-1`}>
                   { comment.image ? (
                     <Image
                       src={ comment.image }
@@ -508,14 +515,22 @@ export default function ListComment({
                       height={40}
                       className="rounded-full p-[1px] [box-shadow:_inset_0_1px_#ffffff,inset_0_-1px_#00000055] object-cover ml-3 h-10 w-10"
                     />
-                  )  :  (
-                    <span className="flex ml-3 h-10 w-10 text-[#39507fcc] items-center justify-center rounded-full bg-[#020b1d12] text-2xl ">
+                  ) : imgUrlSession ? (
+                    <Image
+                      src={ imgUrlSession }
+                      alt="Imagen de usuario"
+                      width={40}
+                      height={40}
+                      className="rounded-full p-[1px] [box-shadow:_inset_0_1px_#ffffff,inset_0_-1px_#00000055] object-cover ml-3 h-10 w-10"
+                    />
+                  ) : (
+                    <span className="flex ml-3 h-10 w-10 text-[#39507fcc] items-center justify-center rounded-full bg-[#020b1d12] text-2xl [box-shadow:_inset_0_1px_#ffffff,inset_0_-1px_#00000055] ">
                       {comment?.name?.substring(0, 1).toUpperCase() }
                     </span>
                   )}
                  
 
-                  <Frente key={comment.id} className="flex text-[#020b1dbb] space-x-4 w-full p-3 !bg-[#ffffffbb] !rounded-[6px] ">
+                  <Frente key={comment.id} className="flex text-[#020b1dbb] space-x-4 w-full p-3 !bg-[#ffffff88] !rounded-[6px] ">
                     <div className="flex-grow">
                       <div className="flex items-center justify-between">
                         <div className="flex flex-wrap">
@@ -545,7 +560,7 @@ export default function ListComment({
         {/* ///////////////////////////////////////////////////////// */}
 
         {/* crear user */}
-        <form action={formActionx}>
+        <form action={formActionx} className='hidden'>
           <input
             type="hidden"
             name="email"
@@ -562,6 +577,12 @@ export default function ListComment({
             type="hidden"
             name="image"
             value={ "" }
+            readOnly
+          />
+          <input
+            type="hidden"
+            name="password"
+            value={ "72cf0550-3f64-474d-b150-aa813c6b4b67" }
             readOnly
           />
           <input

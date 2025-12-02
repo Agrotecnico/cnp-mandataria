@@ -8,8 +8,6 @@ export default async function SideNavTramites() {
   const allTramites = getAllTramites();
 
   return (
-    <div className="flex h-max flex-col w-[268px] min-w-[268px] max-[900px]:w-full">
-      <NavLinksTramites  allTramites={allTramites} />
-    </div>
+    <NavLinksTramites  allTramites={allTramites} />
   );
 }

@@ -205,7 +205,7 @@ export default function EditProfileImage( { user, setIsModalOpen}: { user: User 
                         <div className="flex items-center gap-2 text-[13px] duration-150 opacity-90 group-hover:opacity-100">
                           <IconDragDrop color='#39507f' className= "w-[30px] opacity-80 ml-2" />
                           <div className='leading-[1]'>
-                            Elegí un archivo o arrastralo y sueltá aquí <br />
+                            Elegí una imagen o arrastrala y sueltá aquí <br />
                             <p className="text-xs mt-1.5"> archivos <span className='font-semibold'>jpg</span >, <span  className='font-semibold' >png</span > o <span className='font-semibold' >pdf</span >
                             </p>
                           </div>

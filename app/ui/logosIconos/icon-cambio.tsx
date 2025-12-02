@@ -33,7 +33,7 @@ const IconCambio: React.FC<IconProps> = ({
         cx="12" 
         cy="12" 
         r="10" 
-        stroke-width="4">
+        strokeWidth="4">
       </circle>
       <path 
         fill={fill} 

@@ -45,8 +45,11 @@ export async function GET(request: NextRequest) {
 
   // return Response.json({ token });
   // redirect("/login?verified=true");
-  redirect(`/email-verified?verified=true&name=${user?.name}&email=${user?.email}&page=${page}`);
+
+  // redirect(`/email-verified?verified=true&name=${user?.name}&email=${user?.email}&page=${page}`);
+
   // redirect(`/login?verified=true&name=${user?.name}&email=${user?.email}&page=${page}`);
   // redirect(`${page}?verified=true&role=${user?.role}`);
+  redirect(`${page}?verified=true&email=${user?.email}&name=${user?.name}`);
 
 }

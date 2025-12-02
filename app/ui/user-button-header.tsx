@@ -382,7 +382,7 @@ export default function UserButtonHeader( { user }: { user: User | undefined } )
 
           <DropdownMenuSeparator className="h-[1px] bg-[#37415122] m-[3px]" />
 
-          {pathname == '/dashboard/comments' ? (
+          {pathname == '/dashboard/comments' || !user || user.role === 'visitor' ? (
             <Link
               href={'#'}
             >

@@ -1,6 +1,7 @@
 import NextAuth from "next-auth"
 import authConfig from "./auth.config"
 import { NextResponse } from "next/server"
+import { log } from "console"
  
 const { auth: middleware } = NextAuth(authConfig)
 
@@ -16,7 +17,7 @@ const publicRoutes= [
   // "/iniciar-tramite/:path+",
   // "/^\/iniciar-tramite\/[\w-]+$/.test(pathname)",
   "/login",
-  // "/register",
+  "/register",
   "/email-verified",
   "/api/auth/signIn",
   "/api/auth/auth",
@@ -33,6 +34,7 @@ export default middleware((req) => {
   const isLoggedIn= !!auth?.user
 
   const { pathname } = req.nextUrl
+
   // Autorizar solo rutas que coinciden con /faq/[slug]
 
  

@@ -23,7 +23,7 @@ export default async function RegisterPage() {
         <Header />
       </SessionProvider> 
       <main className="flex items-start justify-center pt-16 md:h-screen">
-        <div className="relative mt-16 flex w-full max-w-[460px] flex-col space-y-2.5 p-4">
+        <div className="relative mt-16 flex w-full max-w-[472px] flex-col p-4">
           <RegisterForm />
         </div>
       </main>
