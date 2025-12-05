@@ -15,7 +15,6 @@ import { fetchCommentLast } from '@/app/lib/data';
 import IconPresupuesto from '@/app/ui/logosIconos/icon-presupuesto';
 import IconConsulta from '@/app/ui/logosIconos/icon-consulta';
 import { fetchFilteredComments } from '@/app/lib/data';
-import { Providers } from '@/app/dashboard/providers';
 import { fetchUserById2 } from "@/app/lib/data";
 
 
@@ -27,7 +26,6 @@ type Params = {
 
 export default async function PostPage({ params }: Params) {
   const session = await auth();
-  // const user = await fetchUserById(session?.user?.email)
   const user = await fetchUserById2(session?.user.id)
 
   const post = getPostBySlug(params.slug);
@@ -97,9 +95,6 @@ export default async function PostPage({ params }: Params) {
             <SessionProvider basePath={"/auth"} session={session}>
               <ListComment post={post} comments={comments} commentLast={commentLast} user={user}  />
             </SessionProvider>
-          {/* <Providers >
-            <ListComment post={post} comments={comments} commentLast={commentLast} user={user}  />
-          </Providers> */}
           </div>
         </article>
       </Fondo>

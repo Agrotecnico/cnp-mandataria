@@ -1,6 +1,5 @@
 import { Metadata } from 'next';
 import { auth } from 'auth';
-import { SessionProvider } from "next-auth/react"
 
 import FooterConsultas from '@/app/ui/footerConsultas';
 import Header from '@/app/ui/header';
@@ -18,6 +17,8 @@ export default async function Page() {
 
   const session = await auth();
   const user = await fetchUserByEmail(session?.user?.email)
+
+  console.log("userxxx:", user)
 
   return (
     <div className="mx-auto flex min-h-screen w-full flex-col justify-between ">

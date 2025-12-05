@@ -1,33 +1,31 @@
 'use client';
 
 import {
-  AtSymbolIcon,
+  KeyIcon,
 } from '@heroicons/react/24/outline';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { useActionState, useEffect, HTMLAttributes } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
-import Link from 'next/link';
 import { ToastContainer, toast, Zoom, Flip, ToastContentProps } from 'react-toastify';
 import { nanoid } from "nanoid";
 
 import { authenticate4, authenticate2 } from '@/app/lib/actions';
 import { Fondo, Frente } from '@/app/ui/marcos';
 import { Button } from '@/app/ui/button';
-import { signIn } from 'next-auth/react';
-import IconGoogle from '@/app/ui/logosIconos/icon-google';
 import IconFlecha from '@/app/ui//logosIconos/icon-flecha';
 import IconError from '@/app/ui/logosIconos/icon-error';
 import IconAviso from '@/app/ui/logosIconos/icon-aviso';
 import IconCheck from '@/app/ui/logosIconos/icon-check';
+import { User } from "@/app/lib/definitions";
 
 
 const wait = () => new Promise((resolve) => setTimeout(resolve, 8000));
 
-export default function LoginForm() {
+export default function LoginAccount({ user, setOpen}: { user: User | undefined;  setOpen: React.Dispatch<React.SetStateAction<boolean>>
+ }) {
 
   const [email, setEmail] = useState("");
-  const [errorMessagexx, setErrorMessagexx] = useState<string | undefined>(undefined);
 
   const isEmailValid= (email: string) => {
     const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(?:\.[a-zA-Z]{2,})?$/;
@@ -38,7 +36,7 @@ export default function LoginForm() {
   const shimmer2 ='before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_1.5s_cubic-bezier(0.42,_0,_0.58,_1)_infinite] before:bg-gradient-to-r before:from-transparent before:from-20% before:via-white/30 before:via-50%  before:to-transparent before:to-80%';
 
   const searchParams = useSearchParams();
-  const isVerified = searchParams.get('verified') === "true"
+  const isVerified = searchParams.get('verified')
 
   const [errorMessage, formActionAuth, isPendingAuth] = useActionState(authenticate4, undefined, );
 
@@ -49,20 +47,9 @@ export default function LoginForm() {
       autoClose: undefined,
       closeButton:  false ,
       transition: Flip,
-      // data: {
-      //   message: `${errorMessagexx}`,
-      // },
-      className: `!w-full !min-h-min !mt-0 !p-0 !shadow-[0px_4px_12px_#a0b8e996] bg-transparent items-start mb-0` ,/*  ${ state.message === "usuario" && "bg-transparent items-start mb-0" } */
+      className: `!w-full !min-h-min !mt-0 !p-0 !shadow-[0px_4px_12px_#a0b8e996] bg-transparent items-start mb-0` ,
     });
-    // isVerified && toast(<NotifyEmailVerified />, {
-    //   autoClose: false,
-    //   transition: Flip,
-    //   closeButton:  false ,
-    //   className: '!w-screen !h-screen items-start !top-0 !bg-[#39507f33] !m-0 -mr-4  !-mb-4  !p-0 min-[480px]:!-mx-4 min-[480px]:!-top-4',
-    // });
-
-  }, [errorMessage/* , errorMessage */]);
-
+  }, [ errorMessage ]);
 
   const notifyError = () => {
     errorMessage !== undefined &&
@@ -91,69 +78,54 @@ export default function LoginForm() {
     });
   };
 
-
   const notifyEmailVerify = () => {
     toast(NotifyEmailVerify, {
       autoClose: undefined,
       closeButton:  false ,
       transition: Flip,
-      // data: {
-      //   message: `${errorMessagexx}`,
-      // },
       className: '!w-full !min-h-min !mt-4 !p-0 !shadow-[0px_4px_12px_#a0b8e996] ',
     });
   };
 
 
+
+
   return (
     <>
-      <h1 className={`mt-4 mb-3 text-center text-3xl sm:text-4xl`}>Acceso</h1>
+      <h1 className={`mt-2 mb-4 text-center text-2xl`}>Ingreso</h1>
       
-      <form action={ emailValid ? formActionAuth : notifyValidateEmail }  className="" >
+      {/* <form action={ emailValid ? formActionAuth : notifyValidateEmail }  className="" > */}
+      <form action={ formActionAuth }  className="" >
         <Fondo className=" px-3 py-4 mx-0 sm:py-6 sm:px-4 sm:mx-1.5 ">
           <div className="flex flex-col ">
-            <Frente className="flex h-10 !rounded-[3px]  hover:bg-[#ffffffcc] hover:[box-shadow:_0_0_0_1px_#3767c847] ">
-              <div
-                // onClick={async () => {
-                //   await signIn('google', {
-                //     callbackUrl: '/dashboard',
-                //   });
-                // }}
-                className="relative w-full flex cursor-pointer place-items-center items-center justify-start px-10 duration-200  "
-              >
-                <IconGoogle className="absolute top-2.5 left-3 w-[18px]" />
-                <div className="flex items-center text-[#020b1d88] text-[14px] ml-1.5">con google</div>
-              </div>
-            </Frente>
-
-            <div className="flex w-full items-center gap-2 py-2 text-sm">
-              <div className="h-px w-full bg-slate-300"></div>O
-              <div className="h-px w-full bg-slate-300"></div>
-            </div>
-
-            <Frente className={`!rounded-[4px] hover:!bg-[#ffffffcc] ${errorMessage === "Por favor, revisá tu correo electrónico y enviá la verificación." && "hover:!bg-[#ffffff88] " }`}>
-              <div className={`relative `}>
+            <Frente className="!rounded-[4px]">
+              <div className="relative">
                 <input
-                  className="!hover:bg-transparent rounded-[3px] peer block w-full border border-transparent bg-transparent py-0 duration-150 pl-[46px] text-sm h-10 outline-2 placeholder:text-[#020b1d88]  hover:[box-shadow:_0_0_0_1px_#3767c847] focus:[box-shadow:_0_0_0_1px_#548eff] focus:bg-[#ffffffbb] focus:border-transparent focus:outline-1 focus:outline-[#548eff66] disabled:opacity-50 disabled:hover:shadow-none "
-                  id="email"
-                  type="email"
-                  name="email"
-                  value={email}
-                  placeholder="con email"
+                  className="!hover:bg-transparent rounded-[3px] peer block w-full border border-transparent bg-transparent py-0 duration-150 pl-10 text-sm h-10 outline-2 placeholder:text-[#020b1d88] hover:bg-[#ffffff3d] hover:[box-shadow:_0_0_0_1px_#3767c847] focus:[box-shadow:_0_0_0_1px_#548eff] focus:bg-[#ffffffbb] focus:border-transparent focus:outline-1 focus:outline-[#548eff66] "
+                  id="password"
+                  type="password"
+                  name="password"
+                  placeholder="Contraseña"
+                  autoComplete="off"
                   required
-                  disabled= {errorMessage === "Por favor, revisá tu correo electrónico y enviá la verificación." && true }
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                  }} 
+                  minLength={6}
+                  maxLength={100}
                 />
-                <AtSymbolIcon className="pointer-events-none absolute left-3 top-1/2 h-[21px] w-[21px] stroke-2 -translate-y-1/2 text-[#548effcc]" />
+                <KeyIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-600  peer-focus:text-[#2b68e2]" />
               </div>
             </Frente>
+
+            <input
+              type="hidden"
+              name="email"
+              value={user?.email}
+              readOnly
+            />
           </div>
         </Fondo>
 
         <Button
-          className={`${( isPendingAuth)  && `${shimmer2} animate-pulse` } relative overflow-hidden !h-9 w-full !mt-3 justify-center bg-[#071f50cc] text-base  text-[#ffffffcc] duration-150 hover:bg-[#071f50ee] hover:text-[#fff] active:!bg-[#071f50dd] disabled:hover:bg-[#071f50cc] disabled:hover:text-[#ffffffcc] disabled:!opacity-100 disabled:active:!bg-[#071f50cc] `}
+          className={`${( isPendingAuth)  && `${shimmer2} animate-pulse` } relative overflow-hidden !h-9 w-full !mt-3 justify-center bg-[#548effdd] text-base  text-[#ffffffcc] duration-150 hover:bg-[#548eff] hover:text-[#fff] active:!bg-[#548effcc] disabled:hover:bg-[#071f50cc] disabled:hover:text-[#ffffffcc] disabled:!opacity-100 disabled:active:!bg-[#071f50cc] `}
           type="submit"
           disabled= {errorMessage === "Por favor, revisá tu correo electrónico y enviá la verificación." && true }
         >
@@ -161,27 +133,25 @@ export default function LoginForm() {
         </Button>
       </form>
 
-      <div className={` ${errorMessage === "Por favor, revisá tu correo electrónico y enviá la verificación." && "opacity-50"} flex justify-end gap-2 mr-4 mt-1.5 text-[13px]`}>
-        <p className="text-[#020b1d88] ">No tenés acceso?</p>
-
-        <Link
-          href= { errorMessage !== "Por favor, revisá tu correo electrónico y enviá la verificación." ? '/register' : ""}
-          className={` flex items-center justify-center rounded-x  ${errorMessage === "Por favor, revisá tu correo electrónico y enviá la verificación." ? "opacity-50 cursor-default" : "group "}`}
+      <div 
+        // className={` ${errorMessage === "Por favor, revisá tu correo electrónico y enviá la verificación." && "opacity-50"} flex justify-end gap-2 mr-4 mt-1.5 text-[13px]`}
+        className={` ${user?.role === "memberAccount" && "hidden"} flex justify-end gap-2 mr-4 mt-1.5 text-[13px]`}
         >
-          <p className="text-[#3171edcc] font-medium duration-200 group-hover:text-[#3171ed]">
-          Verificá tu email
+        <p className="text-[#020b1d88] ">No tenés una contraseña?</p>
+
+        <button
+          className={` flex items-center justify-center rounded-x  ${errorMessage === "Por favor, revisá tu correo electrónico y enviá la verificación." ? "opacity-50 cursor-default" : "group "}`}
+
+          onClick={() => setOpen(false)}
+        >
+          <p className="text-[#39507fcc] font-semibold duration-200 group-hover:text-[#39507f]">
+          Créala
           </p>
-          <IconFlecha className="fill-[#3171ed99] ml-1 w-4 duration-200 group-hover:fill-[#3171ed]" />
-        </Link> 
+          <IconFlecha className="fill-[#39507faa] ml-1 w-4 duration-200 group-hover:fill-[#39507f]" />
+        </button> 
       </div>
 
-      {/* <ToastContainer  className={!isVerified  ? "foo" : "" } autoClose={false} /> */}
-
       <ToastContainer  className={ !isVerified  ? "foo" : "foo2" } autoClose={false} />
-
-      {/* <ToastContainer  className={ !isVerified || errorMessage === "Por favor, revisá tu correo electrónico y enviá la verificación."  ? "foo2" : "foo" } autoClose={false} /> */}
-
-
     </>
   );
 }
@@ -323,7 +293,6 @@ function NotifyValidateEmail({
   );
 }
 
-
 function NotifyEmailVerify() {
 
   return (
@@ -337,35 +306,7 @@ function NotifyEmailVerify() {
             <div className='flex items-center gap-5'>
               <IconAviso className={`mb-auto h-[18px] w-[18px] fill-[#ffffffcc]`} />
 
-              <p className="text-[15px] text-[#fff] sm:text-base">Por favor, revisá tu correo electrónico y enviá la verificación</p>
-            </div>
-
-            <button 
-              onClick={() => location.reload()}
-              className='text-white text-lg flex leading-[0.8] items-start justify-center font-medium pr-3 pl-4 opacity-60 hover:opacity-100'
-              >
-              x
-            </button>
-          </div> 
-        </Frente>
-    </div>
-  );
-}
-function NotifyEmailVerifyxx() {
-
-  return (
-    <div
-      className=" flex items-center w-[440px] mt-[378px] mx-auto sm:mt-[384px] shadow-[0_10px_20px_#eaf1ff] "
-      aria-live="polite"
-      aria-atomic="true"
-    >
-        <Frente className="w-full pl-3 py-1.5 mx-3 !rounded-md  ![box-shadow:_inset_0_1px_#ffffff,inset_0_-1px_#00000046] flex flex-col items-start gap-1 !bg-[#548effee] min-[480px]:mx-0">
-          <div className='min-h-5 w-full flex items-stretch justify-between'
-            >
-            <div className='flex items-center gap-5'>
-              <IconAviso className={`mb-auto h-[18px] w-[18px] fill-[#ffffffcc]`} />
-
-              <p className="text-[15px] text-[#fff] sm:text-base">Por favor, revisá tu correo electrónico y enviá la verificación</p>
+              <p className="text-[15px] text-[#fff] sm:text-base [text-shadow:_1px_1px_#3d61ad]">Por favor, revisá tu correo electrónico y enviá la verificación</p>
             </div>
 
             <button 
@@ -396,12 +337,12 @@ function NotifyEmailVerified() {
 
   return (
     <div
-      className=" flex items-center w-[440px] mt-[378px] mx-auto sm:mt-[384px] shadow-[0_10px_20px_#eaf1ff] "
+      className=" flex items-center w-[440px] mt-[464px] mx-auto !shadow-[0_10px_20px_#39507f66]"
       aria-live="polite"
       aria-atomic="true"
     >
         <Frente 
-          className={`${ isPendingAuth  && `${shimmer2} animate-pulse2` } relative overflow-hidden w-full mx-3 !rounded-md ![box-shadow:_inset_0_1px_#ffffff,inset_0_-1px_#00000046] flex flex-col items-start gap-1 !bg-[#548effee] duration-200 hover:!bg-[#4881f3] active:!bg-[#548eff] min-[480px]:mx-0`}
+          className={`${ isPendingAuth  && `${shimmer2} animate-pulse2` } relative overflow-hidden w-full mx-3 !rounded-md ![box-shadow:_inset_0_1px_#ffffffaa,inset_0_-1px_#00000046] flex flex-col items-start gap-1 !bg-[#548effee] duration-200 hover:!bg-[#4881f3] active:!bg-[#548eff] min-[480px]:mx-0`}
           >
             
           <form action={ formActionAuth } className="w-full">
@@ -425,73 +366,14 @@ function NotifyEmailVerified() {
                 type= "submit" 
                 className="w-full duration-150 p-2 pt-2.5 rounded sm:p-3"
                 >
-                <p className="text-[14px] sm:text-[16px] text-[#ffffffcc] font-medium [font-variant-caps:_small-caps]"> Correo Electrónico Verificado<span className='inline-flex  justify-center mb-2 ml-3'>
+
+                <p className="text-[14px] sm:text-[16px] text-[#ffffffee] font-medium [font-variant-caps:_small-caps] [text-shadow:_1px_1px_#3d61ad]"><span className='inline-flex  justify-center mr-2 mb-2 ml-3'>
                   <IconCheck color="#ffffffcc" size="16" />
-                </span></p>
+                </span> Correo Electrónico Verificado</p>
 
                 <div className='flex items-center justify-center'>
-                  <p className="text-[#ffffffcc] text-[13px] sm:text-[15px]">Continuar</p>
-                  <p className="text-[#ffffffcc] text-base font-semibold ml-2 mt-0.5">{">"}</p>
-                </div>
-            </button>
-          </form>
-        </Frente>
-    </div>
-
-
-
-    
-  );
-}
-function NotifyEmailVerifiedxx() {
-
-  const shimmer2 ='before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_1.5s_cubic-bezier(0.42,_0,_0.58,_1)_infinite] before:bg-gradient-to-r before:from-transparent before:from-20% before:via-white/30 before:via-50%  before:to-transparent before:to-80%';
-  
-    const searchParams = useSearchParams();
-    const callbackUrl: string = '/dashboard/consultas' ;
-  
-    const token= nanoid()
-
-  const [errorMessage, formActionAuth, isPendingAuth] = useActionState(
-      authenticate2,
-      undefined,
-    );
-
-  return (
-    <div
-      className="w-[92%] flex items-center mx-auto  max-w-[440px] mt-[466px] shadow-[0_10px_20px_#dee9ff] min-[480px]:ml-[calc((100vw_-_440px)_/_2)] "
-      aria-live="polite"
-      aria-atomic="true"
-    >
-        <Frente className={`${ isPendingAuth  && `${shimmer2} animate-pulse2` } relative overflow-hidden !shadow-[0_10px_20px_#020b1d33] w-full !rounded-md  ![box-shadow:_inset_0_1px_#ffffffee,inset_0_-1px_#00000036] flex flex-col items-start gap-1 !bg-[#548effee] duration-200 hover:!bg-[#4881f3] active:!bg-[#548eff] min-[480px]:min-w-[440px] min-[480px]:w-[92%]`}>
-          <form action={ formActionAuth } className="w-full">
-            <input
-                id="email"
-                type="hidden"
-                name="email"
-                value={`${searchParams.get("email")}`}
-                readOnly
-            />
-            <input
-                id="password"
-                type="hidden"
-                name="password"
-                value= {token}
-                readOnly
-            />
-            <input type="hidden" name="redirectTo" value={callbackUrl} />
-
-            <button
-                type= "submit" 
-                className="w-full duration-150 p-2 rounded sm:p-3"
-                >
-                <p className="text-[14px] sm:text-[16px] text-[#ffffffee] font-medium [font-variant-caps:_small-caps]"> Correo Electrónico Verificado<span className='inline-flex  justify-center mb-2 ml-3'>
-                  <IconCheck color="#ffffffcc" size="16" />
-                </span></p>
-
-                <div className='flex items-center justify-center'>
-                  <p className="text-[#ffffffcc] text-[13px] sm:text-[15px]">Continuar</p>
-                  <p className="text-[#ffffffcc] text-base font-semibold ml-2 mt-0.5">{">"}</p>
+                  <p className="text-[#ffffffdd] text-[13px] sm:text-[15px] [text-shadow:_1px_1px_#3d61ad]">Continuar</p>
+                  <p className="text-[#ffffffdd] text-base font-semibold ml-2 mt-0.5">{">"}</p>
                 </div>
             </button>
           </form>

@@ -181,15 +181,31 @@ export default function UserButtonHeader( { user }: { user: User | undefined } )
 
           <DropdownMenuSeparator className="h-[1px] bg-[#37415122] m-[3px]" />
 
+
+          {/* <DropdownMenuItem>
+            <form
+              action={async () => {
+                'use server';
+                await signOut({ redirectTo: '/' });
+              }}
+              className="mt-1 !px-4 !py-1 !justify-start !rounded-[4px] file:ml-auto h-auto w-full text-[#020b1d99] opacity-90 hover:opacity-100 active:opacity-70 disabled:opacity-40 hover:bg-[#547eff16] hover:text-[#020b1dc1]"
+            >
+                <PowerIcon className="w-[18px] mr-4 text-[#548eff] stroke-[3]"/>
+                <p>Salir</p>
+              
+            </form>
+          </DropdownMenuItem> */}
+
+
+          
           <Button
             variant={'ghost'}
             className="mt-1 !px-4 !py-1 !justify-start !rounded-[4px] file:ml-auto h-auto w-full text-[#020b1d99] opacity-90 hover:opacity-100 active:opacity-70 disabled:opacity-40 hover:bg-[#547eff16] hover:text-[#020b1dc1]"
             onClick={async () => {
-              await signOut({ callbackUrl: "/" });/* pathname */
+              await signOut({ callbackUrl: "/" });
               sessionStorage.clear()
             }}
             disabled={!user}
-            // disabled={true}
           >
             <DropdownMenuItem>
               <PowerIcon className="w-[18px] mr-4 text-[#548eff] stroke-[3]"/>

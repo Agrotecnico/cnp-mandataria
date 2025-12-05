@@ -42,9 +42,6 @@ export default function EditTramiteForm({
     const [gastos, setGastos] = useState("")
     const [impuestos, setImpuestos] = useState("")
 
-    // const [validez, setValidez] = useState("7")
-    // const [estado, setEstado] = useState(true)
-
     const { state, close, toggle } = useToggleState()
 
     const presupuesto= Number(honorarios) + Number(aranceles) + Number(viaticos) + Number(gastos) + Number(impuestos)
@@ -407,7 +404,7 @@ export default function EditTramiteForm({
               <fieldset>
                 <div className="rounded-md border-gray-200 bg-[#f7f7f700] px-[14px] py-3 my-2">
                   <div className="flex gap-8">
-                    <div className={`relative border rounded-lg flex items-center ${pago === "pendiente" ? " text-[#ffffffcc] border-[#548eff58] bg-[#548eff]" : "bg-[#eaeaea] text-[#020b1d77] border-[#dbdbdb]" } hover:border-[#548eff58]`}/* {`relative border border-[#dbdbdb] rounded-lg flex items-center ${pago === "pagado" ? "bg-[#eaeaea] text-[#020b1d77]" : " text-[#020b1dcc] border-[#ff000038] bg-[#ff000014]"} hover:border-[#ff000038]`} */>
+                    <div className={`relative border rounded-lg flex items-center ${pago === "pendiente" ? " text-[#ffffffcc] border-[#548eff58] bg-[#548eff]" : "bg-[#eaeaea] text-[#020b1d77] border-[#dbdbdb]" } hover:border-[#548eff58]`}>
                       <input
                         id="pendiente"
                         name="status"
@@ -528,10 +525,6 @@ export default function EditTramiteForm({
                 <p className="mt-2 text-sm text-red-500">{statex.message}</p>
               ) : null}
             </div>
-
-            {/* {finalizado === "cancelado" || finalizado === "terminado" ? (
-              ""
-            ) : ( */}
               <div className="flex justify-end gap-4">
                 <Link
                   href="/dashboard/tramites"

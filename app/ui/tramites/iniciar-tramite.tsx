@@ -27,9 +27,7 @@ import markdownStyles from '@/app/ui/tramites/markdown-styles.module.css';
 import { InputCnp } from "@/app/ui/uiRadix/input-cnp";
 import { TextareaCnp } from "@/app/ui/uiRadix/textarea-cnp";
 import { TramiteMd } from "@/app/lib/definitions"
-import { PDFDocument } from 'pdf-lib';
 import 'react-toastify/dist/ReactToastify.css';
-// import NotifyVerified from '@/app/ui/consultas/notify-verified-consulta';
 import NotifyVerifiedTramite from '@/app/ui/tramites/notify-verified-tramite';
 import NotifyVerifyTramite from '@/app/ui/tramites/notify-verify-tramite';
 import './styles.css';
@@ -267,7 +265,6 @@ export default function IniciarTramite( {
       autoClose: undefined,
       closeButton:  false ,
       transition: Flip,
-      // className: '!w-screen !h-screen !bg-[#020b1d66] !m-0 !-mb-4 !-mr-4 !p-0 max-[482px]:!-m-0',
       className: `!w-full !min-h-min !mt-0 !p-0 !shadow-[0px_4px_12px_#a0b8e996] !bg-transparent !mb-0`,
     });
 
@@ -850,17 +847,7 @@ export default function IniciarTramite( {
         </div>
       </div>
 
-      {/* <ToastContainer  className={!isVerified  ? "foo" : "" } /> */}
       <ToastContainer  className={ !isVerified  ? "foo" : "foo2" } autoClose={false} />
-      {/* <NotifyVerifyTramite  isEmailVisitor= {isEmailVisitor} tramite={tramite} user={user} email={email}  /> */}
-      {/* <Frente className={`mt-6 !bg-[#548effee] w-full ${ isVerified && "hidden"}`}>
-        <div className=" flex items-start gap-4 pl-4 pb-1 pt-1.5 pr-7  sm:pr-7 sm:gap-5">
-          <IconEnvioEmail fill="#ffffff88" filla="#ffffffdd" className=" w-8 mt-1 mb-auto sm:w-9" />
-          <p className={` w-full text-start gap-1.5 text-[15px] text-[#ffffff] sm:text-base [text-shadow:_1px_1px_#3d61ad] `}>
-            Enviaré el presupuesto a tu correo electrónico <span className= "underline decoration-[#ffffffdd] underline-offset-[3] mx-1 ">{isEmailVisitor ? email : user?.email ? user.email : email}</span>
-          </p>
-        </div>
-      </Frente> */}
 
 
       {/* authentication */}

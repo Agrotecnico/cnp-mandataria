@@ -14,7 +14,7 @@ export default async function Page() {
   const session = await auth();
   const email = session?.user?.email
 
-  if (session?.user.role === "admin" )
+  if (session?.user.email === process.env.ADMIN )
     return (
       <main>
         <h1 className={`mb-[22px] mt-1.5 text-xl lg:text-2xl`} >

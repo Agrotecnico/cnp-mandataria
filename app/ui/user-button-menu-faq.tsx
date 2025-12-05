@@ -3,18 +3,9 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import clsx from 'clsx';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
-} from '@/app/ui/uiRadix/dropdown-menu';
 
 import Dropdown from '@/app/ui/Dropdown';
 import type { Post } from "@/app/lib/definitions"
-import IconMenu from './logosIconos/icon-menu';
 
 
 export default  function UserButtonMenuFaq({allPosts}:{allPosts:Post}) {

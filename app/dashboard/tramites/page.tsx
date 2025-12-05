@@ -1,6 +1,5 @@
 
 import { Metadata } from 'next';
-import { useSession } from "next-auth/react"
 import { auth } from '@/auth';
 import { notFound } from 'next/navigation';
 
@@ -12,6 +11,7 @@ import { fetchTramitesPagesM } from '@/app/lib/data';
 import { fetchFilteredTramitesM } from '@/app/lib/data';
 import { fetchFilteredTramites } from '@/app/lib/data';
 import Search from '@/app/ui/search';
+import { fetchUserByEmail } from "@/app/lib/data";
 
 
 export const metadata: Metadata = {
@@ -29,6 +29,8 @@ export default async function Page({
   const session = await auth();
   const email= session?.user?.email
 
+  const user = await fetchUserByEmail(session?.user.email);
+
   const query = searchParams?.query || '';
   const currentPage = Number(searchParams?.page) || 1;
 
@@ -38,35 +40,63 @@ export default async function Page({
   const tramitesMember = await fetchFilteredTramitesM( email, currentPage );
 
 
-  if (session?.user.role === "admin")
-    return (
-      <main>
-        <h1 className={` mb-4 mt-2 text-xl lg:text-2xl`}>
-          Trámites
-        </h1>
+  if ( session?.user.role === "memberAccount" ) {
+      if (session?.user.email === process.env.ADMIN)
+        return (
+          <main>
+            <h1 className={` mb-4 mt-2 text-xl lg:text-2xl`}>
+              Trámites
+            </h1>
 
-        <div className="mb-6 flex items-center justify-between gap-2">
-          <Search placeholder="Buscar trámites..." />
-        </div>
+            <div className="mb-6 flex items-center justify-between gap-2">
+              <Search placeholder="Buscar trámites..." />
+            </div>
 
-        {AllTramites?.map((AllTramite, idx) => (
-          <div key={idx } className=" text-[13px] leading-[18px] ">
-            <TableTramiteAdmin AllTramite={AllTramite} />
-          </div>
-        ))}
+            {AllTramites?.map((AllTramite, idx) => (
+              <div key={idx } className=" text-[13px] leading-[18px] ">
+                <TableTramiteAdmin AllTramite={AllTramite} />
+              </div>
+            ))}
 
-        <div className="my-5 flex w-full justify-center">
-          <Pagination totalPages={totalPages} />
-        </div>
-      </main>
-    );
+            <div className="my-5 flex w-full justify-center">
+              <Pagination totalPages={totalPages} />
+            </div>
+          </main>
+      );
+      return (
+        <main>
+          <h1 className={`mb-[22px] mt-1.5 text-xl lg:text-2xl`}>
+            Mis Trámites
+          </h1>
+        
+          {tramitesMember.length ? (
+            <div className="text-[#020b1ddd] flex flex-col gap-2 ">
+              {tramitesMember?.map((tramite, idx) => (
+                <div key={idx } className=" text-[13px] leading-[18px] ">
+                  <TableTramiteMember tramite={tramite} />
+                </div>
+              ))}
 
+              <div className="z-[5] my-5 flex w-full justify-center">
+                <Pagination totalPages={totalPagesMember} />
+              </div>
+            </div>
+          ) : (
+            <div>
+              <p>Todavía no iniciaste un trámite</p>
+            </div>
+          )}
+        </main>
+      );
+    }
+  
+  if ( user?.role === "member" || user?.role === "memberVerified" ) {
     return (
       <main>
         <h1 className={`mb-[22px] mt-1.5 text-xl lg:text-2xl`}>
           Mis Trámites
         </h1>
-       
+      
         {tramitesMember.length ? (
           <div className="text-[#020b1ddd] flex flex-col gap-2 ">
             {tramitesMember?.map((tramite, idx) => (
@@ -85,7 +115,8 @@ export default async function Page({
           </div>
         )}
       </main>
-    );
+    )
+  }
 
-  // return notFound();
+  return notFound();
 }

@@ -565,22 +565,15 @@ export default function RealizarConsulta({
                     type="hidden"
                     id="image"
                     name="image"
-                    value={ /* imagen ? imagen : imageUrl ? imageUrl : */ "" }
+                    value={ "" }
                     readOnly
                   />
-                  {/* <input
-                    type="hidden"
-                    name="password"
-                    value= {"72cf0550-3f64-474d-b150-aa813c6b4b67" }
-                    readOnly
-                  /> */}
                   <input
                     type="hidden"
                     name="token"
                     value= {token }
                     readOnly
                   />
-                  {/* <input type="hidden" name="pathname" value={pathname} readOnly /> */}
                 </fieldset>
 
                 {/* Massages erros */}
@@ -705,18 +698,6 @@ export default function RealizarConsulta({
         </Frente>
       )}
 
-      {/* Massages error consult */}
-      {/* {estado?.message === "consultaCreada" && (
-        <Frente className="!p-2 mt-5 !bg-[#ddebdf] sm:!p-4 ">
-          <div className={`w-full text-start text-sm text-[#2e4067] transition-[opacity] duration-300 sm:text-[15px] `}>
-            <p className="sm:text-center">Recibí la <b>consulta</b>, te responderé a la mayor brevedad.</p>
-            <p className={`mt-2 ${ user?.email_verified && "hidden"} sm:text-center`}>
-              Por favor, revisá el correo electrónico <span className= "underline decoration-[#39507fdd] underline-offset-2 mx-1 ">{user?.email}</span> y enviá la verificación.
-            </p>
-          </div>
-        </Frente> 
-      )} */}
-
       <div
         className="mb-3 mt-3 flex items-end space-x-1"
         aria-live="polite"
@@ -780,7 +761,6 @@ export default function RealizarConsulta({
         )}
       </div>
       
-      {/* <ToastContainer  className={!isVerified  ? "foo" : "" } /> */}
       <ToastContainer  className={ !isVerified  ? "foo" : "foo2" } autoClose={false} />
 
 

@@ -2,27 +2,24 @@
 
 import { useActionState, useEffect, HTMLAttributes, useRef, useState } from 'react';
 import {
-  AtSymbolIcon,
-  UserIcon,
+  KeyIcon,
 } from '@heroicons/react/24/outline';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
-import Link from 'next/link';
-import { signIn } from 'next-auth/react';
-import { usePathname, useSearchParams, redirect } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { ToastContainer, toast, Zoom, Flip, ToastContentProps } from 'react-toastify';
-import { nanoid } from "nanoid";
 
 import { Button } from './button';
-import { createUser2, StateUser, authenticate2, authenticate4  } from '@/app/lib/actions';
+import { createUser2, StateUser, StateUserPassword, authenticate2, authenticate4, updateUserPassword  } from '@/app/lib/actions';
 import { Fondo, Frente } from '@/app/ui/marcos';
 import IconFlecha from '@/app/ui//logosIconos/icon-flecha';
 import IconError from '@/app/ui/logosIconos/icon-error';
 import IconAviso from '@/app/ui/logosIconos/icon-aviso';
+import { User } from "@/app/lib/definitions";
 
 
-export default function RegisterForm() {
+export default function RegisterAccount({ user, setOpen }: { user: User | undefined; setOpen: React.Dispatch<React.SetStateAction<boolean>>
+ }) {
 
-  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
 
   const isEmailValid= (email: string) => {
@@ -31,7 +28,6 @@ export default function RegisterForm() {
   }
   const emailValid= isEmailValid(email)
 
-  // const pathname = usePathname();
   const pathname = "/login";
   const shimmer2 ='before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_1.5s_cubic-bezier(0.42,_0,_0.58,_1)_infinite] before:bg-gradient-to-r before:from-transparent before:from-20% before:via-white/30 before:via-50%  before:to-transparent before:to-80%';
 
@@ -43,16 +39,18 @@ export default function RegisterForm() {
     if (buttonRefAuth.current) buttonRefAuth.current.click()
   };
 
-  const initialState: StateUser = { message: null, errors: {} };
-  const [state, formCreateUser, isPending] = useActionState(createUser2, initialState);
+  // const initialState: StateUser = { message: null, errors: {} };
+  // const [state, formCreateUser, isPending] = useActionState(createUser2, initialState);
 
-  const [errorMessage, formActionAuth, isPendingAuth] = useActionState(authenticate2, undefined, );
+  const initialState: StateUserPassword = { message: null, errors: {} };
+  const updateUserPasswordWithId = updateUserPassword.bind(null, `${user?.email}`);
+  const [state, formUpdatePassword, isPending] = useActionState(updateUserPasswordWithId, initialState);
+
+  // const [errorMessage, formActionAuth, isPendingAuth] = useActionState(authenticate2, undefined, );
 
   useEffect(() => {
 
-    // errorMessage === undefined ? "" : errorMessage === "Por favor, revisá tu correo electrónico y enviá la verificación." ? notifyEmailVerify() : notifyError()
-
-    state.message === "usuario"  ? notifyEmailVerify() : state.errors === undefined || state.message === null ? "" : notifyError()
+    // state.message === "usuario"  ? notifyEmailVerify() : state.errors === undefined || state.message === null ? "" : notifyError()
 
     // isVerified && toast(<NotifyEmailVerified />, {
     //   autoClose: undefined,
@@ -63,19 +61,18 @@ export default function RegisterForm() {
 
   }, [state ]);
 
-  const notifyError = () => {
-    toast(<NotifyError state={state} />, {
-      // customProgressBar: true,
-      autoClose: 7000,
-      position: "bottom-center",
-      transition: Flip,
-      pauseOnHover: false,
-      className: '!w-full !min-h-min !mt-8 !p-0 !shadow-[0px_4px_12px_#e9a2a247] ',
-      progressClassName: "fancy-progress",
-      closeButton: false ,
-      hideProgressBar: true,
-    });
-  };
+  // const notifyError = () => {
+  //   toast(<NotifyError state={state} />, {
+  //     autoClose: 7000,
+  //     position: "bottom-center",
+  //     transition: Flip,
+  //     pauseOnHover: false,
+  //     className: '!w-full !min-h-min !mt-8 !p-0 !shadow-[0px_4px_12px_#e9a2a247] ',
+  //     progressClassName: "fancy-progress",
+  //     closeButton: false ,
+  //     hideProgressBar: true,
+  //   });
+  // };
   const notifyValidateEmail = () => {
     toast(NotifyValidateEmail, {
       autoClose: 4000,
@@ -99,86 +96,83 @@ export default function RegisterForm() {
 
   return (
     <>
-      <h1 className={`mt-4 mb-3 text-center text-3xl sm:text-4xl`}>Verificar <span className='text-[15px]'>correo electrónico</span></h1>
-      <form action= { emailValid ? formCreateUser : notifyValidateEmail } className="">
+      <h1 className={`mt-2 mb-4 text-center text-2xl`}>Crear <span className='text-xl'>CUENTA </span><span className='text-base'>con contraseña</span></h1>
+      <form action= { formUpdatePassword } className="">
         <Fondo className=" px-3 py-4 mx-0 sm:py-6 sm:px-4 sm:mx-1.5 ">
           <div className="flex flex-col gap-4">
             <Frente className="!rounded-[4px]">
               <div className="relative">
                 <input
-                  className=" rounded-[3px] peer block w-full border border-transparent bg-transparent py-0 duration-150 pl-10 text-sm h-10 outline-2 placeholder:text-[#020b1d88] !hover:bg-transparent hover:bg-[#ffffff3d] hover:[box-shadow:_0_0_0_1px_#3767c847] focus:[box-shadow:_0_0_0_1px_#548eff] focus:bg-[#ffffffbb] focus:border-transparent focus:outline-1 focus:outline-[#548eff66] "
-                  id="name"
-                  type="text"
-                  name="name"
-                  placeholder="Nombre"
+                  className="!hover:bg-transparent rounded-[3px] peer block w-full border border-transparent bg-transparent py-0 duration-150 pl-10 text-sm h-10 outline-2 placeholder:text-[#020b1d88] hover:bg-[#ffffff3d] hover:[box-shadow:_0_0_0_1px_#3767c847] focus:[box-shadow:_0_0_0_1px_#548eff] focus:bg-[#ffffffbb] focus:border-transparent focus:outline-1 focus:outline-[#548eff66] "
+                  id="password"
+                  type="password"
+                  name="password"
+                  placeholder="Contraseña"
+                  autoComplete="off"
                   required
-                  minLength={2}
-                  maxLength={126}
-                  value={name}
-                  onChange={(e) => {
-                    setName(e.target.value);
-                  }} 
+                  minLength={6}
+                  maxLength={100}
                 />
-                <UserIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-600 peer-focus:text-[#2b68e2]" />
+                <KeyIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-600  peer-focus:text-[#2b68e2]" />
               </div>
             </Frente>
 
-            <Frente className="!rounded-[4px]">
+            {/* <Frente className="!rounded-[4px]">
               <div className="relative">
                 <input
                   className="!hover:bg-transparent rounded-[3px] peer block w-full border border-transparent bg-transparent py-0 duration-150 pl-10 text-sm h-10 outline-2 placeholder:text-[#020b1d88] hover:bg-[#ffffff3d] hover:[box-shadow:_0_0_0_1px_#3767c847] focus:[box-shadow:_0_0_0_1px_#548eff] focus:bg-[#ffffffbb] focus:border-transparent focus:outline-1 focus:outline-[#548eff66] "
-                  id="email"
-                  type="email"
-                  name="email"
-                  placeholder="Email"
+                  id="confirmPassword"
+                  type="password"
+                  name="confirmPassword"
+                  placeholder="Confirmá la contraseña"
+                  autoComplete="off"
                   required
-                  // minLength={6}
-                  // maxLength={126}
-                  value={email}
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                  }} 
+                  minLength={6}
+                  maxLength={100}
                 />
-                <AtSymbolIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-600  peer-focus:text-[#2b68e2]" />
+                <KeyIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-600  peer-focus:text-[#2b68e2]" />
               </div>
             </Frente>
 
             <input type="hidden" name="image" value={ "" } readOnly />
 
-            <input type="hidden" name="password" value= {"72cf0550-3f64-474d-b150-aa813c6b4b67" } /* { "******" } */ readOnly />
+            <input type="hidden" name="password" value= {"72cf0550-3f64-474d-b150-aa813c6b4b67" } readOnly /> */}
           </div>
         </Fondo>
 
         <Button 
-          className={`${( isPending)  && `${shimmer2} animate-pulse` } relative overflow-hidden !h-9 w-full !mt-3 justify-center bg-[#071f50cc] text-base  text-[#ffffffcc] duration-150 hover:bg-[#071f50ee] hover:text-[#fff] active:!bg-[#071f50dd] disabled:hover:bg-[#071f50cc] disabled:hover:text-[#ffffffcc] disabled:!opacity-100 disabled:active:!bg-[#071f50cc] `}
+          className={`${( isPending)  && `${shimmer2} animate-pulse` } relative overflow-hidden !h-9 w-full !mt-3 justify-center bg-[#548effdd] text-base  text-[#ffffffcc] duration-150 hover:bg-[#548eff] hover:text-[#fff] active:!bg-[#548effcc] disabled:hover:bg-[#071f50cc] disabled:hover:text-[#ffffffcc] disabled:!opacity-100 disabled:active:!bg-[#071f50cc] `}
           type="submit"
           aria-disabled={isPending}
           onClick={() => { 
-            setTimeout(handleClickButtonAuth, 200) 
+            // setTimeout(handleClickButtonAuth, 200) 
+            setTimeout(() => setOpen(true), 1000) 
+            setTimeout(() => location.reload(), 1000) 
+            // setOpen(true) 
           }}
         >
-          Continuar <ArrowRightIcon className="ml-auto h-5 w-5 text-gray-50" />
+          Crear cuenta <ArrowRightIcon className="ml-auto h-5 w-5 text-gray-50" />
         </Button>
       </form>
 
-      <div className='flex justify-end gap-2 mr-4 mt-1.5 text-[13px]'>
-        <p className=" text-[#020b1d88]">Tenés verificado tu email?</p>
+      {/* <div className='flex justify-end gap-2 mr-4 mt-1.5 text-[13px]'>
+        <p className=" text-[#020b1d88]">Ya tenés una contraseña?</p>
 
-        <Link
-          href={'/login'}
+        <button
           className="group flex items-center justify-center rounded-x "
+          onClick={() => setOpen(true)}
         >
-          <p className="text-[#3171edcc] font-medium duration-200 group-hover:text-[#3171ed]">
-          Acceso
+          <p className="text-[#39507fcc] font-semibold duration-200 group-hover:text-[#39507f]">
+          Ingresá
           </p>
-          <IconFlecha className="fill-[#3171ed99] ml-1 w-4 duration-200 group-hover:fill-[#3171ed]" />
-        </Link>
-      </div>
+          <IconFlecha className="fill-[#39507faa] ml-1 w-4 duration-200 group-hover:fill-[#39507f]" />
+        </button>
+      </div> */}
 
       <ToastContainer  className={ state.message === "usuario" ? "foo3" : "foo" } autoClose={false} />
 
       {/* authentication */}
-      <form action={formActionAuth} className="">
+      {/* <form action={formActionAuth} className="">
         <input
           type="hidden"
           name="email"
@@ -199,7 +193,7 @@ export default function RegisterForm() {
         >
           Continuar
         </button>
-      </form>
+      </form> */}
     </>
   );
 }

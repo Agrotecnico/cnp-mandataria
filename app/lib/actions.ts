@@ -114,7 +114,12 @@ const UpdateCustomer = FormSchemaCustomer.omit({ id: true });
 const UpdateUser = FormSchemaUser.omit({ role: true, id: true, password: true, image: true, name: true, email_verified: true, created_at: true, updated_at: true });
 const UpdateUserImage = FormSchemaUser.omit({ role: true, id: true, password: true, name: true, email: true, email_verified: true, created_at: true, updated_at: true });
 const UpdateUserName = FormSchemaUser.omit({ role: true, id: true, password: true, image: true, email: true, email_verified: true, created_at: true, updated_at: true });
+
 const UpdateUserEmail = FormSchemaUser.omit({ role: true, id: true, password: true, image: true, name: true, email_verified: true, created_at: true, updated_at: true });
+
+const UpdateUserPassword = FormSchemaUser.omit({ role: true, id: true, email: true, image: true, name: true, email_verified: true, created_at: true, updated_at: true });
+
+
 const UpdateConsulta = FormSchemaConsulta.omit({  created_at: true, id: true, email_id: true, archivos_url: true });
 const UpdateTramite = FormSchemaTramite.omit({ created_at: true, id: true, email_id: true, documentos_url: true, tramite: true, informacion: true });
 const UpdateComment = FormSchemaComment.omit({ created_at: true, id: true, comment: true, nombre: true });
@@ -146,6 +151,7 @@ export type StateUser = {
     name?: string[];
     email?: string[];
     image?: string[] | undefined;
+    // password?: string[];
   };
   message?: string | null;
 };
@@ -176,6 +182,13 @@ export type StateUserName = {
 export type StateUserEmail = {
   errors?: {
     email?: string[];
+  };
+  message?: string | null;
+};
+
+export type StateUserPassword = {
+  errors?: {
+    password?: string[];
   };
   message?: string | null;
 };
@@ -629,10 +642,15 @@ export async function createUser(prevStateUser: StateUser, formData: FormData) {
     name: formData.get('name'),
     email: formData.get('email'),
     image: formData.get('image'),
+    // password: formData.get('password'),
+    // confirmPassword: formData.get('confirmPassword'),
   });
 
   const pathname= formData.get("pathname")
   const token= formData.get("token")
+
+  // const password= formData.get("password")
+  // const confirmPassword= formData.get("confirmPassword")
   
   // Validate confirm password
   // const pwd= formData.get("password")
@@ -643,6 +661,7 @@ export async function createUser(prevStateUser: StateUser, formData: FormData) {
   //     message: 'Las contraseñas no coinciden.',
   //   };
   // }
+
   // If form validation fails, return errors early. Otherwise, continue.
   if (!validatedFields.success) {
     return {
@@ -654,11 +673,10 @@ export async function createUser(prevStateUser: StateUser, formData: FormData) {
   // Prepare data for insertion into the database
   const { name, email, image  } = validatedFields.data;
 
-  const hashedPassword = await bcrypt.hash("xxxxxx", 10); 
+  const contraseña = await bcrypt.hash("xxxxxx", 10); 
+  const hashedPassword= /* pwd ? `${pwd}` : */ contraseña
 
-  // const role= "member"
-  const role= email === "comment@gmail.com" ? "visitor" : "member"
-
+  const role= email === "comment@gmail.com" ? "visitor" : /* pwd ? "memberAccount" : */  "member"
 
   const emailToken= email === "comment@gmail.com" ? `${token}@cnpmandataria.com` : email
   const imageNull= image === "" ? null : image
@@ -918,6 +936,49 @@ export async function updateUserEmail(
 
   revalidatePath(`${pathname}`);
   redirect(`${pathname}`);
+}
+export async function updateUserPassword(
+  id: string,
+  prevStateUserPassword: StateUserPassword,
+  formData: FormData,
+) {
+  const validatedFields = UpdateUserPassword.safeParse({
+    password: formData.get('password'),
+  });
+
+  // const pathname= formData.get("pathname")
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Missing Fields. No se pudo actualizar la contraseña del Usuario.',
+    };
+  }
+
+  const { password } = validatedFields.data;
+
+  const contraseña = await bcrypt.hash(password, 10); 
+  // const hashedPassword= /* pwd ? `${pwd}` : */ contraseña
+  const role= "memberAccount"
+
+  try {
+    await sql`
+      UPDATE users
+      SET password = ${contraseña}, 
+          role = ${role}
+      WHERE email = ${id}
+    `;
+
+    return {
+      message: `contraseñaActualizada`,
+    };
+
+  } catch (error) {
+    return { message: 'Database Error: No se pudo actualizar la contraseña  del Usuario.' };
+  }
+
+  // revalidatePath(`${pathname}`);
+  // redirect(`${pathname}`);
 }
 
 export async function updateUserEmailVerified(
@@ -1323,10 +1384,10 @@ export async function authenticate4(
 
   // formData.set("password", "xxxxxx")
 
-  // const password= formData.get("passsword")
+  // const passwordAccount= formData.get("password")
   // password === "" ? formData.set("password", "xxxxxx") : formData.set("password", `${password}`) ;
 
-  formData.set("password", "xxxxxx")
+  formData.set("password", "xxxxxx" )
   formData.set("redirectTo", "/dashboard")
   formData.set("conConsulta", "noconsulta")
   // formData.set("redirectTox", "/dashboard")
@@ -1346,6 +1407,36 @@ export async function authenticate4(
     
   
 }
+// export async function authenticate4(
+//   prevState: string | undefined,
+//   formData: FormData,
+// ) {
+
+//   // formData.set("password", "xxxxxx")
+
+//   // const password= formData.get("passsword")
+//   // password === "" ? formData.set("password", "xxxxxx") : formData.set("password", `${password}`) ;
+
+//   formData.set("password", "xxxxxx")
+//   formData.set("redirectTo", "/dashboard")
+//   formData.set("conConsulta", "noconsulta")
+//   // formData.set("redirectTox", "/dashboard")
+  
+//   try {
+//     await signIn('credentials', formData );
+//   } catch (error) {
+//     if (error instanceof AuthError) {
+//       // switch (error.type) {
+//         // case 'CredentialsSignin':
+//           return error.cause?.err?.message;
+//         // default:
+//         //   return 'Algo salió mal.';
+//       }
+//       throw error;
+//     }
+    
+  
+// }
 
 
 

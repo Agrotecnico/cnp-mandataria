@@ -15,8 +15,6 @@ const wait = () => new Promise((resolve) => setTimeout(resolve, 2000));
 export default function EditPerfilName( { user, setIsModalOpen2}: { user: User | undefined; setIsModalOpen2: React.Dispatch<React.SetStateAction<boolean>>
  } ) {
 
-  // export default function EditPerfilName( { user, setIsModalOpen2xx}: { user: User | undefined; setIsModalOpen2xx: any } ) {
-
   const pathname = usePathname();
   
   const [name, setName] = useState("");

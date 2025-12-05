@@ -13,8 +13,6 @@ import { Button } from '@/app/ui/button';
 import useToggleState from "@/app/lib/hooks/use-toggle-state"
 import { TramitesTable } from "@/app/lib/definitions";
 import { Disclosure, DisclosurePanel } from '@headlessui/react'
-import Link from 'next/link';
-
 
 
 export default function TableTramiteAdmin({

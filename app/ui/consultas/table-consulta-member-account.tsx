@@ -10,7 +10,7 @@ import IconConsulta from '../logosIconos/icon-consulta';
 import IconRespuesta from '../logosIconos/icon-respuesta'
 
 
-export default async function TableConsultaAdmin({
+export default async function TableConsultaMemberAccount({
   query,
   currentPage,
 }: {
@@ -27,6 +27,8 @@ export default async function TableConsultaAdmin({
       <div className="mt-4 flex items-center justify-between gap-2">
         <Search placeholder="Buscar consultas..." />
       </div>
+
+      <div>CONSULTA MEMBER ACCOUNT</div>
 
       <div className="mt-6 flow-root">
         <div className="inline-block min-w-full align-middle">

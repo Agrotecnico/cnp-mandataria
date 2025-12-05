@@ -4,8 +4,6 @@ import { useState, useEffect } from 'react';
 import { Disclosure, DisclosurePanel } from '@headlessui/react'
 import clsx from 'clsx';
 import Link from 'next/link';
-import type { Session } from "next-auth"
-// import { useSession } from "next-auth/react"
 
 import { Consulta } from '@/app/lib/definitions';
 import { Button } from '@/app/ui/button';
@@ -26,7 +24,6 @@ export default function TableConsultaMember( {
   currentPage: number;
   index: number;
 } ) {
-  // const { data: session, update } = useSession()
   
   const [palabrasConsulta, setTextconsulta] = useState(consulta.consulta.split(" "))
   const [successState, setSuccessState] = useState(false)
@@ -56,17 +53,12 @@ export default function TableConsultaMember( {
 
   const indexz = consulta.consulta.search("::");
   const tema= consulta.consulta.slice(0, indexz + 1)
-  // const temaConsulta= consulta.consulta.slice(indexz + 3)
+
   const temaConsulta= indexz === -1 ? consulta.consulta.slice(indexz + 1) : consulta.consulta.slice(indexz + 2)
   const onsultaSplit= temaConsulta.split(" ")
   const tituloConsultax= onsultaSplit.slice(0, 12)
 
   const numeroFormateado = ( ( countcon - currentPage * 6 ) + 6 - index ).toString().padStart(3, "0")
-
-  
-
-
-  // console.log("session:", session)
 
 
   return (
@@ -82,7 +74,6 @@ export default function TableConsultaMember( {
               <span className="">realizada el </span>
 
               <time className="text-[#39507f99] leading-[1.2] ml-1 rounded-lg px-1.5 bg-[#ffffff]">
-                {/* {distanceToNow(new Date(`${consulta.created_at}`))} */}
                 {formatDateToLocal(`${consulta.created_at}`)}
               </time>
             </p>

@@ -14,7 +14,7 @@ export default function NavLinksTramites({allTramites }:{allTramites:TramiteMd[]
   
   return (
     <Frente className="hidden !bg-[#548eff16] h-full flex-col min-[900px]:flex">
-      <div className="mt-0.5 text-sm flex justify-center bg-[#548effd6] rounded-t-md text-[#ffffffee]  sm:text-[15px] text-center py-1 [text-shadow:_1px_1px_#3d61ad] ">
+      <div className="mt-0.5 text-sm flex justify-center bg-[#548effdd] rounded-t-md text-[#ffffff]  sm:text-[15px] text-center py-1 [text-shadow:_1px_1px_#3d61ad] ">
         Seleccioná un trámite
       </div>
       <div className="flex grow flex-row justify-between space-x-2 md:flex-col md:space-x-0 md:space-y-2">

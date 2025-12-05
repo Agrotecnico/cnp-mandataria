@@ -213,7 +213,7 @@ export const tramites3 = [
 
 
 
-export const linkMembers = [
+export const linksMembers = [
   {
     name: 'Resumen',
     href: '/dashboard',
@@ -230,7 +230,7 @@ export const linkMembers = [
     icon: ClipboardDocumentListIcon,
   },
   { name: 'Comentarios', href: '/dashboard/comments', icon: ChatBubbleLeftEllipsisIcon, },
-  { name: 'Mi cuenta', href: '/dashboard/cuenta', icon: IconCuenta, },
+  // { name: 'Ingreso mi CUENTA', href: '/dashboard/cuenta', icon: IconCuenta, },
 ];
 
 export const links = [
@@ -238,4 +238,14 @@ export const links = [
   { name: 'Consultas', href: '/dashboard/consultas', icon: QuestionMarkCircleIcon },
   { name: 'Trámites', href: '/dashboard/tramites', icon: ClipboardDocumentListIcon, },
   { name: 'Comentarios', href: '/dashboard/comments', icon: ChatBubbleLeftEllipsisIcon, },
+  { name: 'Ingreso ADMIN', href: '/dashboard/cuenta', icon: IconCuenta, },
 ];
+
+// export const links = [
+//   { name: 'Ingreso ADMIN', href: '/dashboard/cuenta', icon: IconCuenta, },
+//   { name: 'Resumen', href: '/dashboard/resumen', icon: iconResumen, },
+//   { name: 'Dirección', href: '/dashboard/direccion', icon: QuestionMarkCircleIcon },
+//   { name: 'Envío', href: '/dashboard/envio', icon: QuestionMarkCircleIcon },
+//   { name: 'Info Personal', href: '/dashboard/informacion', icon: ClipboardDocumentListIcon, },
+//   { name: 'Pago', href: '/dashboard/pago', icon: ChatBubbleLeftEllipsisIcon, },
+// ];
