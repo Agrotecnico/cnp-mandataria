@@ -1,9 +1,7 @@
 'use client';
 
 import { useActionState, useEffect, HTMLAttributes, useRef, useState } from 'react';
-import {
-  KeyIcon,
-} from '@heroicons/react/24/outline';
+import { KeyIcon, AtSymbolIcon, UserIcon, } from '@heroicons/react/24/outline';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { ToastContainer, toast, Zoom, Flip, ToastContentProps } from 'react-toastify';
@@ -15,9 +13,10 @@ import IconFlecha from '@/app/ui//logosIconos/icon-flecha';
 import IconError from '@/app/ui/logosIconos/icon-error';
 import IconAviso from '@/app/ui/logosIconos/icon-aviso';
 import { User } from "@/app/lib/definitions";
+import IconContraseña from './logosIconos/icon-contraseña';
 
 
-export default function RegisterAccount({ user, setOpen }: { user: User | undefined; setOpen: React.Dispatch<React.SetStateAction<boolean>>
+export default function AccountVerifyEmail({ user, setOpen }: { user: User | undefined; setOpen: React.Dispatch<React.SetStateAction<boolean>>
  }) {
 
   const [email, setEmail] = useState("");
@@ -34,7 +33,7 @@ export default function RegisterAccount({ user, setOpen }: { user: User | undefi
   const searchParams = useSearchParams();
   const isVerified = searchParams.get('verified') === "true"
 
-  const buttonRefAuth = useRef<HTMLButtonElement>(null); // authentication
+   const buttonRefAuth = useRef<HTMLButtonElement>(null); // authentication
   const handleClickButtonAuth= () => {
     if (buttonRefAuth.current) buttonRefAuth.current.click()
   };
@@ -46,9 +45,11 @@ export default function RegisterAccount({ user, setOpen }: { user: User | undefi
   const updateUserPasswordWithId = updateUserPassword.bind(null, `${user?.email}`);
   const [state, formUpdatePassword, isPending] = useActionState(updateUserPasswordWithId, initialState);
 
-  // const [errorMessage, formActionAuth, isPendingAuth] = useActionState(authenticate2, undefined, );
+  const [errorMessage, formActionAuth, isPendingAuth] = useActionState(authenticate4, undefined, );
 
   useEffect(() => {
+
+    errorMessage === undefined ? "" : errorMessage === "Por favor, revisá tu correo electrónico y enviá la verificación." ? notifyEmailVerify() : notifyError()
 
     // state.message === "usuario"  ? notifyEmailVerify() : state.errors === undefined || state.message === null ? "" : notifyError()
     state.message && notifyError()
@@ -101,7 +102,22 @@ export default function RegisterAccount({ user, setOpen }: { user: User | undefi
       <h1 className={`mt-2 mb-4 text-center text-2xl`}>Crear <span className='text-xl'>CUENTA </span><span className='text-base'>con contraseña</span></h1>
       <form action= { formUpdatePassword } className="">
         <Fondo className=" px-3 py-4 mx-0 sm:py-6 sm:px-4 sm:mx-1.5 ">
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center relative rounded-[4px] text-[#020b1dcc] bg-[#ffffff66] pl-10 text-sm h-10">
+              {user?.name}
+              <UserIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-600  peer-focus:text-[#2b68e2]" />
+            </div>
+
+            <div className="flex items-center relative rounded-[4px] text-[#020b1dcc] bg-[#ffffff66] pl-10 text-sm h-10">
+              {user?.email}
+              <AtSymbolIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-600  peer-focus:text-[#2b68e2]" />
+            </div>
+
+            <div className="flex w-full items-center gap-2 py-4 text-sm">
+              <div className="h-px w-full bg-slate-300"></div>
+              <div className="h-px w-full bg-slate-300"></div>
+            </div>
+
             <Frente className="!rounded-[4px]">
               <div className="relative">
                 <input
@@ -109,7 +125,7 @@ export default function RegisterAccount({ user, setOpen }: { user: User | undefi
                   id="password"
                   type="password"
                   name="password"
-                  placeholder="Contraseña"
+                  placeholder="Ingresá una contraseña"
                   autoComplete="off"
                   required
                   minLength={6}
@@ -132,7 +148,7 @@ export default function RegisterAccount({ user, setOpen }: { user: User | undefi
                   minLength={6}
                   maxLength={100}
                 />
-                <KeyIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-600  peer-focus:text-[#2b68e2]" />
+                <IconContraseña className="pointer-events-none absolute left-3 top-1/2 fill-[#39507faa] h-[18px] w-[18px] -translate-y-1/2 text-gray-600  peer-focus:text-[#2b68e2]" />
               </div>
             </Frente>
           </div>
@@ -143,7 +159,7 @@ export default function RegisterAccount({ user, setOpen }: { user: User | undefi
           type="submit"
           aria-disabled={isPending}
           onClick={() => { 
-            // setTimeout(handleClickButtonAuth, 200) 
+            setTimeout(handleClickButtonAuth, 200) 
             setTimeout(() => setOpen(true), 5000) 
             setTimeout(() => location.reload(), 5000) 
           }}
@@ -152,21 +168,32 @@ export default function RegisterAccount({ user, setOpen }: { user: User | undefi
         </Button>
       </form>
 
-      {/* <div className='flex justify-end gap-2 mr-4 mt-1.5 text-[13px]'>
-        <p className=" text-[#020b1d88]">Ya tenés una contraseña?</p>
-
-        <button
-          className="group flex items-center justify-center rounded-x "
-          onClick={() => setOpen(true)}
-        >
-          <p className="text-[#39507fcc] font-semibold duration-200 group-hover:text-[#39507f]">
-          Ingresá
-          </p>
-          <IconFlecha className="fill-[#39507faa] ml-1 w-4 duration-200 group-hover:fill-[#39507f]" />
-        </button>
-      </div> */}
-
       <ToastContainer  className={ state.message === "usuario" ? "foo3" : "foo" } autoClose={false} />
+
+
+      {/* authentication */}
+      <form action={formActionAuth} className="">
+        <input
+          type="hidden"
+          name="email"
+          value={email}
+          readOnly
+        />
+        <input
+          type="hidden"
+          name="password"
+          value= "72cf0550-3f64-474d-b150-aa813c6b4b67"
+          readOnly
+        />
+        <input type="hidden" name="redirectTo" value={pathname} readOnly/>
+        <button
+          type="submit" 
+          ref={buttonRefAuth}
+          className="hidden"
+        >
+          Continuar
+        </button>
+      </form>
     </>
   );
 }
@@ -184,139 +211,57 @@ function NotifyError({
   attributes.className = 'animate';
   attributes.style = {
     animationDuration: `5000ms`,
-    // animationPlayState: isPaused ? 'paused' : 'running',
   };
-
-  // attributes.onAnimationEnd = () => {
-  //   closeToast();
-  // };
 
   return (
     <Frente 
-        className=" w-full px-3 py-1.5 justify-center !rounded-md ![box-shadow:_inset_0_1px_#ffffff,inset_0_-1px_#00000046] flex flex-col items-start gap-1.5 !bg-[#548effdd]"
-        aria-live="polite"
-        aria-atomic="true"
-      >
-        {/* {state.errors?.name && 
-          <div className='min-h-[22px] flex items-center justify-between gap-3 w-full '>
-            <div className='flex items-center gap-3  '>
-              <IconError className={`mb-auto h-[18px] w-[18px] fill-[#ffffffcc]`} />
-              <p className="text-sm text-[#fff] sm:text-[15px]">{state.errors.name}</p>
-            </div>
-
-            <svg
-              width="22"
-              height="22"
-              viewBox="-25 -25 250 250"
-              version="1.1"
-              xmlns="http://www.w3.org/2000/svg"
-              className="-rotate-90"
-            >
-              <circle
-                r="90"
-                cx="100"
-                cy="100"
-                fill="transparent"
-                stroke="#e0e0e0"
-                stroke-width="6"
-                stroke-dasharray={`${strokeDash}px`}
-                stroke-dashoffset="0"
-              />
-              <circle
-                r="90"
-                cx="100"
-                cy="100"
-                stroke="#ffffffdd"
-                stroke-width="26px"
-                stroke-linecap="round"
-                fill="transparent"
-                stroke-dasharray={`${strokeDash}px`}
-                {...attributes}
-              />
-            </svg>
+      className=" w-full px-3 py-1.5 justify-center !rounded-md ![box-shadow:_inset_0_1px_#ffffff,inset_0_-1px_#00000046] flex flex-col items-start gap-1.5 !bg-[#548effdd]"
+      aria-live="polite"
+      aria-atomic="true"
+    >
+      {state.message && 
+        <div className=' min-h-[22px] flex items-center justify-between gap-3 w-full '>
+          <div className='flex items-center gap-3  '>
+            <IconAviso className={`mb-auto h-[18px] w-[18px] fill-[#ffffffcc]`} />
+            <p className="text-sm text-[#fff] sm:text-[15px]">{state.message}</p>
           </div>
-        }
-        {state.errors?.email && 
-          <div className=' min-h-[22px] flex items-center justify-between gap-3 w-full '>
-            <div className='flex items-center gap-3  '>
-              <IconError className={`mb-auto h-[18px] w-[18px] fill-[#ffffffcc]`} />
-              <p className="text-sm text-[#fff] sm:text-[15px]">{state.errors.email}</p>
-            </div>
 
-            <svg
-              width="22"
-              height="22"
-              viewBox="-25 -25 250 250"
-              version="1.1"
-              xmlns="http://www.w3.org/2000/svg"
-              className="-rotate-90"
-            >
-              <circle
-                r="90"
-                cx="100"
-                cy="100"
-                fill="transparent"
-                stroke="#e0e0e0"
-                stroke-width="6"
-                stroke-dasharray={`${strokeDash}px`}
-                stroke-dashoffset="0"
-              />
-              <circle
-                r="90"
-                cx="100"
-                cy="100"
-                stroke="#ffffffdd"
-                stroke-width="26px"
-                stroke-linecap="round"
-                fill="transparent"
-                stroke-dasharray={`${strokeDash}px`}
-                {...attributes}
-              />
-            </svg>
-          </div>
-        } */}
-         {state.message && 
-          <div className=' min-h-[22px] flex items-center justify-between gap-3 w-full '>
-            <div className='flex items-center gap-3  '>
-              <IconAviso className={`mb-auto h-[18px] w-[18px] fill-[#ffffffcc]`} />
-              <p className="text-sm text-[#fff] sm:text-[15px]">{state.message}</p>
-            </div>
-
-            <svg
-              width="22"
-              height="22"
-              viewBox="-25 -25 250 250"
-              version="1.1"
-              xmlns="http://www.w3.org/2000/svg"
-              className="-rotate-90"
-            >
-              <circle
-                r="90"
-                cx="100"
-                cy="100"
-                fill="transparent"
-                stroke="#e0e0e0"
-                stroke-width="6"
-                stroke-dasharray={`${strokeDash}px`}
-                stroke-dashoffset="0"
-              />
-              <circle
-                r="90"
-                cx="100"
-                cy="100"
-                stroke="#ffffffdd"
-                stroke-width="26px"
-                stroke-linecap="round"
-                fill="transparent"
-                stroke-dasharray={`${strokeDash}px`}
-                {...attributes}
-              />
-            </svg>
-          </div>
-        }
-      </Frente>
+          <svg
+            width="22"
+            height="22"
+            viewBox="-25 -25 250 250"
+            version="1.1"
+            xmlns="http://www.w3.org/2000/svg"
+            className="-rotate-90"
+          >
+            <circle
+              r="90"
+              cx="100"
+              cy="100"
+              fill="transparent"
+              stroke="#e0e0e0"
+              stroke-width="6"
+              stroke-dasharray={`${strokeDash}px`}
+              stroke-dashoffset="0"
+            />
+            <circle
+              r="90"
+              cx="100"
+              cy="100"
+              stroke="#ffffffdd"
+              stroke-width="26px"
+              stroke-linecap="round"
+              fill="transparent"
+              stroke-dasharray={`${strokeDash}px`}
+              {...attributes}
+            />
+          </svg>
+        </div>
+      }
+    </Frente>
   );
 }
+
 function NotifyValidateEmail({
   closeToast,
   isPaused,

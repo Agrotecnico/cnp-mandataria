@@ -94,6 +94,11 @@ export default function IniciarTramite( {
     if (buttonRefVerification.current) buttonRefVerification.current.click()
   };
 
+  const refCreateUser = useRef<HTMLButtonElement>(null);
+  const handleCreateUser= () => {
+    if (refCreateUser.current) refCreateUser.current.click()
+  };
+
   const months = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Setiembre", "Octubre", "Noviembre", "Diciembre"];
   const d = new Date();
   const date= `${months[d.getMonth()]}-${d.getFullYear()}`
@@ -273,7 +278,7 @@ export default function IniciarTramite( {
       customProgressBar: true,
       position: "bottom-center",
       transition: Flip,
-      className: '!w-full !min-h-min mt-6 !mb-8 !p-0 !shadow-[0_10px_20px_#c0cde7] ',
+      className: '!w-full !min-h-min !mb-8 !p-0 !shadow-[0_10px_20px_#c0cde7] ',
     });
 
   }, [ ])
@@ -311,7 +316,7 @@ export default function IniciarTramite( {
       position: "bottom-center",
       transition: Flip,
       pauseOnHover: false,
-      className: '!w-full !min-h-min !mb-8 !mt-6 !p-0 !shadow-[0_10px_20px_#c0cde7]',
+      className: '!w-full !min-h-min !mb-8 !mt-0 !p-0 !shadow-[0_10px_20px_#c0cde7]',
     });
 
 
@@ -564,225 +569,121 @@ export default function IniciarTramite( {
       </Frente>
 
       {/* registrar email tramite */}
-      { !user ? (
-        <Frente className="!p-2  mt-2 text-small-regular !bg-[#548eff16] sm:!px4 ">
-          <div className="flex items-start justify-between gap-3  sm:items-center sm:gap-5 ">
-            <div className="mt-[2px] sm:mt-1.5  ">
-              <IconRegistro className=" w-5 ml-1.5 sm:w-6 sm:ml-3" />
+      <Frente className={`${!user || isEmailVisitor ? "block" : "hidden"} py-1.5 px-2 mt-2 text-small-regular !bg-[#548effe2] sm:!px-4 `}>
+        <div className={`${open ? "justify-end py-1.5 " : "justify-between "} flex items-start gap-3 sm:items-center sm:gap-5 `}>
+          <div className={`${open && "hidden"} flex items-center justify-start gap-3 w-full text-[13px] text-[#ffffff] [text-shadow:_1px_1px_#3d61ad] sm:text-[15px] `}>
+            <div className="mt-[1px] sm:mt-[3px] ">
+              <IconRegistro className=" w-[13px] ml-1.5 sm:w-[22px] sm:ml-3" />
             </div>
-            
-            <div className={`w-full text-start text-[#39507f] `}>
-              <div className={` text-[13px] sm:text-[15px] `}>
-                <p>Envíame un Email para que pueda mandarte el presupuesto<span className=" text-[#ff0000] ml-0.5">*</span></p>
-              </div>
-            </div>
-              
+            {isEmailVisitor ? (
+              <p><b>{ user.name }</b>, enviame un e-mail para mandarte el presupuesto<span className="text-[15px] text-[#ff0000]  [text-shadow:_1px_1px_#fff9,_-1px_-1px_#fff9,_1px_1px_#fff9,_-1px_1px_#fff9] ml-1.5">*</span>
+              </p>
+            ) : (
+              <p>Envíame un Email para que pueda mandarte el presupuesto<span className="text-[15px] text-[#ff0000]  [text-shadow:_1px_1px_#fff9,_-1px_-1px_#fff9,_1px_1px_#fff9,_-1px_1px_#fff9] ml-1.5">*</span>
+              </p>
+            )}
+          </div>
+
+          <div className='flex items-center gap-3'>
+            {/* button submit */}
             <ButtonB
-              className={`h-8 text-[13px]  w-max`}
+              className={`group ${!open && "hidden"} ${email && name && "!bg-[#ffffff]" } w-max h-[28px] !rounded-md text-[13px] !text-[#020b1daa] ml-auto !opacity-100 disabled:!opacity-85  disabled:hover:!opacity-85 hover:!text-[#020b1dee] `}
+              onClick={() => { 
+                handleCreateUser()
+                setTimeout(handleClickButtonAuth, 200)
+                setTimeout(notifyVerifyTramite, 2000)
+              }}
+              disabled= { (name || user?.name) && email && isEmailValid(`${email}`)  ? false : true}
+            >
+              <IconCambio fill="#548eff" className={`${(isPendingx || isPendingAuth) && "animate-spin"} fill-[#fff0] stroke-[#548eff36] mr-2 w-[26px] h-[26px] opacity-70  group-hover:opacity-100`} />{/*  */}
+
+              <p className="w-full" >Enviar</p>
+            </ButtonB>
+
+            <ButtonB
+              className={`h-[28px] text-[13px] !rounded-md w-max !opacity-100 !bg-[#ffffffcc] hover:!bg-[#ffffff] active:!opacity-70 `}
               onClick={() => { 
                 setOpen(!open); 
                 setEmail(""); 
                 setName("");
               }}
-
               data-testid="edit-button"
               data-active={open}
             >
               {open ? "Cancelar" :  <div className="text-[13px] overflow-auto whitespace-nowrap">Email</div>  }
             </ButtonB>
           </div>
-          
-          <div
-            className={clsx(
-              "transition-[max-height,opacity] duration-300 ease-in-out overflow-visible",
-              {
-                "max-h-[1000px] opacity-100": open,
-                "max-h-0 opacity-0": !open,
-              }
-            )}
-          >
-            {/* create user */}
-            <div className={`pt-2 sm:pt-4 ${!open && "invisible"} `}> 
-              <form action={formActionx}>
-                <fieldset className={`mb-2 grid grid-cols-1 items-center gap-2 md:grid-cols-2 md:mb-4 md:flex-row md:gap-4`}>
-                  <InputCnp
-                    className={`text-sm h-8 !bg-[#ffffff]`}
-                    id="email"
-                    type="email"
-                    name="email"
-                    minLength={3}
-                    maxLength={100}
-                    value={email}
-                    placeholder= "Email"
-                    required
-                    disabled={ !open }
-                    onChange={(e) => {
-                      setEmail(e.target.value);
-                    }} 
-                    >
-                    <div className="absolute rounded-l-[4px] h-[32px] w-[32px] left-0 top-0 bg-[#020b1d0b]" >
-                    </div>
-                    <IconEmail2  className="absolute w-[14px] left-[9px] top-[9px] " color="#39507faa" />
-                  </InputCnp>
-                  
-                  <div className={` ${nameVisitor   && "hidden"}`}>
-                    <InputCnp
-                      className={`text-sm h-8 !bg-[#ffffff]`}
-                      id="name"
-                      type="text"
-                      name="name"
-                      minLength={3}
-                      maxLength={100}
-                      value={ name /* ? name : nameVisitor ? nameVisitor : "" */ }
-                      placeholder= "Nombre"
-                      required
-                      disabled={ !open }
-                      onChange={(e) => {
-                        setName(e.target.value);
-                      }} >
-                      <div className="absolute rounded-l-[4px] h-[32px] w-[32px] left-0 top-0 bg-[#020b1d0b]" >
-                      </div>
-                      <IconCuenta  className="absolute w-[14px] left-[9px] top-[9px] " color="#39507faa" />
-                    </InputCnp>
-                  </div>
-
-                  <input
-                    type="hidden"
-                    id="image"
-                    name="image"
-                    value={ /* imagen ? imagen : imageUrl ? imageUrl : */ "" }
-                    readOnly
-                  />
-                  <input
-                    type="hidden"
-                    name="password"
-                    value= {"72cf0550-3f64-474d-b150-aa813c6b4b67" }
-                    readOnly
-                  />
-                  <input type="hidden" name="pathname" value={pathname} readOnly />
-                </fieldset>
-
-                {/* Massages erros */}
-                <div
-                  className="flex items-end relative space-x-8"
-                  aria-live="polite"
-                  aria-atomic="true"
+        </div>
+        
+        <div
+          className={clsx(
+            "transition-[max-height,opacity] duration-300 ease-in-out overflow-visible",
+            {
+              "max-h-[1000px] opacity-100 pb-1.5": open,
+              "max-h-0 opacity-0": !open,
+            }
+          )}
+        >
+          <div className={`pt-1.5 ${!open && "invisible"} `}> 
+            <fieldset className={` grid grid-cols-1 items-center gap-2 md:grid-cols-2 md:flex-row md:gap-4`}>
+              <InputCnp
+                className={`${email ? "bg-[#ffffff]" : "bg-[#ffffffcc]"} text-sm h-[30px] pb-[3px] !opacity-100 hover:!bg-[#ffffff] focus:!bg-[#ffffff]`}
+                id="email"
+                type="email"
+                name="email"
+                minLength={3}
+                maxLength={100}
+                value={email}
+                placeholder= "Email"
+                required
+                disabled={ !open }
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                }} 
                 >
-                  {estadox?.message && (
-                    <>
-                      <ExclamationCircleIcon className="absolute top-4 h-5 w-5 text-red-500" />
-                      <p className="pt-4 text-sm text-red-500">{estadox?.message}</p>
-                    </>
-                  )}
+                <div className="absolute rounded-l-[4px] h-[32px] w-[32px] left-0 top-0 bg-[#548eff26]" >
                 </div>
-
-                {/* button submit */}
-                <ButtonA
-                  className={`${(isPendingx || isPendingAuth) && "before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_1s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/30 before:to-transparent"}  relative overflow-hidden w-32  h-8 text-[13px] ml-auto ${!open && "hidden"} disabled:!opacity-60`}
-                  onClick={() => { 
-                    setTimeout(handleClickButtonAuth, 200) 
-                    setTimeout(notifyVerifyTramite, 2000) 
-                  }}
-                  disabled= {( name) && email && isEmailValid(`${email}`) ? false : true}
-                >
-                  Enviar
-                </ButtonA>
-              </form>
-            </div>
-          </div>
-        </Frente>
-      ) : isEmailVisitor && (
-        <Frente className={`!p-2 mt-2 text-small-regular !bg-[#548eff16] sm:!p-4 `}>
-          <div className="flex items-start justify-between gap-3  sm:items-center sm:gap-5 ">
-            <div className="mt-[2px] sm:mt-1.5  ">
-              <IconRegistro className="w-5 ml-1.5 sm:w-6 sm:ml-3 " />
-            </div>
-
-            <div className={`w-full text-start text-[#39507f] `}>
-              <div className={` text-[13px] sm:text-[15px] `}>
-                <p><b>{ user.name}</b>, enviame un e-mail para mandarte el presupuesto<span className=" text-[#ff0000] ml-0.5">*</span></p>
-              </div>
-            </div>
+                <IconEmail2  className="absolute w-[14px] left-[9px] top-[7px] " color="#39507fcc" />
+              </InputCnp>
               
-            <ButtonB
-              className={`h-8 text-[13px]  w-max`}
-              onClick={() => { 
-                setOpen(!open); 
-                setEmail(""); 
-                setName("");
-              }}
-
-              data-testid="edit-button"
-              data-active={open}
-            >
-              {open ? "Cancelar" :  <div className="text-[13px] overflow-auto whitespace-nowrap">Email</div>  }
-            </ButtonB>
-          </div>
-          
-          <div
-            className={clsx(
-              "transition-[max-height,opacity] duration-300 ease-in-out overflow-visible",
-              {
-                "max-h-[1000px] opacity-100": open,
-                "max-h-0 opacity-0": !open,
-              }
-            )}
-          >
-            {/* update email user */}
-            <div className={`pt-2 sm:pt-4 ${!open && "invisible"} `}> 
-              <fieldset className={`mb-2 grid grid-cols-1 items-center gap-2 md:grid-cols-2 md:mb-4 md:flex-row md:gap-4`}>
+              <div className={` ${isEmailVisitor && "hidden"}`}>
                 <InputCnp
-                  className={`text-sm h-8 !bg-[#ffffff]`}
-                  id="email"
-                  type="email"
-                  name="email"
-                  minLength={3}
+                  className={`${name ? "!bg-[#ffffff]" : "!bg-[#ffffffcc]"} text-sm h-[30px] pb-[3px] !opacity-100 hover:!bg-[#ffffff] focus:!bg-[#ffffff]`}
+                  id="name"
+                  type="text"
+                  name="name"
+                  minLength={2}
                   maxLength={100}
-                  value={email}
-                  placeholder= "Email"
+                  value={ name /* ? name : nameVisitor ? nameVisitor : "" */ }
+                  placeholder= "Nombre"
                   required
                   disabled={ !open }
                   onChange={(e) => {
-                    setEmail(e.target.value);
-                  }} 
-                  >
-                  <div className="absolute rounded-l-[4px] h-[32px] w-[32px] left-0 top-0 bg-[#020b1d0b]" >
+                    setName(e.target.value);
+                  }} >
+                  <div className="absolute rounded-l-[4px] h-[32px] w-[32px] left-0 top-0 bg-[#548eff26]" >
                   </div>
-                  <IconEmail2  className="absolute w-[14px] left-[9px] top-[9px] " color="#39507faa" />
+                  <IconCuenta  className="absolute w-[14px] left-[9px] top-[7px] " color="#39507fcc" />
                 </InputCnp>
-              </fieldset>
-
-              {/* Massages erros */}
-              <div
-                className="flex items-end relative space-x-8"
-                aria-live="polite"
-                aria-atomic="true"
-              >
-                {estadox?.message && (
-                  <>
-                    <ExclamationCircleIcon className="absolute top-4 h-5 w-5 text-red-500" />
-                    <p className="pt-4 text-sm text-red-500">{estadox?.message}</p>
-                  </>
-                )}
               </div>
+            </fieldset>
 
-              <form onSubmit={  uploadToServer3  }>
-                <ButtonA
-                  type="submit"
-                  className={`${(isPendingx || isPendingAuth) && "before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_1s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/30 before:to-transparent"}  relative overflow-hidden w-32 h-8 text-[13px] ml-auto ${!open && "hidden"} disabled:!opacity-60`}
-                  onClick={() => { 
-                    setTimeout(handleClickButtonAuth, 2000) 
-                    setTimeout(notifyVerifyTramite, 3000) 
-                  }}
-                  disabled= {( user?.name || name) && email && isEmailValid(`${email}`) ? false : true}
-                >
-                  Enviar
-                </ButtonA>
-              </form>
+            {/* Massages erros */}
+            <div
+              className="flex items-end relative space-x-8"
+              aria-live="polite"
+              aria-atomic="true"
+            >
+              {estadox?.message && estadox.message !== "usuario" && (
+                <>
+                  <ExclamationCircleIcon className="absolute top-4 h-5 w-5 text-red-500" />
+                  <p className="pt-4 text-sm text-red-500">{estadox?.message}</p>
+                </>
+              )}
             </div>
           </div>
-        </Frente>
-      )}
+        </div>
+      </Frente>
 
 
       {/* Massages error tramite */}
@@ -797,20 +698,24 @@ export default function IniciarTramite( {
       )}
 
       {/* Boton Enviar tramite */}
-      <div className="mt-6 w-full flex justify-between items-center">
-        <p className={`text-xs ml-2 ${tramite && user?.email && !isEmailVisitor && (images.length === documentos?.length || tramiteMd.slug === "x-Otros") && "opacity-0" } sm:text-[13px]`}><span className=" text-[#ff0000]">*</span> Requeridos</p>
+      <div className="mt-3 w-full flex justify-between items-start">
+        
+        <p className={`text-xs mt-1 mb-14 ${tramite && user?.email && !isEmailVisitor && (images.length === documentos?.length || tramiteMd.slug === "x-Otros") && "opacity-0" } sm:text-[13px]`}><span className=" text-[#ff0000]">*</span> Requeridos</p>
 
-        <div className="flex gap-4">
+        {/* <div className="flex gap-4"> */}
           {estado?.message !== "tramiteIniciado" ? (
             <form 
               onSubmit={ images.length === 0 ? uploadToServer1 : uploadToServer2 } >
               <div className="group relative w-full flex justify-between items-center">
-                <div className="w-[188px] absolute bottom-8 pt-3">
-                  <span className={`opacity-0 invisible text-xs text-[#020b1d] absolute w-[188px] bottom-[12px] bg-[#ffffff] pt-[3px] pb-[5px] pl-1.5 pr-3 rounded-lg duration-150 shadow-[0_20px_25px_-5px_rgb(0_0_0_/_0.2),_0_8px_10px_-6px_rgb(0_0_0_/_0.2),_0px_-5px_10px_#00000012] ${tramite && (images.length === documentos?.length || tramiteMd.slug === "x-Otros") ? "" : "group-hover:opacity-100 " } sm:text-[13px] group-hover:visible`}><span className="text-base text-[#ff0000]">* </span>Completar requeridos</span>
-                </div>
+
+                <div className={`w-[188px] absolute bottom-8 pt-3  `}>
+
+                  <span className={` items-center hidden text-[13px] text-[#020b1dcc] absolute h-8 w-max -bottom-[32px] right-[200px] bg-[#ffffff] py-auto pl-2 pr-3 rounded-lg duration-150 shadow-[0_20px_25px_-5px_rgb(0_0_0_/_0.2),_0_8px_10px_-6px_rgb(0_0_0_/_0.2),_0px_-5px_10px_#00000012] ${user && tramite && (images.length === documentos?.length || tramiteMd.slug === "x-Otros") ? "bottom-9" : "duration-300 group-hover:opacity-100 " } sm:text-[13px] group-hover:flex`}><span className=" text-[#ff0000] mx-1">* </span>Completar requeridos</span>
+                  
+                </div>{/* group-hover:visible  */}
 
                 <ButtonA
-                  className={`h-8 !px-4 text-sm !justify-start disabled:!opacity-100`}
+                  className={`h-8 w-max !px-3 text-[13px] !justify-start disabled:!opacity-100`}
                   type="submit"
                   disabled={ tramite && user?.email && !isEmailVisitor && (images.length === documentos?.length || tramiteMd.slug === "x-Otros") ? false : true }
                   onClick={() => {
@@ -824,9 +729,9 @@ export default function IniciarTramite( {
                   }}
                 >
                   <IconCambio
-                  className={`${(spin || isPending || isPendingxx ) && "animate-spin"} fill-[#fff0] stroke-[#ffffff55] mr-2 w-[22px] h-[22px]`}
+                  className={`${(spin || isPending || isPendingxx ) && "animate-spin"} fill-[#fff0] stroke-[#ffffff55] mr-1.5 w-[22px] h-[22px]`}
                 />
-                  <p className="w-full" >Pedir presupuesto</p>
+                  <p className="w-full text-start" >Pedir presupuesto</p>
                 </ButtonA>
               </div>
             </form>
@@ -845,7 +750,7 @@ export default function IniciarTramite( {
             )
           }
         </div>
-      </div>
+      {/* </div> */}
 
       <ToastContainer  className={ !isVerified  ? "foo" : "foo2" } autoClose={false} />
 
@@ -1020,6 +925,41 @@ export default function IniciarTramite( {
         <button
           type="submit"
           ref={buttonRefxxx}
+          className= "hidden " 
+        >
+          Enviar Consulta
+        </button>
+      </form>
+
+      {/*create user */}
+      <form action={formActionx}>
+        <input
+          type="hidden"
+          name="email"
+          value={ email }
+          readOnly
+        />
+        <input
+          type="hidden"
+          name="name"
+          value={ name }
+          readOnly
+        />
+        <input
+          type="hidden"
+          name="image"
+          value={ "" }
+          readOnly
+        />
+        <input
+          type="hidden"
+          name="token"
+          value= {token }
+          readOnly
+        />
+        <button
+          type="submit"
+          ref={refCreateUser}
           className= "hidden " 
         >
           Enviar Consulta

@@ -38,12 +38,12 @@ export default async function Page({
   const consultas = await fetchFilteredConsultasM( id, currentPage );
 
 
-  if ( session?.user.role === "memberAccount" ) {
-    if (session?.user.email === process.env.ADMIN)
+  if ( user?.role === "admin" ) {
+    if (user?.account === "abierto")
       return (
       <main>
         <h1 className={` mb-4 mt-2 text-xl lg:text-2xl`}>
-          Consultas
+          Consultas admin abierto
         </h1>
 
         <TableConsultaAdmin query={query} currentPage={currentPage} />
@@ -54,50 +54,80 @@ export default async function Page({
       </main>
     );
     return (
-      // <main>
-      //   <h1 className={` mb-4 mt-2 text-xl lg:text-2xl`}>
-      //     Consultas
-      //   </h1>
-
-      //   <TableConsultaMemberAccount query={query} currentPage={currentPage} />
-
-      //   <div className="mt-2 my-5 flex w-full justify-center">
-      //     <Pagination totalPages={totalPages} />
-      //   </div>
-      // </main>
-
       <main>
-        <h1 className={`mb-[22px] mt-1.5 text-xl lg:text-2xl`}>
-          Mis Consultas
+        <h1 className={` mb-4 mt-2 text-xl lg:text-2xl`}>
+          Mis Consultas admin cerrado
         </h1>
-        
-        {consultas.length ? (
-          <div className=" flex flex-col gap-3 ">
-            {consultas?.map((consulta, idx) => (
-              <div key={idx } className=" text-[13px] leading-[18px] ">
-                <Providers >
-                  <TableConsultaMember consulta={consulta} countcon={countcon} currentPage={currentPage} index={idx} />
-                </Providers>
-              </div>
-            ))}
-            <div className="z-10 my-5 flex w-full justify-center">
-              <Pagination totalPages={totalPagesMember} />
-            </div>
-          </div>
-        ) : (
-          <div className="flex flex-col  justify-center">
-            <p>Todavía no realizaste una consulta</p>
-          </div>
-        )}
+
+        <TableConsultaAdmin query={query} currentPage={currentPage} />
+
+        <div className="mt-2 my-5 flex w-full justify-center">
+          <Pagination totalPages={totalPages} />
+        </div>
       </main>
     );
   }
 
-  if ( user?.role === "member" || user?.role === "memberVerified" ) {
+  if ( user?.role === "memberAccount" ) {
+      if (user?.account === "abierto") {
+        <main>
+          <h1 className={`mb-[22px] mt-1.5 text-xl lg:text-2xl`}>
+            Mis Consultas memberAccount abierto
+          </h1>
+          
+          {consultas.length ? (
+            <div className=" flex flex-col gap-3 ">
+              {consultas?.map((consulta, idx) => (
+                <div key={idx } className=" text-[13px] leading-[18px] ">
+                  <Providers >
+                    <TableConsultaMember consulta={consulta} countcon={countcon} currentPage={currentPage} index={idx} />
+                  </Providers>
+                </div>
+              ))}
+              <div className="z-10 my-5 flex w-full justify-center">
+                <Pagination totalPages={totalPagesMember} />
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-col  justify-center">
+              <p>Todavía no realizaste una consulta</p>
+            </div>
+          )}
+        </main>
+      }
+      return (
+        <main>
+          <h1 className={`mb-[22px] mt-1.5 text-xl lg:text-2xl`}>
+            Mis Consultas memberAccount cerrado
+          </h1>
+          
+          {consultas.length ? (
+            <div className=" flex flex-col gap-3 ">
+              {consultas?.map((consulta, idx) => (
+                <div key={idx } className=" text-[13px] leading-[18px] ">
+                  <Providers >
+                    <TableConsultaMember consulta={consulta} countcon={countcon} currentPage={currentPage} index={idx} />
+                  </Providers>
+                </div>
+              ))}
+              <div className="z-10 my-5 flex w-full justify-center">
+                <Pagination totalPages={totalPagesMember} />
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-col  justify-center">
+              <p>Todavía no realizaste una consulta</p>
+            </div>
+          )}
+        </main>
+      )
+    }
+
+  if ( user?.role === "memberVerified" ) {
     return (
       <main>
         <h1 className={`mb-[22px] mt-1.5 text-xl lg:text-2xl`}>
-          Mis Consultas
+          Mis Consultas memberVerified
         </h1>
         
         {consultas.length ? (

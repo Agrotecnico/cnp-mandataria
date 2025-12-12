@@ -10,11 +10,11 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { ToastContainer, toast, Zoom, Flip, ToastContentProps } from 'react-toastify';
 import { nanoid } from "nanoid";
+import { signIn } from 'next-auth/react';
 
 import { authenticate4, authenticate2 } from '@/app/lib/actions';
 import { Fondo, Frente } from '@/app/ui/marcos';
 import { Button } from '@/app/ui/button';
-import { signIn } from 'next-auth/react';
 import IconGoogle from '@/app/ui/logosIconos/icon-google';
 import IconFlecha from '@/app/ui//logosIconos/icon-flecha';
 import IconError from '@/app/ui/logosIconos/icon-error';
@@ -93,23 +93,35 @@ export default function LoginForm() {
   return (
     <>
       <h1 className={`mt-4 mb-3 text-center text-3xl sm:text-4xl`}>Acceso</h1>
-      
+
+      <Frente className="flex h-10 !rounded-[3px]  hover:bg-[#ffffffcc] hover:[box-shadow:_0_0_0_1px_#3767c847] ">
+        <button
+          type="button"
+          onClick={ () => {
+          signIn();
+          }}
+          className="relative w-full flex cursor-pointer place-items-center items-center justify-start px-10 duration-200  "
+        >
+          <IconGoogle className="absolute top-2.5 left-3 w-[18px]" />
+          <div className="flex items-center text-[#020b1d88] text-[14px] ml-1.5">con google</div>
+        </button>
+      </Frente>
+
       <form action={ emailValid ? formActionAuth : notifyValidateEmail }  className="" >
         <Fondo className=" px-3 py-4 mx-0 sm:py-6 sm:px-4 sm:mx-1.5 ">
           <div className="flex flex-col ">
-            <Frente className="flex h-10 !rounded-[3px]  hover:bg-[#ffffffcc] hover:[box-shadow:_0_0_0_1px_#3767c847] ">
-              <div
-                // onClick={async () => {
-                //   await signIn('google', {
-                //     callbackUrl: '/dashboard',
-                //   });
-                // }}
+            {/* <Frente className="flex h-10 !rounded-[3px]  hover:bg-[#ffffffcc] hover:[box-shadow:_0_0_0_1px_#3767c847] ">
+              <button
+                type="button"
+                onClick={ () => {
+                signIn();
+                }}
                 className="relative w-full flex cursor-pointer place-items-center items-center justify-start px-10 duration-200  "
               >
                 <IconGoogle className="absolute top-2.5 left-3 w-[18px]" />
                 <div className="flex items-center text-[#020b1d88] text-[14px] ml-1.5">con google</div>
-              </div>
-            </Frente>
+              </button>
+            </Frente> */}
 
             <div className="flex w-full items-center gap-2 py-2 text-sm">
               <div className="h-px w-full bg-slate-300"></div>O
@@ -134,6 +146,12 @@ export default function LoginForm() {
                 <AtSymbolIcon className="pointer-events-none absolute left-3 top-1/2 h-[21px] w-[21px] stroke-2 -translate-y-1/2 text-[#548effcc]" />
               </div>
             </Frente>
+
+            <input 
+              type="hidden" 
+              name="redirectTo" 
+              value={ "/dashboard/resumen" } 
+              readOnly />
           </div>
         </Fondo>
 

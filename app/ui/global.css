@@ -48,18 +48,34 @@ input:-webkit-autofill:focus {
 .Toastify__progress-bar {
   transform-origin: right !important;
 }
-.Toastify__close-button--light{
+/* .Toastify__close-button--light{
   color: #fff !important;
-  opacity: .85 !important;
-}
+  
+} */
 .Toastify__close-button {
-  top: 8px !important;
+  color: #fff !important;
+  top: 0px !important;
+  right: 8px !important;
+  padding: 8px 4px 8px 12px !important;
+  opacity: .6 !important;
+  transition: 0.15s !important;
 }
+.Toastify__close-button:hover {
+  opacity: 1 !important;
+}
+.Toastify__close-button > svg {
+  stroke-width: 1px;
+  stroke: #fff ;
+}
+/* .Toastify__close-button > svg:hover {
+    opacity: 1;
+} */
 
 .foo {
   position: static !important;
   transform: none !important;
   width: 100% !important;
+  padding: 0 12px;
 }
 
 .foo2 {

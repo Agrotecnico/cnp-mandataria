@@ -1,14 +1,17 @@
-import { ResumenSkeleton } from '@/app/ui/skeletons';
-import { auth } from 'auth';
+"use client"
 
-export default /* async */ function Loading() {
-  // const session = await auth();
-  // if (session?.user?.email === process.env.ADMIN )
-  //   return  (
-  //     <CardControlSkeleton />
-  //   );
+import {CommentsSkeleton} from '@/app/ui/skeletons';
+import { useSession } from "next-auth/react"
+
+export default function Loading() {
+  const { data: session, update } = useSession()
+
+  if (session?.user?.role === "admin" )
     return  (
-      // <div>Loading resumen...</div>
-      <ResumenSkeleton />
+      <div className='pt-10 h-[400px] text-2xl flex items-center justify-center '>Cargando...</div>
+    );
+    return  (
+      <CommentsSkeleton />
     )
+    
   }

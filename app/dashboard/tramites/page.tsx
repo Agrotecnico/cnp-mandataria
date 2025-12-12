@@ -40,33 +40,58 @@ export default async function Page({
   const tramitesMember = await fetchFilteredTramitesM( email, currentPage );
 
 
-  if ( session?.user.role === "memberAccount" ) {
-      if (session?.user.email === process.env.ADMIN)
-        return (
-          <main>
-            <h1 className={` mb-4 mt-2 text-xl lg:text-2xl`}>
-              Trámites
-            </h1>
+  if ( user?.role === "admin"  ) {
+    if (user?.account === "abierto")
+      return (
+        <main>
+          <h1 className={` mb-4 mt-2 text-xl lg:text-2xl`}>
+            Trámites admin abierto
+          </h1>
 
-            <div className="mb-6 flex items-center justify-between gap-2">
-              <Search placeholder="Buscar trámites..." />
+          <div className="mb-6 flex items-center justify-between gap-2">
+            <Search placeholder="Buscar trámites..." />
+          </div>
+
+          {AllTramites?.map((AllTramite, idx) => (
+            <div key={idx } className=" text-[13px] leading-[18px] ">
+              <TableTramiteAdmin AllTramite={AllTramite} />
             </div>
+          ))}
 
-            {AllTramites?.map((AllTramite, idx) => (
-              <div key={idx } className=" text-[13px] leading-[18px] ">
-                <TableTramiteAdmin AllTramite={AllTramite} />
-              </div>
-            ))}
+          <div className="my-5 flex w-full justify-center">
+            <Pagination totalPages={totalPages} />
+          </div>
+        </main>
+    );
+    return (
+      <main>
+        <h1 className={` mb-4 mt-2 text-xl lg:text-2xl`}>
+          Trámites admin abierto
+        </h1>
 
-            <div className="my-5 flex w-full justify-center">
-              <Pagination totalPages={totalPages} />
-            </div>
-          </main>
-      );
+        <div className="mb-6 flex items-center justify-between gap-2">
+          <Search placeholder="Buscar trámites..." />
+        </div>
+
+        {AllTramites?.map((AllTramite, idx) => (
+          <div key={idx } className=" text-[13px] leading-[18px] ">
+            <TableTramiteAdmin AllTramite={AllTramite} />
+          </div>
+        ))}
+
+        <div className="my-5 flex w-full justify-center">
+          <Pagination totalPages={totalPages} />
+        </div>
+      </main>
+    );
+  }
+
+  if ( user?.role === "memberAccount"  ) {
+    if (user?.account === "abierto")
       return (
         <main>
           <h1 className={`mb-[22px] mt-1.5 text-xl lg:text-2xl`}>
-            Mis Trámites
+            Mis Trámites memberAccouny abierto
           </h1>
         
           {tramitesMember.length ? (
@@ -87,14 +112,39 @@ export default async function Page({
             </div>
           )}
         </main>
-      );
-    }
-  
-  if ( user?.role === "member" || user?.role === "memberVerified" ) {
+    );
     return (
       <main>
         <h1 className={`mb-[22px] mt-1.5 text-xl lg:text-2xl`}>
-          Mis Trámites
+          Mis Trámites  memberAccouny cerrado
+        </h1>
+      
+        {tramitesMember.length ? (
+          <div className="text-[#020b1ddd] flex flex-col gap-2 ">
+            {tramitesMember?.map((tramite, idx) => (
+              <div key={idx } className=" text-[13px] leading-[18px] ">
+                <TableTramiteMember tramite={tramite} />
+              </div>
+            ))}
+
+            <div className="z-[5] my-5 flex w-full justify-center">
+              <Pagination totalPages={totalPagesMember} />
+            </div>
+          </div>
+        ) : (
+          <div>
+            <p>Todavía no iniciaste un trámite</p>
+          </div>
+        )}
+      </main>
+    );
+  }
+  
+  if ( user?.role === "memberVerified" ) {
+    return (
+      <main>
+        <h1 className={`mb-[22px] mt-1.5 text-xl lg:text-2xl`}>
+          Mis Trámites  memberVerified
         </h1>
       
         {tramitesMember.length ? (

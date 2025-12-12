@@ -27,7 +27,7 @@ export default function NotifyVerifyTramite({
   return (
     <>
       { tramite && user && !isEmailVisitor  ? (
-        <Frente className=" w-full !bg-[#548effdd] ">
+        <Frente className=" w-full !bg-[#548effe2] ">
           <div className=" flex items-start gap-3 pl-4 pb-1.5 pt-2 pr-7 text-sm text-[#ffffff] sm-gap-4 sm:text-[15px] sm:pr-7 sm:gap-5">
             <div>
               <IconCheck color="#ffffffcc" className=" w-[14px] mt-0.5 mb-auto sm:w-4" />
@@ -45,7 +45,7 @@ export default function NotifyVerifyTramite({
           </div>
         </Frente> 
       ) : (
-        <Frente className={` !bg-[#548effdd] w-full ${ isVerified && "hidden"}`}>
+        <Frente className={` !bg-[#548effe2] w-full ${ isVerified && "hidden"}`}>
           <div className=" flex items-start gap-4 pl-4 pb-[5px] pt-[7px] pr-7  sm:pr-7 sm:gap-5">
             <IconEnvioEmail fill="#ffffff88" filla="#ffffffdd" className=" w-7 mt-1 mb-auto sm:w-8" />
             <p className={` w-full text-start gap-1.5 text-sm text-[#ffffff] sm:text-[15px] [text-shadow:_1px_1px_#3d61ad] `}>

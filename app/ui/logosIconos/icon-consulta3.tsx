@@ -4,7 +4,7 @@ export type IconProps = {
   size?: string | number
 } & React.SVGAttributes<SVGElement>
 
-const IconConsulta: React.FC<IconProps> = ({
+const IconConsulta3: React.FC<IconProps> = ({
   size=16,
   ...attributes
 }) => {
@@ -25,4 +25,4 @@ const IconConsulta: React.FC<IconProps> = ({
   )
 }
 
-export default IconConsulta
+export default IconConsulta3

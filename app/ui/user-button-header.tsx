@@ -15,7 +15,7 @@ import {
   AtSymbolIcon,
   PowerIcon,
 } from '@heroicons/react/24/outline';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef, useActionState } from 'react';
 import Image from 'next/image'
 
 import { Button } from '@/app/ui/uiRadix/button';
@@ -29,6 +29,8 @@ import IconConsulta from './logosIconos/icon-consulta';
 import IconPresupuesto from './logosIconos/icon-presupuesto';
 import IconCamara from './logosIconos/icon-camara';
 import IconEmail2 from './logosIconos/icon-email2';
+import IconComment from './logosIconos/icon-comment';
+import { createAccountOpen, StateAccountOpen } from '@/app/lib/actions';
 
 
 export default function UserButtonHeader( { user }: { user: User | undefined } ) {
@@ -42,15 +44,25 @@ export default function UserButtonHeader( { user }: { user: User | undefined } )
 
   const router = useRouter()
 
+  const buttonRef = useRef<HTMLButtonElement>(null); // update estado account
+  const handleClickButton= () => {
+    if (buttonRef.current) buttonRef.current.click()
+  };
+
+  const initialState: StateAccountOpen = { message: null, errors: {} };
+  const createAccountOpenWithId = createAccountOpen.bind(null, `${user?.email}`);
+  const [state, formAccountOpen, isPending] = useActionState(createAccountOpenWithId, initialState);
+
   useEffect(() => {
     sessionStorage.getItem('imgVisitor') && setImgVisitor(`${sessionStorage.getItem('imgVisitor')}`) 
   }, []);
 
   const isEmailVisitor= user?.email.slice(16) === "@cnpmandataria.com"
+
+  console.log("state:", state)
   
 
   return (
-    <>
     <div className='flex items-center justify-end gap-4 '>
       <DropdownMenu>
         <div className={`relative items-center justify-center ${user ? "flex" : "hidden" }`} >
@@ -60,7 +72,7 @@ export default function UserButtonHeader( { user }: { user: User | undefined } )
                 <Image 
                   src= { user.image }
                   alt="imagen de perfil"
-                  className="h-9 w-9 rounded-full "
+                  className="h-8 w-8 rounded-full "
                   width={40}
                   height={40}>
                 </Image>
@@ -68,12 +80,12 @@ export default function UserButtonHeader( { user }: { user: User | undefined } )
                 <Image 
                   src= { imgVisitor }
                   alt="imagen de perfil"
-                  className="h-9 w-9 rounded-full "
+                  className="h-8 w-8 rounded-full "
                   width={40}
                   height={40}>
                 </Image>
               ) : (
-                <span className="flex text-lg h-9 w-9 items-center opacity-80 duration-150 justify-center rounded-full bg-[#ffffffdd] text-[#374151] sm:text-xl hover:opacity-95 active:opacity-70 ">
+                <span className="flex text-base h-7 w-7 items-center opacity-80 duration-150 justify-center rounded-full bg-[#ffffffdd] text-[#374151] sm:text-lg hover:opacity-95 active:opacity-70 ">
                   { user?.name.substring(0, 1).toUpperCase()  }
                 </span>
               )}
@@ -108,10 +120,10 @@ export default function UserButtonHeader( { user }: { user: User | undefined } )
           <Button
             variant={'ghost'}
             className="!p-0 !justify-start !rounded-[4px] file:ml-auto h-auto w-full text-[#020b1d99] opacity-90 hover:opacity-100 active:opacity-70 disabled:opacity-40 hover:bg-[#547eff16] hover:text-[#020b1dc1]"
-            onClick={async () => {
+            onClick={ () => {
               setIsModalOpen(true)
             }}
-          >
+            >
             <DropdownMenuItem className='w-full px-4 py-1 cursor-pointer'>
               <IconCamara className="w-4 mr-2" color='#548effdd' />
               <p>{user?.image ? "Cambiar" : "Cargar"} imagen</p>
@@ -121,10 +133,10 @@ export default function UserButtonHeader( { user }: { user: User | undefined } )
           <Button
             variant={'ghost'}
             className="!p-0 !justify-start !rounded-[4px] file:ml-auto h-auto w-full text-[#020b1d99] opacity-90 hover:opacity-100 active:opacity-70 disabled:opacity-40 hover:bg-[#547eff16] hover:text-[#020b1dc1]"
-            onClick={async () => {
+            onClick={ () => {
               setIsModalOpen2(true)
             }}
-          >
+            >
             <DropdownMenuItem className='w-full px-4 py-1 cursor-pointer'>
               <IconCuenta className="w-4 mr-2 " color="#548effdd" />
               <p>Actualizar nombre</p>
@@ -134,10 +146,10 @@ export default function UserButtonHeader( { user }: { user: User | undefined } )
           <Button
             variant={'ghost'}
             className={`group !p-0 !justify-start rounded-[4px] file:ml-auto h-auto w-full text-[#020b1d99]`}
-            onClick={async () => {
+            onClick={ () => {
               !isEmailVisitor && setIsModalOpen3(true)
             }}
-          >
+            >
             {!isEmailVisitor  ? (
               <DropdownMenuItem className={`w-full px-4 py-1 cursor-pointer opacity-90 hover:opacity-100 hover:bg-[#548eff16] group-hover:text-[#020b1dc1] active:opacity-70`}>
                 <IconEmail2 className="w-4 mr-2" color='#548effdd' />
@@ -156,9 +168,9 @@ export default function UserButtonHeader( { user }: { user: User | undefined } )
           <Button
             variant={'ghost'}
             className="!p-0 !justify-start cursor-default file:ml-auto h-auto w-full  text-[#374151] active:!opacity-100"
-            onClick={async () => {
+            onClick={ () => {
             }}
-          >
+            >
             <DropdownMenuItem className=''>
             </DropdownMenuItem>
             <div className='w-full px-4 py-1 opacity-40 hover:bg-[#547eff26]'>
@@ -169,9 +181,9 @@ export default function UserButtonHeader( { user }: { user: User | undefined } )
           <Button
             variant={'ghost'}
             className="!p-0 !justify-start cursor-default file:ml-auto h-auto w-full  text-[#374151] active:!opacity-100"
-            onClick={async () => {
+            onClick={ () => {
             }}
-          >
+            >
             <DropdownMenuItem className=''>
             </DropdownMenuItem>
             <div className='w-full px-4 py-1 opacity-40 hover:bg-[#547eff26]'>
@@ -181,37 +193,21 @@ export default function UserButtonHeader( { user }: { user: User | undefined } )
 
           <DropdownMenuSeparator className="h-[1px] bg-[#37415122] m-[3px]" />
 
-
-          {/* <DropdownMenuItem>
-            <form
-              action={async () => {
-                'use server';
-                await signOut({ redirectTo: '/' });
-              }}
+          <DropdownMenuItem>
+            <Button
+              variant={'ghost'}
               className="mt-1 !px-4 !py-1 !justify-start !rounded-[4px] file:ml-auto h-auto w-full text-[#020b1d99] opacity-90 hover:opacity-100 active:opacity-70 disabled:opacity-40 hover:bg-[#547eff16] hover:text-[#020b1dc1]"
+              onClick={ () => {
+                handleClickButton()
+                setTimeout(() => signOut({ redirectTo: "/" }), 1000) 
+              }}
+              disabled={!user}
             >
-                <PowerIcon className="w-[18px] mr-4 text-[#548eff] stroke-[3]"/>
-                <p>Salir</p>
-              
-            </form>
-          </DropdownMenuItem> */}
-
-
-          
-          <Button
-            variant={'ghost'}
-            className="mt-1 !px-4 !py-1 !justify-start !rounded-[4px] file:ml-auto h-auto w-full text-[#020b1d99] opacity-90 hover:opacity-100 active:opacity-70 disabled:opacity-40 hover:bg-[#547eff16] hover:text-[#020b1dc1]"
-            onClick={async () => {
-              await signOut({ callbackUrl: "/" });
-              sessionStorage.clear()
-            }}
-            disabled={!user}
-          >
-            <DropdownMenuItem>
               <PowerIcon className="w-[18px] mr-4 text-[#548eff] stroke-[3]"/>
               <p>Salir</p>
-            </DropdownMenuItem>
-          </Button>
+              
+            </Button>
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
@@ -288,14 +284,16 @@ export default function UserButtonHeader( { user }: { user: User | undefined } )
             </Link>
           )}
 
-          {pathname.startsWith('/dashboard') ? (
+          {pathname.startsWith('/dashboard') || !user || user.role === 'visitor' || user.role === "member" ? (
             <Link
               href={'#'}
             >
               <div className="cursor-default relative flex justify-start text-sm gap-4 w-full !font-normal text-start px-0 opacity-50 hover:bg-[#548eff26]" >
                 <div className="flex items-center gap-0 w-max rounded-md px-2 text-[#374151] ">
-                  {user?.role === "admin" ? (
+                  { user?.role === "admin" ? (
                     <div className="w-full text-[13px] px-2 py-1"><span className='font-semibold h-8 text-[#39507f]'>ADMIN </span>Panel</div>
+                  ) : user?.role === "memberAccount" && user?.account === "abierto" ? (
+                    <div className="w-full text-[13px] px-2 py-1"><span className='font-semibold h-8 text-[#39507f]'>CUENTA </span>Panel</div>
                   ) : (
                     <div className="w-full text-[13px] px-2 py-1"><span className='font-semibold h-8 text-[#39507f]'>INFO </span>Panel</div>
                   )}
@@ -311,10 +309,10 @@ export default function UserButtonHeader( { user }: { user: User | undefined } )
                   <div className="flex items-center gap-0 w-max rounded-md px-2 opacity-80 text-[#374151] group-hover:opacity-100">
                     {user?.role === "admin" ? (
                       <div className="w-full text-[13px] px-2 py-1"><span className='font-semibold h-8 text-[#39507f]'>ADMIN </span>Panel</div>
-                    ) : user?.role === "memberAccount" || user?.role === "memberVerified" || user?.role === "member" ? (
-                      <div className="w-full text-[13px] px-2 py-1"><span className='font-semibold h-8 text-[#39507f]'>INFO </span>Panel</div>
+                    ) : (user?.role === "memberAccount" && user?.account === "abierto") ? (
+                      <div className="w-full text-[13px] px-2 py-1"><span className='font-semibold h-8 text-[#39507f]'>CUENTA </span>Panel</div>
                     ) : (
-                      ""
+                      <div className="w-full text-[13px] px-2 py-1"><span className='font-semibold h-8 text-[#39507f]'>INFO </span>Panel</div>
                     )}
                   </div>
                 </div>
@@ -329,7 +327,7 @@ export default function UserButtonHeader( { user }: { user: User | undefined } )
               href={'#'}
             >
               <div className="group relative cursor-default flex items-center gap-2 pr-4 text-sm h-8 !font-normal text-start rounded-[4px] px-0 opacity-50 hover:bg-[#548eff26]" >
-                <IconConsulta color='#fff' color2='#548eff' className="border border-[#548eff88] rounded-full ml-4 w-[19px] text-[#39507faa] bg-[#548eff00]" />
+                <IconConsulta className="fill-[#548effdd] rounded-full ml-4 w-[17px] text-[#39507faa] bg-[#548eff00]" />
                 <div className=" w-max rounded-md text-[#374151] ">
                   {user?.role === "admin" ? (
                     <div className="w-full py-1"><span className=' text-[#39507f]'>Consultas</span></div>
@@ -347,7 +345,7 @@ export default function UserButtonHeader( { user }: { user: User | undefined } )
             >
               <DropdownMenuItem>
                 <div className="group relative cursor-pointer flex items-center gap-2 pr-4 text-sm h-8 w-full !font-normal text-start rounded-[4px] px-0 hover:bg-[#548eff16] active:opacity-70" >
-                  <IconConsulta color='#fff' color2='#548eff' className="border border-[#548eff88] rounded-full ml-4 w-[19px] text-[#39507faa]" />
+                  <IconConsulta className="fill-[#548effdd] rounded-full ml-4 w-[17px] text-[#39507faa]" />
                   <div className="w-max rounded-md opacity-80 text-[#374151] group-hover:opacity-100">
                     {user?.role === "admin" ? (
                       <div className="w-full py-1">
@@ -366,7 +364,7 @@ export default function UserButtonHeader( { user }: { user: User | undefined } )
               href={'#'}
             >
               <div className=" relative cursor-default flex items-center gap-2 pr-4 text-sm h-8 !font-normal text-start rounded-[4px] px-0 opacity-50 hover:bg-[#548eff26]" >
-                <IconPresupuesto color='#fff' color2='#548eff' className="border border-[#548eff88] ml-4 w-[19px] text-[#39507faa] rounded-[3px]" />
+                <IconPresupuesto className="fill-[#548effdd] ml-4 w-[17px] text-[#39507faa] rounded-[3px]" />
                 <div className="w-max rounded-md text-[#374151] ">
                   {user?.role === "admin" ? (
                     <div className="w-full py-1"><span className=' text-[#39507f]'>Trámites</span></div>
@@ -383,7 +381,7 @@ export default function UserButtonHeader( { user }: { user: User | undefined } )
             >
               <DropdownMenuItem>
                 <div className="group relative cursor-pointer rounded-[4px] flex items-center gap-2 pr-4 text-sm h-8 w-full !font-normal text-start px-0 hover:bg-[#548eff16] active:opacity-70" >
-                  <IconPresupuesto color='#fff' color2='#548eff' className="border border-[#548eff88] ml-4 w-[19px] text-[#39507faa] rounded-[3px]" />
+                  <IconPresupuesto className="fill-[#548effdd] ml-4 w-[17px] text-[#39507faa] rounded-[3px]" />
                   <div className=" w-max opacity-80 text-[#374151] group-hover:opacity-100">
                     {user?.role === "admin" ? (
                       <div className="w-full py-1"><span className=' text-[#39507f]'>Trámites</span></div>
@@ -398,24 +396,26 @@ export default function UserButtonHeader( { user }: { user: User | undefined } )
 
           <DropdownMenuSeparator className="h-[1px] bg-[#37415122] m-[3px]" />
 
-          {pathname == '/dashboard/comments' || !user || user.role === 'visitor' ? (
+          {pathname == '/dashboard/comments' || !user || user.role === 'visitor' || user.role === "member" ? (
             <Link
               href={'#'}
             >
-              <div className="cursor-default relative flex justify-start text-sm gap-4 h-8 w-full !font-normal text-start rounded-md px-0 opacity-50 hover:bg-[#548eff26]" >
-                <div className="flex items-center gap-0 w-max rounded-md px-2 text-[#374151] ">
-                  <div className="w-full px-2 py-1">Ver <span className='font-semibold text-[13px] text-[#39507f]'>COMENTARIOS </span></div>
+              <div className="cursor-default relative flex justify-start text-sm gap-2 h-8 w-full !font-normal text-start rounded-md px-0 opacity-50 hover:bg-[#548eff26]" >
+                <IconComment className="fill-[#548effdd] ml-4 w-[17px] text-[#39507faa] rounded-[3px]" />
+                <div className="flex items-center w-max rounded-md text-[#374151] ">
+                  <div className="w-full py-1">Ver <span className='font-semibold text-[13px] text-[#39507f]'>COMENTARIOS </span></div>
                 </div>
               </div>
             </Link>
           ) : (
             <Link
-              href={'/dashboard/comments'}
+              href={'/dashboard'}
             >
               <DropdownMenuItem>
-                <div className="group cursor-pointer flex justify-start text-sm gap-4 h-8 w-full !font-normal text-start rounded-[4px] px-0 hover:bg-[#548eff16]" >
-                  <div className="flex items-center gap-0 w-max rounded-md px-2 opacity-80 text-[#374151]   group-hover:opacity-100">
-                    <div className="w-full px-2 py-1">ver<span className='ml-1 font-semibold text-[13px] text-[#39507f]'>COMENTARIOS </span></div>
+                <div className="group cursor-pointer flex justify-start text-sm gap-2 h-8 w-full !font-normal text-start rounded-[4px] px-0 hover:bg-[#548eff16]" >
+                  <IconComment className="fill-[#548effdd] ml-4 w-[17px] text-[#39507faa] rounded-[3px]" />
+                  <div className="flex items-center w-max rounded-md opacity-80 text-[#374151]   group-hover:opacity-100">
+                    <div className="w-full py-1">ver<span className='ml-1 font-semibold text-[13px] text-[#39507f]'>COMENTARIOS </span></div>
                   </div>
                 </div>
               </DropdownMenuItem>
@@ -426,7 +426,7 @@ export default function UserButtonHeader( { user }: { user: User | undefined } )
 
       <div className={`fixed inset-0 bg-gray-600 bg-opacity-50 items-start justify-end ${isModalOpen ? "flex" : "hidden"}`}>
         <div className="relative w-[300px] mt-[64px] mr-10 bg-white rounded-md shadow-lg sm:mr-12 sm:mt-[76px] min-[1024px]:mr-[calc((100vw_-_928px)_/_2)]">
-          <EditProfileImage user={user}  setIsModalOpen= {setIsModalOpen} />
+          {/* <EditProfileImage user={user}  setIsModalOpen= {setIsModalOpen} /> */}
         </div>
       </div>
 
@@ -441,7 +441,23 @@ export default function UserButtonHeader( { user }: { user: User | undefined } )
           <EditProfileEmail user={user}  setIsModalOpen3= {setIsModalOpen3} />
         </div>
       </div>
+
+      {/*update accountClouse */}
+      <form action={formAccountOpen}>
+        <input
+          type="hidden"
+          name="account"
+          value= "cerrado"
+          readOnly
+        />
+        <button
+          type="submit"
+          ref={buttonRef}
+          className= "hidden" 
+        >
+          Enviar
+        </button>
+      </form>
     </div>
-    </>
   );
 }

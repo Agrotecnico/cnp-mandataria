@@ -19,12 +19,12 @@ export default  function UserButtonMenuIni() {
         className={`text-[14px] opacity-80 duration-150 sm:text-[15px] ${ini || pathname.startsWith('/realizar-consulta') ? "block" : "hidden" } hover:opacity-90 `}>
         {ini ? (
           <div className="flex flex-col items-center justify-center gap-1">
-            <IconConsulta color="#ffffff" color2="#39507f" size="22" className="w-[18px] sm:w-[20px] " />
+            <IconConsulta className="w-[18px] sm:w-[20px] fill-[#ffffffcc] " />
             <p className=" text-[#ffffff] leading-[1.1]">Consulta</p>
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center gap-1">
-            <IconPresupuesto color="#ffffff" color2="#39507f" className="w-[18px] sm:w-[20px] "/>
+            <IconPresupuesto className="w-[18px] sm:w-[20px] fill-[#ffffffcc] "/>
             <p className=" text-[#ffffff] leading-[1.1]">Presupuesto</p>
           </div>
         )}

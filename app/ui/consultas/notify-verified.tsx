@@ -31,7 +31,7 @@ export default function NotifyVerified() {
       aria-atomic="true"
     >
         <Frente 
-          className={`${ isPendingAuth  && `${shimmer2} animate-pulse2` } relative overflow-hidden w-full mx-3 !rounded-md  ![box-shadow:_inset_0_1px_#ffffffcc,inset_0_-1px_#00000036] flex flex-col items-start gap-1 !bg-[#548eff] duration-200 hover:!bg-[#4881f3] active:!bg-[#548eff] min-[480px]:mx-0`}
+          className={`${ isPendingAuth  && `${shimmer2} animate-pulse2` } relative overflow-hidden w-full mx-3 !rounded-md  ![box-shadow:_inset_0_1px_#ffffffcc,inset_0_-1px_#00000036] flex flex-col items-start gap-1 !bg-[#548effe2] duration-200 hover:!bg-[#4881f3] active:!bg-[#548effe2] min-[480px]:mx-0`}
           >
             
           <form action={ formActionAuth } className="w-full">

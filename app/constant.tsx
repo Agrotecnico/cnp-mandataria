@@ -6,6 +6,13 @@ import {
 } from '@heroicons/react/24/outline';
 import iconResumen from "@/app/ui/logosIconos/icon-resumen";
 import IconCuenta from "@/app/ui/logosIconos/icon-cuenta";
+import IconUbicacion from "@/app/ui/logosIconos/icon-ubicacion";
+import IconEnvio from "@/app/ui/logosIconos/icon-envio";
+import IconPago from "@/app/ui/logosIconos/icon-pago";
+import IconResumenFill from "@/app/ui/logosIconos/icon-resumen-fill";
+import IconComment from "@/app/ui/logosIconos/icon-comment";
+import IconConsulta from "@/app/ui/logosIconos/icon-consulta";
+import IconTramites from "@/app/ui/logosIconos/icon-tramites";
 
 
 export const agrotecnico = [
@@ -214,38 +221,39 @@ export const tramites3 = [
 
 
 export const linksMembers = [
-  {
-    name: 'Resumen',
-    href: '/dashboard',
-    icon: iconResumen,
-  },
+  // {
+  //   name: 'Resumen',
+  //   href: '/dashboard',
+  //   icon: iconResumen,
+  // },
+  { name: 'Comentarios', href: '/dashboard', icon: IconComment, },
   {
     name: 'Consultas',
     href: '/dashboard/consultas',
-    icon: QuestionMarkCircleIcon,
+    icon: IconConsulta,
   },
   {
     name: 'Trámites',
     href: '/dashboard/tramites',
-    icon: ClipboardDocumentListIcon,
+    icon: IconTramites,
   },
-  { name: 'Comentarios', href: '/dashboard/comments', icon: ChatBubbleLeftEllipsisIcon, },
+ 
   // { name: 'Ingreso mi CUENTA', href: '/dashboard/cuenta', icon: IconCuenta, },
 ];
 
-export const links = [
-  { name: 'Resumen', href: '/dashboard', icon: iconResumen, },
-  { name: 'Consultas', href: '/dashboard/consultas', icon: QuestionMarkCircleIcon },
-  { name: 'Trámites', href: '/dashboard/tramites', icon: ClipboardDocumentListIcon, },
-  { name: 'Comentarios', href: '/dashboard/comments', icon: ChatBubbleLeftEllipsisIcon, },
-  { name: 'Ingreso ADMIN', href: '/dashboard/cuenta', icon: IconCuenta, },
-];
-
 // export const links = [
+//   { name: 'Resumen', href: '/dashboard', icon: iconResumen, },
+//   { name: 'Consultas', href: '/dashboard/consultas', icon: QuestionMarkCircleIcon },
+//   { name: 'Trámites', href: '/dashboard/tramites', icon: ClipboardDocumentListIcon, },
+//   { name: 'Comentarios', href: '/dashboard/comments', icon: ChatBubbleLeftEllipsisIcon, },
 //   { name: 'Ingreso ADMIN', href: '/dashboard/cuenta', icon: IconCuenta, },
-//   { name: 'Resumen', href: '/dashboard/resumen', icon: iconResumen, },
-//   { name: 'Dirección', href: '/dashboard/direccion', icon: QuestionMarkCircleIcon },
-//   { name: 'Envío', href: '/dashboard/envio', icon: QuestionMarkCircleIcon },
-//   { name: 'Info Personal', href: '/dashboard/informacion', icon: ClipboardDocumentListIcon, },
-//   { name: 'Pago', href: '/dashboard/pago', icon: ChatBubbleLeftEllipsisIcon, },
 // ];
+
+export const links = [
+  // { name: 'CUENTA', href: '/dashboard/cuenta', icon: IconCuenta, },
+  { name: 'Resumen', href: '/dashboard/resumen', icon: IconResumenFill, },
+  { name: 'Direcciónes', href: '/dashboard/direcciones', icon: IconUbicacion },
+  { name: 'Envío', href: '/dashboard/envio', icon: IconEnvio },
+  { name: 'Pago', href: '/dashboard/pago', icon: IconPago, },
+  
+];

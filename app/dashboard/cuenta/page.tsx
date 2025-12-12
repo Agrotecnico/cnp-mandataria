@@ -17,21 +17,8 @@ export default async function LoginPage() {
   const user = await fetchUserByEmail(session?.user?.email)
 
   return (
-
+    
     <AccessAccount user= {user} />
 
-    // <main className="flex items-start justify-center ">
-    //   <div className="relative flex w-full max-w-[472px] flex-col">
-    //     {open ? (
-    //         <Suspense>
-    //             <LoginAccount setOpen={setOpen} />
-    //         </Suspense>
-    //     ) : (
-    //         <Suspense>
-    //             <RegisterAccount setOpen={setOpen} />
-    //         </Suspense>
-    //     )}
-    //   </div>
-    // </main>
   );
 }

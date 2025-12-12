@@ -25,14 +25,14 @@ export default async function SideNavConsultas() {
         <Link 
           href={session?.user.role === "admin" ? '/dashboard/tramites' : '/iniciar-tramite/cambio-de-radicacion'} 
           className="group h-7 flex items-center rounded-t-lg px-3 bg-[#548eff0b] duration-150 justify-start  sm:h-8 hover:bg-white active:opacity-80">
-          <IconPresupuesto className="mr-2 w-[15px] h-[15px] duration-150 opacity-90 group-hover:opacity-100 sm:w-[16px] sm:h-[16px]"/>
+          <IconPresupuesto className="mr-2 w-[15px] h-[15px] fill-[#548effdd] duration-150 opacity-90 group-hover:opacity-100 sm:w-[16px] sm:h-[16px]"/>
           <p className="text-[#020b1dcc] duration-150 group-hover:text-[#020b1d]">{session?.user.role === "admin" ? 'Ver trámites' : 'Pedí presupuesto'}</p>
         </Link>
         <Link 
           href={session?.user.role === "admin" ? '/dashboard/consultas' : '/realizar-consulta'} 
           className="group h-7 flex items-center rounded-b-lg px-3 bg-[#548eff0b] duration-150 justify-start  sm:h-8 hover:bg-white active:opacity-80">
           <IconConsulta 
-            className="mr-2 w-[15px] h-[15px] duration-150 opacity-90 group-hover:opacity-100 sm:w-[16px] sm:h-[16px]"/>
+            className="mr-2 w-[15px] h-[15px] fill-[#548eff] duration-150 opacity-90 group-hover:opacity-100 sm:w-[16px] sm:h-[16px]"/>
           <p className="text-[#020b1dcc] duration-150 group-hover:text-[#020b1d]">{session?.user.role === "admin" ? 'Ver consultas' : 'Realizá tu consulta'}</p>
         </Link>
       </div>

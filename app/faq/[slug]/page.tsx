@@ -15,7 +15,7 @@ import { fetchCommentLast } from '@/app/lib/data';
 import IconPresupuesto from '@/app/ui/logosIconos/icon-presupuesto';
 import IconConsulta from '@/app/ui/logosIconos/icon-consulta';
 import { fetchFilteredComments } from '@/app/lib/data';
-import { fetchUserById2 } from "@/app/lib/data";
+import { fetchUserByEmail } from "@/app/lib/data";
 
 
 type Params = {
@@ -26,7 +26,7 @@ type Params = {
 
 export default async function PostPage({ params }: Params) {
   const session = await auth();
-  const user = await fetchUserById2(session?.user.id)
+  const user = await fetchUserByEmail(`${session?.user.email}`)
 
   const post = getPostBySlug(params.slug);
 
@@ -40,7 +40,6 @@ export default async function PostPage({ params }: Params) {
   }
   const content = await markdownToHtml(post.content || '');
 
-  // console.log("session", session)
 
   return (
     <>
@@ -92,9 +91,9 @@ export default async function PostPage({ params }: Params) {
             />
           </div>
           <div className="mx-auto text-sm max-w-2xl sm:text-[15px]">
-            <SessionProvider basePath={"/auth"} session={session}>
+            {/* <SessionProvider basePath={"/auth"} session={session}> */}
               <ListComment post={post} comments={comments} commentLast={commentLast} user={user}  />
-            </SessionProvider>
+            {/* </SessionProvider> */}
           </div>
         </article>
       </Fondo>
@@ -104,14 +103,14 @@ export default async function PostPage({ params }: Params) {
           href={session?.user.role === "admin" ? '/dashboard/tramites' : '/iniciar-tramite/cambio-de-radicacion'} 
           className="group h-7 flex items-center rounded-t-lg px-3 bg-[#548eff0b] duration-150 justify-start sm:rounded-tr-none sm:rounded-l-lg sm:h-8 hover:bg-white active:opacity-80">
           <IconPresupuesto 
-            className="mr-2 w-[15px] h-[15px] duration-150 opacity-90 group-hover:opacity-100 sm:w-[16px] sm:h-[16px]"/>
+            className="mr-2 w-[15px] h-[15px] fill-[#548eff] duration-150 opacity-90 group-hover:opacity-100 sm:w-[16px] sm:h-[16px]"/>
           <p className="text-[#020b1dcc] duration-150 group-hover:text-[#020b1d]">{session?.user.role === "admin" ? 'Ver trámites' : 'Pedí presupuesto'}</p>
         </Link>
         <Link 
           href={session?.user.role === "admin" ? '/dashboard/consultas' : '/realizar-consulta'} 
           className="group h-7 flex items-center rounded-b-lg px-3 bg-[#548eff0b] duration-150 justify-start sm:rounded-bl-none sm:rounded-r-lg sm:h-8 hover:bg-white active:opacity-80">
           <IconConsulta 
-            className="mr-2 w-[15px] h-[15px] duration-150 opacity-90 group-hover:opacity-100 sm:w-[16px] sm:h-[16px]"/>
+            className="mr-2 w-[15px] h-[15px] fill-[#548eff] duration-150 opacity-90 group-hover:opacity-100 sm:w-[16px] sm:h-[16px]"/>
           <p className="text-[#020b1dcc] duration-150 group-hover:text-[#020b1d]">{session?.user.role === "admin" ? 'Ver consultas' : 'Realizá tu consulta'}</p>
         </Link>
       </div>

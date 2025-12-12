@@ -1,110 +1,108 @@
+"use client"
 
 import Link from 'next/link';
 import { PowerIcon } from '@heroicons/react/24/outline';
-import { signOut, auth } from '@/auth';
+import { signOut } from "next-auth/react";
+import { useRef, useActionState } from 'react';
 
-import  NavLinksAdmin  from '@/app/ui/dashboard/nav-links-admin'
-import  NavLinksMember  from '@/app/ui/dashboard/nav-links-member'
-import  NavLinksMemberAccount  from '@/app/ui/dashboard/nav-links-member-account'
-import NavLinksAccount from './nav-links-account';
+import  NavAccountAdmin  from '@/app/ui/dashboard/nav-account-admin'
+import  NavAccountMember  from '@/app/ui/dashboard/nav-account-member'
 import IconPresupuesto from '@/app/ui/logosIconos/icon-presupuesto';
 import IconConsulta from '@/app/ui/logosIconos/icon-consulta';
-import { fetchUserByEmail } from '@/app/lib/data';
-import { Fondo } from '@/app/ui/marcos'
+import { Fondo, Frente } from '@/app/ui/marcos'
+import { User } from "@/app/lib/definitions";
+import { createAccountOpen, StateAccountOpen } from '@/app/lib/actions';
 
 
-export default async function SideNav() {
+export default /* async */ function SideNav({user}: {user: User |undefined}) {
 
-  const session = await auth();
-  const user = await fetchUserByEmail(session?.user?.email)
+  const buttonRef = useRef<HTMLButtonElement>(null); // update estado account
+  const handleClickButton= () => {
+    if (buttonRef.current) buttonRef.current.click()
+  };
 
+  const initialState: StateAccountOpen = { message: null, errors: {} };
+  const createAccountOpenWithId = createAccountOpen.bind(null, `${user?.email}`);
+  const [state, formAccountOpen, isPending] = useActionState(createAccountOpenWithId, initialState);
 
   return (
-    <Fondo className="flex h-full flex-col p-2 md:pt-3">
-      <div className="text-sm flex flex-col justify-center items-center text-center pb-2 px-2 md:mb-2 lg:pb-3">
+    <>
+      <Frente className={`${user?.account === "abierto" ? "!bg-[#39507f]" : "!bg-[#548effdd]"} text-[#ffffff] ![box-shadow:_inset_0_2px_#ffffff,inset_0_-2px_#00000022]`}>
+        <div className="text-sm [text-shadow:_1px_1px_#3d61ad] flex flex-col justify-center items-center text-center p-2.5 md:mb-2 ">
 
-        {session?.user.email === process.env.ADMIN ? <p>Panel ADMIN </p> : session?.user.role === "memberAccount" ? <p>Panel CUENTA </p> : <p>Panel INFO </p> } 
+          {user?.role === "admin" ? <p>Panel <span className='text-base font-semibold'>ADMIN </span></p> : user?.role === "memberAccount" && user.account === "abierto" ? <p>Panel <span className='text-base font-semibold'>CUENTA </span></p> : <p>Panel <span className='text-base font-semibold'>INFO </span></p> } 
 
-        <p>
-          <span className='text-[13px] text-[#39507fcc]'>{session?.user?.email && `${session.user.email}`}</span>
-        </p>
-      </div>
-
-      <div className="flex grow flex-row justify-between gap-2 md:gap-0 md:flex-col">
-        <div className="flex flex-col w-full md:gap-0">
-          {session?.user.email === process.env.ADMIN && session?.user.role === "memberAccount" ? (
-            <NavLinksAdmin />
-          ) : session?.user.email !== process.env.ADMIN && session?.user.role === "memberAccount" ? (
-            <NavLinksMemberAccount />
-          ) : user?.email === process.env.ADMIN  ? (
-            <NavLinksAccount />
-          ) : <NavLinksMember /> }
+          <p>
+            <span className='text-[13px] text-[#ffffffdd] '>{user?.email && `${user.email}`}</span>
+          </p>
         </div>
+      </Frente>
 
-        {session?.user.email !== process.env.ADMIN && (
-          <div className={` hidden flex-col mt-2 text-[13px] rounded-md shadow-[box-shadow:_inset_0 1px_#ffffff,_inset_0_-1px_#0000002e] sm:text-sm md:flex`}>
-            <Link 
-              href={session?.user.role === "admin" ? '/dashboard/tramites' : '/iniciar-tramite/cambio-de-radicacion'} 
-              className= 'w-full h-9 flex items-center justify-start first:rounded-l-md last:rounded-r-md duration-200 text-[#020b1dbb] bg-[#ffffff88] [box-shadow:_inset_0_1px_#ffffff,inset_0_-1px_#0000002e] hover:bg-[#ffffffe3] hover:text-[#020b1d] md:first:rounded-bl-none md:last:rounded-tr-none md:first:rounded-t-md md:last:rounded-b-md'>
-                
-              <IconPresupuesto 
-                color='#fff0' 
-                color2='#39507faa' 
-                className="mr-2 ml-3 w-[16px] h-[16px] duration-150 rounded-[3px] border border-[#39507f88] group-hover:opacity-100 sm:w-[18px] sm:h-[18px]"/>
-              
-              <p className="text-[#020b1dcc] duration-150 group-hover:text-[#020b1d]">{session?.user.role === "admin" ? 'Ver trámites' : 'Pedí presupuesto'}</p>
-            </Link>
-            <Link 
-              href={session?.user.role === "admin" ? '/dashboard/consultas' : '/realizar-consulta'} 
-              className= 'w-full h-9 flex items-center justify-start first:rounded-l-md last:rounded-r-md duration-200 text-[#020b1dbb] bg-[#ffffff88] [box-shadow:_inset_0_1px_#ffffff,inset_0_-1px_#0000002e] hover:bg-[#ffffffe3] hover:text-[#020b1d] md:first:rounded-bl-none md:last:rounded-tr-none md:first:rounded-t-md md:last:rounded-b-md'>
-              <IconConsulta 
-                color='#fff0' 
-                color2='#39507faa' 
-                className="mr-2 ml-3 w-[16px] h-[16px] duration-150 rounded-full border border-[#39507f88] group-hover:opacity-100 sm:w-[18px] sm:h-[18px]"/>
-              <p className="text-[#020b1dcc] duration-150 group-hover:text-[#020b1d]">{session?.user.role === "admin" ? 'Ver consultas' : 'Realizá tu consulta'}</p>
-            </Link>
+      <Fondo className="flex h-[calc(100%_-_68px)] flex-col p-2 md:pt-3">
+        <div className="flex grow flex-row justify-between gap-2 md:gap-2 md:flex-col">
+          <div className="flex flex-col w-full md:gap-0">
+            <NavAccountAdmin user={user} />
           </div>
-        )}
 
-        <div className="hidden h-auto mt-2 mb-2 w-full grow rounded-md bg-gray-50 md:block"></div>
-        
-        <form
-          className=''
-          action={async () => {
-            'use server';
-            await signOut({ redirectTo: '/' });
-          }}
-        >
-          <button className="flex h-full w-full grow cursor-pointer items-center justify-center gap-2 rounded-md text-[#020b1dbb] bg-[#ffffff88] [box-shadow:_inset_0_1px_#ffffff,inset_0_-1px_#0000002e] p-3 text-sm font-medium hover:bg-[#ffffffe3] hover:text-[#020b1d] md:flex-none md:justify-start md:p-2 md:px-3">
-            <PowerIcon className="w-5 text-red-500" />
-            <div className=" hidden md:block">Salir</div>
-          </button>
-        </form>
-      </div>
+          <div className={`flex flex-col w-full md:gap-0`}>
+            <NavAccountMember  user={user} /> 
+          </div>
 
-      {session?.user.role !== "admin" && (
-        <div className={` flex mt-2 h-8 mb-0 gap-[1px] text-[13px] rounded-md shadow-[box-shadow:_inset_0 1px_#ffffff,_inset_0_-1px_#0000002e] sm:h-9 sm:text-sm md:hidden`}>
-          <Link 
-            href={session?.user.role === "admin" ? '/dashboard/tramites' : '/iniciar-tramite/cambio-de-radicacion'} 
-            className= 'w-full flex items-center justify-start first:rounded-l-md last:rounded-r-md duration-200 text-[#020b1dbb] bg-[#ffffff88] [box-shadow:_inset_0_1px_#ffffff,inset_0_-1px_#0000002e] hover:bg-[#ffffffe3] hover:text-[#020b1d] md:first:rounded-bl-none md:last:rounded-tr-none md:first:rounded-t-md md:last:rounded-b-md'>
-              
-            <IconPresupuesto 
-              color='#fff0' 
-              color2='#548eff' 
-              className="mr-2 ml-3 w-[16px] h-[16px] duration-150 rounded-[3px] border border-[#548effaa]  group-hover:opacity-100 sm:w-[18px] sm:h-[18px]"/>
-            <p className="text-[#020b1dcc] duration-150 group-hover:text-[#020b1d]">{session?.user.role === "admin" ? 'Ver trámites' : 'Pedí presupuesto'}</p>
-          </Link>
-          <Link 
-            href={session?.user.role === "admin" ? '/dashboard/consultas' : '/realizar-consulta'} 
-            className= 'w-full flex items-center justify-start first:rounded-l-md last:rounded-r-md duration-200 text-[#020b1dbb] bg-[#ffffff88] [box-shadow:_inset_0_1px_#ffffff,inset_0_-1px_#0000002e] hover:bg-[#ffffffe3] hover:text-[#020b1d] md:first:rounded-bl-none md:last:rounded-tr-none md:first:rounded-t-md md:last:rounded-b-md'>
-            <IconConsulta 
-              color='#fff0' 
-              color2='#548eff' 
-              className="mr-2 ml-3 w-[16px] h-[16px] duration-150 rounded-full border border-[#548effaa]  group-hover:opacity-100 sm:w-[18px] sm:h-[18px]"/>
-            <p className="text-[#020b1dcc] duration-150 group-hover:text-[#020b1d]">{session?.user.role === "admin" ? 'Ver consultas' : 'Realizá tu consulta'}</p>
-          </Link>
+          {user?.role !== "admin" && (
+            <div className={` flex flex-col text-[13px] rounded-md shadow-[box-shadow:_inset_0 1px_#ffffff,_inset_0_-1px_#0000002e] sm:text-sm md:flex`}>
+              <Link 
+                href={ '/iniciar-tramite/cambio-de-radicacion'} 
+                className= 'group w-full h-[34px] flex items-center justify-start first:rounded-l-md last:rounded-r-md duration-200 bg-[#ffffff88] [box-shadow:_inset_0_1px_#ffffff,inset_0_-1px_#0000002e] hover:bg-[#ffffff] md:first:rounded-bl-none md:last:rounded-tr-none md:first:rounded-t-md md:last:rounded-b-md'>
+                  
+                <IconPresupuesto 
+                  className={` ${user?.account === "abierto" ? " fill-[#39507f88]" : " fill-[#548eff88] "} w-[16px] mr-3 ml-2.5 `} />
+
+                <p className="text-[#020b1dcc] duration-150 group-hover:text-[#020b1d]">{ 'Pedí presupuesto'}</p>
+              </Link>
+
+              <Link 
+                href={'/realizar-consulta'} 
+                className= 'group w-full h-[34px] flex items-center justify-start first:rounded-l-md last:rounded-r-md duration-200 bg-[#ffffff88] [box-shadow:_inset_0_1px_#ffffff,inset_0_-1px_#0000002e] hover:bg-[#ffffff] md:first:rounded-bl-none md:last:rounded-tr-none md:first:rounded-t-md md:last:rounded-b-md'>
+
+                <IconConsulta 
+                  className={` ${user?.account === "abierto" ? " fill-[#39507f88]" : " fill-[#548eff88] "} w-[16px] mr-3 ml-2.5 `}/>
+                  
+                <p className="text-[#020b1dcc] duration-150 group-hover:text-[#020b1d]">{ 'Realizá tu consulta'}</p>
+              </Link>
+            </div>
+          )}
+
+            <button 
+              className="flex h-[34px] w-full grow cursor-pointer items-center justify-center gap-2 rounded-md text-[#020b1dbb] bg-[#ffffff88] [box-shadow:_inset_0_1px_#ffffff,inset_0_-1px_#0000002e] text-sm font-medium hover:bg-[#ffffff] hover:text-[#020b1d] md:flex-none md:justify-start md:px-3"
+              onClick={ () => {
+                //  signOut({ redirectTo: "/" });
+                handleClickButton()
+                setTimeout(() => signOut({ redirectTo: "/" }), 200) 
+              }}
+              >
+              <PowerIcon className="w-[18px] text-red-500" />
+              <div className=" hidden md:block">Salir</div>
+            </button>
+          <div className="hidden h-auto w-full grow rounded-md bg-gray-50 md:block"></div>
         </div>
-      )}
-    </Fondo>
+      </Fondo>
+
+      {/*update accountClouse */}
+      <form action={formAccountOpen}>
+        <input
+          type="hidden"
+          name="account"
+          value= "cerrado"
+          readOnly
+        />
+        <button
+          type="submit"
+          ref={buttonRef}
+          className= "hidden" 
+        >
+          Enviar
+        </button>
+      </form>
+    </>
   );
 }

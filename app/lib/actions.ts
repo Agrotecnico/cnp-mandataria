@@ -39,7 +39,7 @@ const FormSchemaUser = z.object({
   name: z.string().min(2, { message: "El nombre debe tener 2 o más caracteres" }),
   email: z.string().email({ message: "Correo electrónico no válido." }),
   password: z.string().min(5, { message: "Must be 5 or more characters long" }),
-  // confirmPassword: z.string().min(5, { message: "Must be 5 or more characters long" }),
+  confirmPassword: z.string().min(5, { message: "Must be 5 or more characters long" }),
   role: z.enum(['admin', 'memberAccount', 'memberVerified', 'member', 'visitor'], {
     invalid_type_error: 'Seleccione un rol de usuario.',
   }),
@@ -47,6 +47,9 @@ const FormSchemaUser = z.object({
   email_verified: z.string(),
   created_at: z.string(),
   updated_at: z.string(),
+  account: z.enum(['cerrado', 'abierto'], {
+    invalid_type_error: 'Seleccione un estado de cuenta.',
+  }),
 });
 
 const FormSchemaConsulta = z.object({
@@ -99,9 +102,9 @@ const FormSchemaVerificationToken = z.object({
 const CreateInvoice = FormSchema.omit({ id: true, date: true });
 const CreateCustomer = FormSchemaCustomer.omit({ id: true });
 
-const CreateUser = FormSchemaUser.omit({ id: true, role: true, password: true, email_verified: true, created_at: true, updated_at: true });
+const CreateUser = FormSchemaUser.omit({ confirmPassword: true, account: true, id: true, role: true, password: true, email_verified: true, created_at: true, updated_at: true });
 
-const CreateUserAccount = FormSchemaUser.omit({ id: true, role: true, email_verified: true, created_at: true, updated_at: true });
+const CreateUserAccount = FormSchemaUser.omit({ confirmPassword: true, account: true, id: true, role: true, email_verified: true, created_at: true, updated_at: true });
 
 const CreateConsulta = FormSchemaConsulta.omit({ created_at: true, respuesta: true,  id: true,  updated_at: true });
 const CreateTramite = FormSchemaTramite.omit({ id: true, presupuesto: true, created_at: true, budgeted_at: true, started_at: true, canceled_at: true, finished_at: true, estado: true });
@@ -111,13 +114,15 @@ const CreateVerificationToken = FormSchemaVerificationToken;
 
 const UpdateInvoice = FormSchema.omit({ date: true, id: true });
 const UpdateCustomer = FormSchemaCustomer.omit({ id: true });
-const UpdateUser = FormSchemaUser.omit({ role: true, id: true, password: true, image: true, name: true, email_verified: true, created_at: true, updated_at: true });
-const UpdateUserImage = FormSchemaUser.omit({ role: true, id: true, password: true, name: true, email: true, email_verified: true, created_at: true, updated_at: true });
-const UpdateUserName = FormSchemaUser.omit({ role: true, id: true, password: true, image: true, email: true, email_verified: true, created_at: true, updated_at: true });
+const UpdateUser = FormSchemaUser.omit({ confirmPassword: true, account: true, role: true, id: true, password: true, image: true, name: true, email_verified: true, created_at: true, updated_at: true });
+const UpdateUserImage = FormSchemaUser.omit({ confirmPassword: true, account: true, role: true, id: true, password: true, name: true, email: true, email_verified: true, created_at: true, updated_at: true });
+const UpdateUserName = FormSchemaUser.omit({ confirmPassword: true, account: true, role: true, id: true, password: true, image: true, email: true, email_verified: true, created_at: true, updated_at: true });
 
-const UpdateUserEmail = FormSchemaUser.omit({ role: true, id: true, password: true, image: true, name: true, email_verified: true, created_at: true, updated_at: true });
+const UpdateUserEmail = FormSchemaUser.omit({ confirmPassword: true, account: true, role: true, id: true, password: true, image: true, name: true, email_verified: true, created_at: true, updated_at: true });
 
-const UpdateUserPassword = FormSchemaUser.omit({ role: true, id: true, email: true, image: true, name: true, email_verified: true, created_at: true, updated_at: true });
+const UpdateUserPassword = FormSchemaUser.omit({ account: true, role: true, id: true, email: true, image: true, name: true, email_verified: true, created_at: true, updated_at: true });
+
+const UpdateAccountOpen = FormSchemaUser.omit({ confirmPassword: true, password: true, role: true, id: true, email: true, image: true, name: true, email_verified: true, created_at: true, updated_at: true });
 
 
 const UpdateConsulta = FormSchemaConsulta.omit({  created_at: true, id: true, email_id: true, archivos_url: true });
@@ -189,6 +194,13 @@ export type StateUserEmail = {
 export type StateUserPassword = {
   errors?: {
     password?: string[];
+    confirmPassword?: string[];
+  };
+  message?: string | null;
+};
+export type StateAccountOpen = {
+  errors?: {
+    account?: string[];
   };
   message?: string | null;
 };
@@ -944,14 +956,25 @@ export async function updateUserPassword(
 ) {
   const validatedFields = UpdateUserPassword.safeParse({
     password: formData.get('password'),
+    confirmPassword: formData.get('confirmPassword'),
   });
+
+  // Validate confirm password
+  const pwd= formData.get("password")
+  const confirmPwd= formData.get("confirmPassword")
+  if (pwd !== confirmPwd) {
+    return {
+      errors: {},
+      message: 'Las contraseñas no coinciden.',
+    };
+  }
 
   // const pathname= formData.get("pathname")
 
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
-      message: 'Missing Fields. No se pudo actualizar la contraseña del Usuario.',
+      message: 'Missing Fields. No se pudo crear la contraseña.',
     };
   }
 
@@ -970,16 +993,55 @@ export async function updateUserPassword(
     `;
 
     return {
-      message: `contraseñaActualizada`,
+      message: `Cuenta creada`,
     };
 
   } catch (error) {
-    return { message: 'Database Error: No se pudo actualizar la contraseña  del Usuario.' };
+    return { message: 'Database Error: No se pudo crear la contraseña.' };
   }
 
   // revalidatePath(`${pathname}`);
   // redirect(`${pathname}`);
 }
+export async function createAccountOpen(
+  id: string,
+  prevStateAccountOpen: StateAccountOpen,
+  formData: FormData,
+) {
+
+  const validatedFields = UpdateAccountOpen.safeParse({
+    account: formData.get('account'),
+  });
+
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Missing Fields. No se pudo abrir la cuenta.',
+    };
+  }
+
+  const { account } = validatedFields.data;
+
+  try {
+    await sql`
+      UPDATE users
+      SET account = ${account}
+      WHERE email = ${id}
+    `;
+
+    return {
+      message: `Cuenta abierta`,
+    };
+
+  } catch (error) {
+    return { message: 'Database Error: No se pudo crear la contraseña.' };
+  }
+
+  // revalidatePath(`${pathname}`);
+  // redirect(`${pathname}`);
+}
+
 
 export async function updateUserEmailVerified(
   identifier: string
@@ -1382,15 +1444,16 @@ export async function authenticate4(
   formData: FormData,
 ) {
 
-  // formData.set("password", "xxxxxx")
+  const passwordAccount= formData.get("password")
+  const contraseña= !passwordAccount ? "xxxxxx"  : passwordAccount
 
-  // const passwordAccount= formData.get("password")
-  // password === "" ? formData.set("password", "xxxxxx") : formData.set("password", `${password}`) ;
+  const redirect= formData.get("redirectTo")
 
-  formData.set("password", "xxxxxx" )
-  formData.set("redirectTo", "/dashboard")
+  formData.set("password", `${contraseña}` )
+  // formData.set("password", "xxxxxx" )
+  formData.set("redirectTo", `${redirect}`)
+  // formData.set("redirectTo", "/dashboard/resumen")
   formData.set("conConsulta", "noconsulta")
-  // formData.set("redirectTox", "/dashboard")
   
   try {
     await signIn('credentials', formData );

@@ -99,7 +99,7 @@ export default function RegisterForm() {
 
   return (
     <>
-      <h1 className={`mt-4 mb-3 text-center text-3xl sm:text-4xl`}>Verificar <span className='text-[15px]'>correo electrónico</span></h1>
+      <h1 className={`mt-4 mb-3 text-center text-3xl sm:text-4xl`}>Verificar <span className='text-[15px]'>{/* correo electrónico */}</span></h1>
       <form action= { emailValid ? formCreateUser : notifyValidateEmail } className="">
         <Fondo className=" px-3 py-4 mx-0 sm:py-6 sm:px-4 sm:mx-1.5 ">
           <div className="flex flex-col gap-4">
@@ -422,17 +422,17 @@ function NotifyEmailVerify( { email }: { email: string | undefined } ) {
 
   return (
     <div
-      className=" flex items-center w-[440px] mt-[358px] mx-auto shadow-[0_10px_20px_#dee9ff]  sm:mt-[364px]"
+      className=" flex items-center w-[440px] rounded-md mt-[358px] mx-auto shadow-[0_10px_20px_#39507f66 ] sm:mt-[364px]"
       aria-live="polite"
       aria-atomic="true"
     >
-        <Frente className="w-full pl-3 py-1.5 mx-3 !rounded-md  ![box-shadow:_inset_0_1px_#ffffff,inset_0_-1px_#00000046] flex flex-col items-start gap-1 !bg-[#548effee] min-[480px]:mx-0">
+        <Frente className="w-full pl-3 py-1.5 mx-3 !rounded-md  ![box-shadow:_inset_0_1px_#ffffffcc,inset_0_-1px_#00000036] flex flex-col items-start gap-1 !bg-[#548effee] min-[480px]:mx-0">
           <div className='min-h-5 w-full flex items-stretch justify-between'
             >
             <div className='flex items-center gap-5'>
               <IconAviso className={`mb-auto h-[18px] w-[18px] fill-[#ffffffcc]`} />
 
-              <p className="text-[15px] text-[#fff] sm:text-base [text-shadow:_1px_1px_#3d61ad]">Por favor, revisá tu correo electrónico <span className= "underline decoration-[#ffffffdd] underline-offset-[2px] mx-1 ">{email}</span> y enviá la verificación</p>
+              <p className="text-[14px] text-[#fff] sm:text-base [text-shadow:_1px_1px_#3d61ad]">Por favor, revisá tu correo electrónico <span className= "underline decoration-[#ffffffdd] underline-offset-[2px] mx-1 ">{email}</span> y enviá la verificación</p>
             </div>
 
             <button 

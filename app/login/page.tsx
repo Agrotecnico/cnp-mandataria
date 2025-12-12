@@ -15,7 +15,7 @@ export default async function LoginPage() {
 
   const session = await auth();
 
-  if (session )
+  if (session?.user.role === "MemberAccount" || session?.user.role === "MemberAccount"  )
     return redirect('/');
 
   return (

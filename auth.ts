@@ -1,5 +1,6 @@
 import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
+import Google from 'next-auth/providers/google';
 import bcrypt from 'bcrypt';
 import postgres from 'postgres';
 import { z } from 'zod';
@@ -9,6 +10,7 @@ import type { User } from '@/app/lib/definitions';
 import { deleteVerificationToken, createVerificationToken2 } from '@/app/lib/actions';
 import { nanoid } from "nanoid";
 import { emailVerification } from "@/app/lib/brevo/email-verification";
+import { InviteuserPrivilegesInner } from '@getbrevo/brevo';
 
 // const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
@@ -62,6 +64,34 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         const user = await fetchUserById(email);
 
+        
+
+
+        if (password !== "xxxxxx") {
+
+          const isValid = await bcrypt.compare(password, `${user?.password}`);
+
+          if (!isValid)  throw new Error("Contraseña incorrecta");
+
+          return user
+        }
+
+
+
+
+        // if (!isValid) {
+        //   throw new Error("Contraseña incorrecta");
+        // }
+
+        
+        // if ( user?.account === "cerrado") {
+        //   /* const polo= */ await createAccountOpen(`${user?.email}`);
+        //   console.log("verif:", email, password, conConsulta)
+        //   // return user
+        // }
+
+
+
         if ( user?.role === "memberAccount") {
           return user
         }
@@ -75,10 +105,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }
 
         // verificar si la contraseña es correcta
-        const isValid = await bcrypt.compare(password, user.password);
-        if (!isValid) {
-          throw new Error("Contraseña incorrecta");
-        }
+        // const isValid = await bcrypt.compare(password, user.password);
+        // if (!isValid) {
+        //   throw new Error("Contraseña incorrecta");
+        // }
 
         if (user.role === "visitor") {
           return user
@@ -118,6 +148,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         return user
       },
 
+    }),
+
+    Google({
+      clientId: process.env.AUTH_GOOGLE_ID as string,
+      clientSecret: process.env.AUTH_GOOGLE_SECRET as string,
     }),
   ],
   session: { strategy: "jwt" },

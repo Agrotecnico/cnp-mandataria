@@ -32,6 +32,14 @@ const publicRoutes= [
 export default middleware((req) => {
   const {nextUrl, auth} = req
   const isLoggedIn= !!auth?.user
+  // const account= auth?.user.role === "memberAccount"
+  // const verified= auth?.user.role === "memberVerified"
+  const polo= auth?.user.role
+  const account= polo === "memberAccount"
+  const verified= polo === "memberVerified"
+  // const isLoggedIn= !account || !verified
+  // const isLoggedIn= auth?.user.role == "memberAccount" || auth?.user.role == "memberVerified"
+  const isLoggedInx= !account || !verified
 
   const { pathname } = req.nextUrl
 

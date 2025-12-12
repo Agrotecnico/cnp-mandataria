@@ -4,13 +4,13 @@ import {
   KeyIcon,
 } from '@heroicons/react/24/outline';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
-import { useActionState, useEffect, HTMLAttributes } from 'react';
+import { useActionState, useEffect, HTMLAttributes, useRef } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { ToastContainer, toast, Zoom, Flip, ToastContentProps } from 'react-toastify';
 import { nanoid } from "nanoid";
 
-import { authenticate4, authenticate2 } from '@/app/lib/actions';
+import { authenticate4, authenticate2, createAccountOpen, StateAccountOpen } from '@/app/lib/actions';
 import { Fondo, Frente } from '@/app/ui/marcos';
 import { Button } from '@/app/ui/button';
 import IconFlecha from '@/app/ui//logosIconos/icon-flecha';
@@ -20,7 +20,7 @@ import IconCheck from '@/app/ui/logosIconos/icon-check';
 import { User } from "@/app/lib/definitions";
 
 
-const wait = () => new Promise((resolve) => setTimeout(resolve, 8000));
+// const wait = () => new Promise((resolve) => setTimeout(resolve, 8000));
 
 export default function LoginAccount({ user, setOpen}: { user: User | undefined;  setOpen: React.Dispatch<React.SetStateAction<boolean>>
  }) {
@@ -38,7 +38,16 @@ export default function LoginAccount({ user, setOpen}: { user: User | undefined;
   const searchParams = useSearchParams();
   const isVerified = searchParams.get('verified')
 
+  const buttonRef = useRef<HTMLButtonElement>(null); // update estado account
+  const handleClickButton= () => {
+    if (buttonRef.current) buttonRef.current.click()
+  };
+
   const [errorMessage, formActionAuth, isPendingAuth] = useActionState(authenticate4, undefined, );
+
+  const initialState: StateAccountOpen = { message: null, errors: {} };
+  const createAccountOpenWithId = createAccountOpen.bind(null, `${user?.email}`);
+  const [state, formAccountOpen, isPending] = useActionState(createAccountOpenWithId, initialState);
 
   useEffect(() => {
     errorMessage === undefined ? "" : errorMessage === "Por favor, revisá tu correo electrónico y enviá la verificación." ? notifyEmailVerify() : notifyError()
@@ -88,13 +97,10 @@ export default function LoginAccount({ user, setOpen}: { user: User | undefined;
   };
 
 
-
-
   return (
     <>
       <h1 className={`mt-2 mb-4 text-center text-2xl`}>Ingreso</h1>
       
-      {/* <form action={ emailValid ? formActionAuth : notifyValidateEmail }  className="" > */}
       <form action={ formActionAuth }  className="" >
         <Fondo className=" px-3 py-4 mx-0 sm:py-6 sm:px-4 sm:mx-1.5 ">
           <div className="flex flex-col ">
@@ -121,6 +127,11 @@ export default function LoginAccount({ user, setOpen}: { user: User | undefined;
               value={user?.email}
               readOnly
             />
+            <input 
+              type="hidden" 
+              name="redirectTo" 
+              value={ "/dashboard/resumen" } 
+              readOnly />
           </div>
         </Fondo>
 
@@ -128,14 +139,16 @@ export default function LoginAccount({ user, setOpen}: { user: User | undefined;
           className={`${( isPendingAuth)  && `${shimmer2} animate-pulse` } relative overflow-hidden !h-9 w-full !mt-3 justify-center bg-[#548effdd] text-base  text-[#ffffffcc] duration-150 hover:bg-[#548eff] hover:text-[#fff] active:!bg-[#548effcc] disabled:hover:bg-[#071f50cc] disabled:hover:text-[#ffffffcc] disabled:!opacity-100 disabled:active:!bg-[#071f50cc] `}
           type="submit"
           disabled= {errorMessage === "Por favor, revisá tu correo electrónico y enviá la verificación." && true }
+          onClick={() => { 
+            handleClickButton()
+          }}
         >
           Continuar <ArrowRightIcon className="ml-auto h-5 w-5 text-gray-50" />
         </Button>
       </form>
 
       <div 
-        // className={` ${errorMessage === "Por favor, revisá tu correo electrónico y enviá la verificación." && "opacity-50"} flex justify-end gap-2 mr-4 mt-1.5 text-[13px]`}
-        className={` ${user?.role === "memberAccount" && "hidden"} flex justify-end gap-2 mr-4 mt-1.5 text-[13px]`}
+        className={` ${(user?.role === "memberAccount" || user?.role === "admin") && "hidden"} flex justify-end gap-2 mr-4 mt-1.5 text-[13px]`}
         >
         <p className="text-[#020b1d88] ">No tenés una contraseña?</p>
 
@@ -152,6 +165,23 @@ export default function LoginAccount({ user, setOpen}: { user: User | undefined;
       </div>
 
       <ToastContainer  className={ !isVerified  ? "foo" : "foo2" } autoClose={false} />
+
+      {/*update accountOpen */}
+      <form action={formAccountOpen}>
+        <input
+          type="hidden"
+          name="account"
+          value= "abierto"
+          readOnly
+        />
+        <button
+          type="submit"
+          ref={buttonRef}
+          className= "hidden " 
+        >
+          Enviar Consulta
+        </button>
+      </form>
     </>
   );
 }

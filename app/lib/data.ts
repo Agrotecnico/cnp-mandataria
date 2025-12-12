@@ -226,6 +226,7 @@ export async function fetchFilteredCustomers(query: string, currentPage: number,
     throw new Error('Failed to fetch customer table.');
   }
 }
+
 export async function fetchFilteredConsultas(query: string, currentPage: number,) {
   noStore()
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -250,30 +251,6 @@ export async function fetchFilteredConsultas(query: string, currentPage: number,
       ORDER BY consultas.created_at DESC
       LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
     `;
-    return consultas.rows;
-  } catch (error) {
-    console.error('Failed to fetch consultas:', error);
-    throw new Error('No se pudieron recuperar las consultas.');
-  }
-}
-export async function fetchFilteredConsultasM(id: string | null | undefined, currentPage: number,) {
-  noStore()
-  const offset = (currentPage - 1) * ITEMS_PER_PAGE;
-  try {
-    const consultas = await sql<Consulta>`
-      SELECT
-      id,
-      consulta,
-      respuesta,
-      created_at,
-      updated_at,
-      archivos_url
-      FROM consultas 
-      WHERE
-      email_id = ${id}
-      ORDER BY created_at DESC
-      LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
-      `;
     return consultas.rows;
   } catch (error) {
     console.error('Failed to fetch consultas:', error);
@@ -314,6 +291,66 @@ export async function fetchFilteredTramites(query: string, currentPage: number,)
   } catch (error) {
     console.error('Failed to fetch trámites:', error);
     throw new Error('No se pudieron recuperar las trámites.');
+  }
+}
+export async function fetchFilteredCommentsA(query: String, currentPage: number,) {
+  noStore()
+  const offset = (currentPage - 1) * ITEMS_PER_PAGE;
+
+  // const date= new Date('2024-01-01 00:00:00+00').toString()
+
+  try {
+    const comments = await sql<CommentsPost>`
+    SELECT
+    comments.id,
+    comments.email_id,
+    comments.post_slug,
+    comments.comment,
+    comments.created_at,
+    comments.deleted_at,
+    comments.nombre,
+    comments.avatar,
+    users.name,
+    users.image
+    FROM comments
+    JOIN users ON comments.email_id = users.email
+    WHERE
+    users.name ILIKE ${`%${query}%`} OR
+    users.email ILIKE ${`%${query}%`}
+    ORDER BY comments.created_at DESC
+    LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
+    
+    `;
+    return comments.rows;
+  } catch (error) {
+    console.error('Failed to fetch comments:', error);
+    throw new Error('No se pudieron recuperar los comentarios.');
+  }
+}
+
+
+export async function fetchFilteredConsultasM(id: string | null | undefined, currentPage: number,) {
+  noStore()
+  const offset = (currentPage - 1) * ITEMS_PER_PAGE;
+  try {
+    const consultas = await sql<Consulta>`
+      SELECT
+      id,
+      consulta,
+      respuesta,
+      created_at,
+      updated_at,
+      archivos_url
+      FROM consultas 
+      WHERE
+      email_id = ${id}
+      ORDER BY created_at DESC
+      LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
+      `;
+    return consultas.rows;
+  } catch (error) {
+    console.error('Failed to fetch consultas:', error);
+    throw new Error('No se pudieron recuperar las consultas.');
   }
 }
 export async function fetchFilteredTramitesM(email: string | null | undefined, currentPage: number,) {
@@ -369,6 +406,38 @@ export async function fetchFilteredCommentsM(id: string | null | undefined, curr
   } catch (error) {
     console.error('Failed to fetch consultas:', error);
     throw new Error('No se pudieron recuperar las consultas.');
+  }
+}
+
+
+
+export async function fetchFilteredComments(slug: string) {
+  noStore()
+
+  try {
+    const comments = await sql<CommentsPost>`
+    SELECT
+    comments.id,
+    comments.email_id,
+    comments.post_slug,
+    comments.comment,
+    comments.created_at,
+    comments.deleted_at,
+    comments.nombre,
+    comments.avatar,
+    users.name,
+    users.image
+    FROM comments
+    JOIN users ON comments.email_id = users.email
+    WHERE comments.post_slug = ${slug} 
+    -- AND (comments.deleted_at = '2024-01-01 00:00:00+00' OR comments.deleted_at IS NULL )
+    AND comments.deleted_at IS NULL
+    ORDER BY comments.created_at DESC
+    `;
+    return comments.rows;
+  } catch (error) {
+    console.error('Failed to fetch comments:', error);
+    throw new Error('No se pudieron recuperar los comentarios.');
   }
 }
 
@@ -661,6 +730,8 @@ export async function fetchCommentById(id: string) {
 }
 
 
+
+
 export async function fetchCommentLast() {
   noStore()
   try {
@@ -693,70 +764,6 @@ export async function fetchCommentLast() {
     throw new Error('Failed to fetch last comment.');
   }
 }
-export async function fetchFilteredComments(slug: string) {
-  noStore()
-
-  try {
-    const comments = await sql<CommentsPost>`
-    SELECT
-    comments.id,
-    comments.email_id,
-    comments.post_slug,
-    comments.comment,
-    comments.created_at,
-    comments.deleted_at,
-    comments.nombre,
-    comments.avatar,
-    users.name,
-    users.image
-    FROM comments
-    JOIN users ON comments.email_id = users.email
-    WHERE comments.post_slug = ${slug} 
-    -- AND (comments.deleted_at = '2024-01-01 00:00:00+00' OR comments.deleted_at IS NULL )
-    AND comments.deleted_at IS NULL
-    ORDER BY comments.created_at DESC
-    `;
-    return comments.rows;
-  } catch (error) {
-    console.error('Failed to fetch comments:', error);
-    throw new Error('No se pudieron recuperar los comentarios.');
-  }
-}
-export async function fetchFilteredCommentsA(query: String, currentPage: number,) {
-  noStore()
-  const offset = (currentPage - 1) * ITEMS_PER_PAGE;
-
-  // const date= new Date('2024-01-01 00:00:00+00').toString()
-
-  try {
-    const comments = await sql<CommentsPost>`
-    SELECT
-    comments.id,
-    comments.email_id,
-    comments.post_slug,
-    comments.comment,
-    comments.created_at,
-    comments.deleted_at,
-    comments.nombre,
-    comments.avatar,
-    users.name,
-    users.image
-    FROM comments
-    JOIN users ON comments.email_id = users.email
-    WHERE
-    users.name ILIKE ${`%${query}%`} OR
-    users.email ILIKE ${`%${query}%`}
-    ORDER BY comments.created_at DESC
-    LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
-    
-    `;
-    return comments.rows;
-  } catch (error) {
-    console.error('Failed to fetch comments:', error);
-    throw new Error('No se pudieron recuperar los comentarios.');
-  }
-}
-
 
 export async function fetchUserById(id: string | null | undefined): Promise<User | undefined> {
   try {
@@ -776,15 +783,15 @@ export async function fetchUserByEmail(email: string | null | undefined): Promis
     throw new Error('Failed to fetch user.');
   }
 }
-export async function fetchUserById2(id: string | null | undefined): Promise<User | undefined> {
-  try {
-    const user = await sql<User>`SELECT * FROM users WHERE email=${id}`;
-    return user.rows[0];
-  } catch (error) {
-    console.error('Failed to fetch user:', error);
-    throw new Error('Failed to fetch user.');
-  }
-}
+// export async function fetchUserById2(id: string | null | undefined): Promise<User | undefined> {
+//   try {
+//     const user = await sql<User>`SELECT * FROM users WHERE email=${id}`;
+//     return user.rows[0];
+//   } catch (error) {
+//     console.error('Failed to fetch user:', error);
+//     throw new Error('Failed to fetch user.');
+//   }
+// }
 
 export async function fetchUserByIdentifier(identifier: string | null | undefined): Promise<User | undefined> {
   try {

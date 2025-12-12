@@ -19,6 +19,7 @@ export type User = {
   email_verified: string | undefined;
   created_at: string;
   updated_at: string | undefined;
+  account: 'cerrado' | 'abierto';
 };
 
 export type Customer = {
