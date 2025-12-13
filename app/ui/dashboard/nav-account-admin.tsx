@@ -15,15 +15,19 @@ export default function NavAccountAdmin({user}: {user: User | undefined}) {
   return (
     <>
       <Link
-        href={ user?.account === "abierto" && (user?.role === "memberAccount" || user?.role === "admin") ? "#" : "/dashboard/cuenta"}
+        // href={ user?.account === "abierto" && (user?.role === "memberAccount" || user?.role === "admin") ? "#" : "/dashboard/cuenta"}
+        href={ user?.role === "admin" ? "/dashboard/cuenta" : "#"}
         className={clsx(' flex w-full text-[13px] items-center justify-start rounded-md duration-200 text-[#020b1dbb] bg-[#ffffff88] [box-shadow:_inset_0_1px_#ffffff,inset_0_-1px_#0000002e] hover:bg-[#ffffff] hover:text-[#020b1d] sm:text-sm ',
           {
             'text-[#020b1e] bg-[#ffffff] ':  pathname === "/dashboard/cuenta",
-            'hidden ':  user?.account === "abierto" && (user.role === "memberAccount" || user.role === "admin")
+            'hidden ':  user?.account === "abierto" && (user.role === "memberAccount" || user.role === "admin"),
+            'opacity-40 !cursor-default':  user?.role !== "admin"
           }
         )}
+        // prefetch={user?.role !== "admin" ? false : true}
+        // aria-disabled={ user?.role === "admin" ? true : false }
       >
-        <button 
+        <div 
           className="w-full h-8 px-2.5 gap-2 flex items-center justify-start sm:h-9 sm:flex-row sm:justify-start"
           >
           <IconCuenta className={`w-5 ${pathname === "/dashboard/cuenta" ? "fill-[#548eff]" : "fill-[#548eff88]"} `} />
@@ -33,7 +37,7 @@ export default function NavAccountAdmin({user}: {user: User | undefined}) {
               user?.account === "cerrado" && (user.role === "memberVerified" ) && "Creá tu CUENTA"
             }
           </p>
-        </button>
+        </div>
       </Link>
 
       <div>

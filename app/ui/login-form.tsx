@@ -94,34 +94,21 @@ export default function LoginForm() {
     <>
       <h1 className={`mt-4 mb-3 text-center text-3xl sm:text-4xl`}>Acceso</h1>
 
-      <Frente className="flex h-10 !rounded-[3px]  hover:bg-[#ffffffcc] hover:[box-shadow:_0_0_0_1px_#3767c847] ">
-        <button
-          type="button"
-          onClick={ () => {
-          signIn();
-          }}
-          className="relative w-full flex cursor-pointer place-items-center items-center justify-start px-10 duration-200  "
-        >
-          <IconGoogle className="absolute top-2.5 left-3 w-[18px]" />
-          <div className="flex items-center text-[#020b1d88] text-[14px] ml-1.5">con google</div>
-        </button>
-      </Frente>
-
       <form action={ emailValid ? formActionAuth : notifyValidateEmail }  className="" >
         <Fondo className=" px-3 py-4 mx-0 sm:py-6 sm:px-4 sm:mx-1.5 ">
           <div className="flex flex-col ">
-            {/* <Frente className="flex h-10 !rounded-[3px]  hover:bg-[#ffffffcc] hover:[box-shadow:_0_0_0_1px_#3767c847] ">
-              <button
-                type="button"
-                onClick={ () => {
-                signIn();
-                }}
-                className="relative w-full flex cursor-pointer place-items-center items-center justify-start px-10 duration-200  "
+            <Frente className="opacity-50 flex h-10 !rounded-[3px]   ">{/* hover:bg-[#ffffffcc] hover:[box-shadow:_0_0_0_1px_#3767c847] */}
+              <div
+                // type="button"
+                // onClick={ () => {
+                // signIn();
+                // }}
+                className="relative w-full flex  place-items-center items-center justify-start px-10 duration-200  "/* cursor-pointer */
               >
                 <IconGoogle className="absolute top-2.5 left-3 w-[18px]" />
                 <div className="flex items-center text-[#020b1d88] text-[14px] ml-1.5">con google</div>
-              </button>
-            </Frente> */}
+              </div>
+            </Frente>
 
             <div className="flex w-full items-center gap-2 py-2 text-sm">
               <div className="h-px w-full bg-slate-300"></div>O

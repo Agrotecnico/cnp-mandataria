@@ -426,7 +426,7 @@ export default function UserButtonHeader( { user }: { user: User | undefined } )
 
       <div className={`fixed inset-0 bg-gray-600 bg-opacity-50 items-start justify-end ${isModalOpen ? "flex" : "hidden"}`}>
         <div className="relative w-[300px] mt-[64px] mr-10 bg-white rounded-md shadow-lg sm:mr-12 sm:mt-[76px] min-[1024px]:mr-[calc((100vw_-_928px)_/_2)]">
-          {/* <EditProfileImage user={user}  setIsModalOpen= {setIsModalOpen} /> */}
+          <EditProfileImage user={user}  setIsModalOpen= {setIsModalOpen} />
         </div>
       </div>
 

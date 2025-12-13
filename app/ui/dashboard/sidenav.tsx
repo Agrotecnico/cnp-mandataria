@@ -27,7 +27,7 @@ export default /* async */ function SideNav({user}: {user: User |undefined}) {
 
   return (
     <>
-      <Frente className={`${user?.account === "abierto" ? "!bg-[#39507f]" : "!bg-[#548effdd]"} text-[#ffffff] ![box-shadow:_inset_0_2px_#ffffff,inset_0_-2px_#00000022]`}>
+      {/* <Frente className={`${user?.account === "abierto" ? "!bg-[#39507f]" : "!bg-[#548effdd]"} text-[#ffffff] ![box-shadow:_inset_0_2px_#ffffff,inset_0_-2px_#00000022]`}>
         <div className="text-sm [text-shadow:_1px_1px_#3d61ad] flex flex-col justify-center items-center text-center p-2.5 md:mb-2 ">
 
           {user?.role === "admin" ? <p>Panel <span className='text-base font-semibold'>ADMIN </span></p> : user?.role === "memberAccount" && user.account === "abierto" ? <p>Panel <span className='text-base font-semibold'>CUENTA </span></p> : <p>Panel <span className='text-base font-semibold'>INFO </span></p> } 
@@ -36,7 +36,7 @@ export default /* async */ function SideNav({user}: {user: User |undefined}) {
             <span className='text-[13px] text-[#ffffffdd] '>{user?.email && `${user.email}`}</span>
           </p>
         </div>
-      </Frente>
+      </Frente> */}
 
       <Fondo className="flex h-[calc(100%_-_68px)] flex-col p-2 md:pt-3">
         <div className="flex grow flex-row justify-between gap-2 md:gap-2 md:flex-col">
@@ -72,18 +72,19 @@ export default /* async */ function SideNav({user}: {user: User |undefined}) {
             </div>
           )}
 
-            <button 
-              className="flex h-[34px] w-full grow cursor-pointer items-center justify-center gap-2 rounded-md text-[#020b1dbb] bg-[#ffffff88] [box-shadow:_inset_0_1px_#ffffff,inset_0_-1px_#0000002e] text-sm font-medium hover:bg-[#ffffff] hover:text-[#020b1d] md:flex-none md:justify-start md:px-3"
-              onClick={ () => {
-                //  signOut({ redirectTo: "/" });
-                handleClickButton()
-                setTimeout(() => signOut({ redirectTo: "/" }), 200) 
-              }}
-              >
-              <PowerIcon className="w-[18px] text-red-500" />
-              <div className=" hidden md:block">Salir</div>
-            </button>
-          <div className="hidden h-auto w-full grow rounded-md bg-gray-50 md:block"></div>
+          <button 
+            className="flex h-[34px] w-full grow cursor-pointer items-center justify-center gap-2 rounded-md text-[#020b1dbb] bg-[#ffffff88] [box-shadow:_inset_0_1px_#ffffff,inset_0_-1px_#0000002e] text-sm font-medium hover:bg-[#ffffff] hover:text-[#020b1d] md:flex-none md:justify-start md:px-3"
+            onClick={ () => {
+              //  signOut({ redirectTo: "/" });
+              handleClickButton()
+              setTimeout(() => signOut({ redirectTo: "/" }), 1000) 
+            }}
+            >
+            <PowerIcon className="w-[18px] text-red-500" />
+            <div className=" hidden md:block">Salir</div>
+          </button>
+          
+          <div className=" h-auto w-full grow rounded-md bg-gray-50"></div>
         </div>
       </Fondo>
 

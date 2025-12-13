@@ -2,6 +2,7 @@
 
 // import { Suspense, useState } from 'react';
 import { auth } from 'auth';
+import { notFound } from 'next/navigation';
 
 import RegisterAccount from '@/app/ui/register-account';
 import LoginAccount from '@/app/ui/login-Account';
@@ -16,9 +17,14 @@ export default async function LoginPage() {
   const session = await auth();
   const user = await fetchUserByEmail(session?.user?.email)
 
+  if (session?.user.role !== "admin") return notFound();
+
   return (
     
     <AccessAccount user= {user} />
 
   );
+
+  
+
 }

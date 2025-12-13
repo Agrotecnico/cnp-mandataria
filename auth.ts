@@ -135,7 +135,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           await emailVerification({
             to: [{
               name: user.name as string,
-              email: "agrotecnicog@gmail.com"
+              email: user.email as string /* "agrotecnicog@gmail.com" */
               }],
             htmlContent: "/login",
 

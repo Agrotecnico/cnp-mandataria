@@ -572,14 +572,14 @@ export default function IniciarTramite( {
       <Frente className={`${!user || isEmailVisitor ? "block" : "hidden"} py-1.5 px-2 mt-2 text-small-regular !bg-[#548effe2] sm:!px-4 `}>
         <div className={`${open ? "justify-end py-1.5 " : "justify-between "} flex items-start gap-3 sm:items-center sm:gap-5 `}>
           <div className={`${open && "hidden"} flex items-center justify-start gap-3 w-full text-[13px] text-[#ffffff] [text-shadow:_1px_1px_#3d61ad] sm:text-[15px] `}>
-            <div className="mt-[1px] sm:mt-[3px] ">
-              <IconRegistro className=" w-[13px] ml-1.5 sm:w-[22px] sm:ml-3" />
+            <div className="mt-[3px] mb-auto sm:mt-[3px] ">
+              <IconRegistro className=" w-[16px] ml-1.5 sm:w-[22px] sm:ml-3" />
             </div>
             {isEmailVisitor ? (
               <p><b>{ user.name }</b>, enviame un e-mail para mandarte el presupuesto<span className="text-[15px] text-[#ff0000]  [text-shadow:_1px_1px_#fff9,_-1px_-1px_#fff9,_1px_1px_#fff9,_-1px_1px_#fff9] ml-1.5">*</span>
               </p>
             ) : (
-              <p>Envíame un Email para que pueda mandarte el presupuesto<span className="text-[15px] text-[#ff0000]  [text-shadow:_1px_1px_#fff9,_-1px_-1px_#fff9,_1px_1px_#fff9,_-1px_1px_#fff9] ml-1.5">*</span>
+              <p className='leading-[1.1] sm:leading-normal'>Envíame un Email para que pueda mandarte el presupuesto<span className="text-[15px] text-[#ff0000]  [text-shadow:_1px_1px_#fff9,_-1px_-1px_#fff9,_1px_1px_#fff9,_-1px_1px_#fff9] ml-1.5">*</span>
               </p>
             )}
           </div>
