@@ -23,7 +23,7 @@ export function ButtonA({ children, className, ...rest }: ButtonProps) {
     <button
       {...rest}
       className={clsx(
-        'flex justify-center items-center gap-1 rounded-lg px-4 border border-[#e9dae900] bg-[#020b1d] text-[#ffffff] opacity-80 duration-150 ease-in hover:opacity-100 active:opacity-60 focus:outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500 aria-disabled:cursor-not-allowed aria-disabled:opacity-40 disabled:cursor-default disabled:opacity-40 ',
+        'flex justify-center items-center gap-1 rounded-lg px-4 bg-[#31456d] text-[#ffffff] opacity-85 duration-150 ease-in hover:opacity-100 active:opacity-60 focus:outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500 aria-disabled:cursor-not-allowed aria-disabled:opacity-60 disabled:cursor-default disabled:opacity-60 ',
         className,
       )}
     >
@@ -37,7 +37,7 @@ export function ButtonB({ children, className, ...rest }: ButtonProps) {
     <button
       {...rest}
       className={clsx(
-        'flex justify-center items-center gap-1 rounded-lg px-4 border border-[#d9dee8] bg-[#ffffff] text-[#020b1d] opacity-70 duration-150 ease-in hover:opacity-100 active:opacity-60 focus:outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500 aria-disabled:cursor-not-allowed aria-disabled:opacity-40 disabled:cursor-default disabled:opacity-40 ',
+        'flex justify-center items-center gap-1 rounded-lg px-4 border border-[#d9dee8] bg-[#ffffff] text-[#020b1d] opacity-70 duration-150 ease-in hover:opacity-100 active:opacity-60 focus:outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500 aria-disabled:cursor-not-allowed aria-disabled:opacity-55 disabled:cursor-default disabled:opacity-55 ',
         className,
       )}
     >

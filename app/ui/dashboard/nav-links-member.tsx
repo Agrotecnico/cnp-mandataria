@@ -3,36 +3,60 @@
 import Link from 'next/link';
 import clsx from 'clsx';
 import { usePathname } from 'next/navigation'
-import { linkMembers }  from '@/app/constant';
+import { useSession } from "next-auth/react"
+
+import { linksMembers }  from '@/app/constant';
+import { User } from "@/app/lib/definitions";
+import IconCuenta from '../logosIconos/icon-cuenta';
 
 
-export default function NavLinksMember() {
+export default function NavLinksMember(/* {user}: {user: User | undefined} */) {
   const pathname = usePathname(); 
+
+  const { data: session, update } = useSession()
+
+  console.log("session:", session)
+
     return (
       <>
-        {linkMembers?.map((linkMember) => {
+        {linksMembers?.map((linkMember) => {
           const LinkIcon = linkMember.icon;
           return (
+
             <Link
               key={linkMember.name}
               href={linkMember.href}
-              className={clsx(
-                'text-sm flex items-center justify-start first:rounded-t-lg last:rounded-b-lg duration-200 text-[#1d0215bb] bg-[#ffffff88] [box-shadow:_inset_0_1px_#ffffff,inset_0_-1px_#0000002e] hover:bg-[#ffffffe3] hover:text-[#1d0215]',
+              className={clsx(' w-full text-[13px] flex items-center justify-start first:rounded-t-md last:rounded-b-md  duration-200 text-[#020b1dbb] bg-[#ffffff88] [box-shadow:_inset_0_1px_#ffffff,inset_0_-1px_#0000002e] hover:bg-[#ffffffe3] hover:text-[#020b1d] sm:text-sm md:first:rounded-bl-none md:last:rounded-tr-none md:first:rounded-t-md md:last:rounded-b-md',
                 {
-                  'text-[#1d0216] bg-[#ffffffe3] ':  pathname === linkMember.href,
+                  'text-[#020b1d] bg-[#ffffffe3] ':  pathname === linkMember.href,
                 }
               )}
             >
-              <button className="w-full py-2 px-2.5 gap-2 flex justify-start items-center"
-                >
-                <LinkIcon className="w-[20px]  text-[#50073aaa]" />
-                <p className="text-sm text-start ">
-                {linkMember.name}
+              <button className="w-full h-8 px-2.5 gap-2 flex items-center justify-start sm:h-9 sm:flex-row sm:justify-start" >
+                <LinkIcon className={` w-[17px] text-[#39507f] md:w-18`} />{/*  ${linkMember.name === "Ingreso mi CUENTA" && " !w-5 fill-[#548eff] "} */}
+                <p className="text-start ">
+                  {linkMember.name /* === "Ingreso mi CUENTA" && session?.user.role !== "memberAccount" ? "Ingresá a tu CUENTA" : linkMember.name === "Ingreso mi CUENTA" && session?.user.role === "memberAccount" ? "Creá tu Cuenta" : linkMember.name */  }
                 </p>
               </button>
             </Link>
           );
         })}
+
+        <Link
+          href={"/dashboard/cuenta"}
+          className={clsx(' w-full text-[13px] flex items-center justify-start first:rounded-t-md last:rounded-b-md  duration-200 text-[#020b1dbb] bg-[#ffffff88] [box-shadow:_inset_0_1px_#ffffff,inset_0_-1px_#0000002e] hover:bg-[#ffffffe3] hover:text-[#020b1d] sm:text-sm md:first:rounded-bl-none md:last:rounded-tr-none md:first:rounded-t-md md:last:rounded-b-md',
+            {
+              'text-[#020b1d] bg-[#ffffffe3] ':  pathname === "/dashboared/cuenta",
+            }
+          )}
+        >
+          <button className="w-full h-8 px-2.5 gap-2 flex items-center justify-start sm:h-9 sm:flex-row sm:justify-start" >
+            <IconCuenta className={` w-5 fill-[#548eff]`} />
+            <p className="text-start ">
+              Tu CUENTA
+            </p>
+          </button>
+        </Link>
       </>
     );
 }

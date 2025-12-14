@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { v2 as cloudinary } from 'cloudinary';
 
 
+
 cloudinary.config({
   cloud_name: process.env.NEXT_PUBLIC_CLAUDINARY_NAME,
   api_key: process.env.NEXT_PUBLIC_CLAUDINARY_KEY,
@@ -37,6 +38,7 @@ export async function POST(request: NextRequest) {
   }
 
   // console.log("bytes: ", bytes)
+  // console.log("buffers: ", buffers)
 
   // Con los datos del archivo en el buffer, puedes hacer lo que quieras con ellos.
   // Para esto, simplemente los escribiremos en el sistema de archivos en una nueva ubicación.

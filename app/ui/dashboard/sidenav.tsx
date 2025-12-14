@@ -1,63 +1,109 @@
+"use client"
+
 import Link from 'next/link';
-import NavLinks from '@/app/ui/dashboard/nav-links';
-// import AcmeLogo from '@/app/ui/acme-logo';
 import { PowerIcon } from '@heroicons/react/24/outline';
-import { signOut } from '@/auth';
-import  NavLinksAdmin  from '@/app/ui/dashboard/nav-links-admin'
+import { signOut } from "next-auth/react";
+import { useRef, useActionState } from 'react';
+
+import  NavAccountAdmin  from '@/app/ui/dashboard/nav-account-admin'
+import  NavAccountMember  from '@/app/ui/dashboard/nav-account-member'
 import IconPresupuesto from '@/app/ui/logosIconos/icon-presupuesto';
 import IconConsulta from '@/app/ui/logosIconos/icon-consulta';
+import { Fondo, Frente } from '@/app/ui/marcos'
+import { User } from "@/app/lib/definitions";
+import { createAccountOpen, StateAccountOpen } from '@/app/lib/actions';
 
-import { Fondo } from '@/app/ui/marcos'
 
-export default function SideNav() {
+export default /* async */ function SideNav({user}: {user: User |undefined}) {
+
+  const buttonRef = useRef<HTMLButtonElement>(null); // update estado account
+  const handleClickButton= () => {
+    if (buttonRef.current) buttonRef.current.click()
+  };
+
+  const initialState: StateAccountOpen = { message: null, errors: {} };
+  const createAccountOpenWithId = createAccountOpen.bind(null, `${user?.email}`);
+  const [state, formAccountOpen, isPending] = useActionState(createAccountOpenWithId, initialState);
+
   return (
-    <Fondo className="flex h-full flex-col px-3 py-4 md:px-2">
-      <Link
-        className="mb-2 flex justify-center items-center text-center pb-2 px-2 lg:pt-1 lg:pb-3"
-        href="/"
-      >
-        <div className="w-32 md:w-40">
-          Panel ADMIN
+    <>
+      {/* <Frente className={`${user?.account === "abierto" ? "!bg-[#39507f]" : "!bg-[#548effdd]"} text-[#ffffff] ![box-shadow:_inset_0_2px_#ffffff,inset_0_-2px_#00000022]`}>
+        <div className="text-sm [text-shadow:_1px_1px_#3d61ad] flex flex-col justify-center items-center text-center p-2.5 md:mb-2 ">
+
+          {user?.role === "admin" ? <p>Panel <span className='text-base font-semibold'>ADMIN </span></p> : user?.role === "memberAccount" && user.account === "abierto" ? <p>Panel <span className='text-base font-semibold'>CUENTA </span></p> : <p>Panel <span className='text-base font-semibold'>INFO </span></p> } 
+
+          <p>
+            <span className='text-[13px] text-[#ffffffdd] '>{user?.email && `${user.email}`}</span>
+          </p>
         </div>
-      </Link>
-      <div className="flex grow flex-row justify-between space-x-2 md:flex-col md:space-x-0 md:space-y-2">
-        {/* <NavLinks /> */}
-        <div className="flex md:flex-col gap-[1px] w-full md:gap-0">
-          <NavLinksAdmin />
-        </div>
-        {/* <div className="flex flex-col gap-0.5 text-sm rounded-lg shadow-[0_10px_20px_#020b1d33] sm:text-[15px] sm:mt-12 sm:flex-row">
-          <Link 
-            href={"/iniciar-tramite/baja-de-vehiculo"} 
-            className="group h-7 flex items-center rounded-t-lg px-3 bg-[#ffffffaa] duration-150 justify-start sm:rounded-tr-none sm:rounded-l-lg sm:h-8 hover:bg-white active:opacity-80">
-            <IconPresupuesto 
-              className="mr-2 w-[15px] h-[15px] duration-150 opacity-70 group-hover:opacity-100 sm:w-[16px] sm:h-[16px]"
-              color="#ffffffdd" color2="#020b1d"
-              />
-            <p className="text-[#020b1dcc] duration-150 group-hover:text-[#020b1d]">Pedí presupuesto</p>
-          </Link>
-          <Link 
-            href={"/realizar-consulta"} 
-            className="group h-7 flex items-center rounded-b-lg px-3 bg-[#ffffffaa] duration-150 justify-start sm:rounded-bl-none sm:rounded-r-lg sm:h-8 hover:bg-white active:opacity-80">
-            <IconConsulta 
-              className="mr-2 w-[15px] h-[15px] duration-150 opacity-70 group-hover:opacity-100 sm:w-[16px] sm:h-[16px]"
-              color="#ffffffdd" color2="#020b1d"
-              />
-            <p className="text-[#020b1dcc] duration-150 group-hover:text-[#020b1d]">Realizá tu consulta</p>
-          </Link>
-        </div> */}
-        <div className="hidden h-auto w-full grow rounded-md bg-gray-50 md:block"></div>
-        <form
-          action={async () => {
-            'use server';
-            await signOut({ redirectTo: '/' });
-          }}
-        >
-          <button className="flex h-full w-full grow items-center justify-center gap-2 rounded-md text-[#020b1dbb] bg-[#ffffff88] [box-shadow:_inset_0_1px_#ffffff,inset_0_-1px_#0000002e] p-3 text-sm font-medium hover:bg-[#ffffffe3] hover:text-[#020b1d] md:flex-none md:justify-start md:p-2 md:px-3">
-            <PowerIcon className="w-5 text-red-500" />
+      </Frente> */}
+
+      <Fondo className="flex h-[calc(100%_-_68px)] flex-col p-2 md:pt-3">
+        <div className="flex grow flex-row justify-between gap-2 md:gap-2 md:flex-col">
+          <div className="flex flex-col w-full md:gap-0">
+            <NavAccountAdmin user={user} />
+          </div>
+
+          <div className={`flex flex-col w-full md:gap-0`}>
+            <NavAccountMember  user={user} /> 
+          </div>
+
+          {user?.role !== "admin" && (
+            <div className={` flex flex-col text-[13px] rounded-md shadow-[box-shadow:_inset_0 1px_#ffffff,_inset_0_-1px_#0000002e] sm:text-sm md:flex`}>
+              <Link 
+                href={ '/iniciar-tramite/cambio-de-radicacion'} 
+                className= 'group w-full h-[34px] flex items-center justify-start first:rounded-l-md last:rounded-r-md duration-200 bg-[#ffffff88] [box-shadow:_inset_0_1px_#ffffff,inset_0_-1px_#0000002e] hover:bg-[#ffffff] md:first:rounded-bl-none md:last:rounded-tr-none md:first:rounded-t-md md:last:rounded-b-md'>
+                  
+                <IconPresupuesto 
+                  className={` ${user?.account === "abierto" ? " fill-[#39507f88]" : " fill-[#548eff88] "} w-[16px] mr-3 ml-2.5 `} />
+
+                <p className="text-[#020b1dcc] duration-150 group-hover:text-[#020b1d]">{ 'Pedí presupuesto'}</p>
+              </Link>
+
+              <Link 
+                href={'/realizar-consulta'} 
+                className= 'group w-full h-[34px] flex items-center justify-start first:rounded-l-md last:rounded-r-md duration-200 bg-[#ffffff88] [box-shadow:_inset_0_1px_#ffffff,inset_0_-1px_#0000002e] hover:bg-[#ffffff] md:first:rounded-bl-none md:last:rounded-tr-none md:first:rounded-t-md md:last:rounded-b-md'>
+
+                <IconConsulta 
+                  className={` ${user?.account === "abierto" ? " fill-[#39507f88]" : " fill-[#548eff88] "} w-[16px] mr-3 ml-2.5 `}/>
+                  
+                <p className="text-[#020b1dcc] duration-150 group-hover:text-[#020b1d]">{ 'Realizá tu consulta'}</p>
+              </Link>
+            </div>
+          )}
+
+          <button 
+            className="flex h-[34px] w-full grow cursor-pointer items-center justify-center gap-2 rounded-md text-[#020b1dbb] bg-[#ffffff88] [box-shadow:_inset_0_1px_#ffffff,inset_0_-1px_#0000002e] text-sm font-medium hover:bg-[#ffffff] hover:text-[#020b1d] md:flex-none md:justify-start md:px-3"
+            onClick={ () => {
+              //  signOut({ redirectTo: "/" });
+              handleClickButton()
+              setTimeout(() => signOut({ redirectTo: "/" }), 1000) 
+            }}
+            >
+            <PowerIcon className="w-[18px] text-red-500" />
             <div className=" hidden md:block">Salir</div>
           </button>
-        </form>
-      </div>
-    </Fondo>
+          
+          <div className=" h-auto w-full grow rounded-md bg-gray-50"></div>
+        </div>
+      </Fondo>
+
+      {/*update accountClouse */}
+      <form action={formAccountOpen}>
+        <input
+          type="hidden"
+          name="account"
+          value= "cerrado"
+          readOnly
+        />
+        <button
+          type="submit"
+          ref={buttonRef}
+          className= "hidden" 
+        >
+          Enviar
+        </button>
+      </form>
+    </>
   );
 }

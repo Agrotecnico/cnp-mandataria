@@ -14,6 +14,7 @@ interface Params {
 }
 
 export async function emailConfirmRegistro( {subject, to, htmlContent }: Params ) {
+    // console.log("htmlContent: ", htmlContent)
     try {
         const smtpEmail = new brevo.SendSmtpEmail()
 
@@ -30,7 +31,8 @@ export async function emailConfirmRegistro( {subject, to, htmlContent }: Params 
                 <img src="https://res.cloudinary.com/dchmrl6fc/image/upload/v1753280842/logo-cnp-horizontal_yxoecb.png" alt="Logo" width="160" height="46">
                 <br>
                 <br>
-                <p>${htmlContent}</p>
+                <p>Haz clic en el enlace de abajo para verificar tu correo electrónico.</p>
+                <a href="${process.env.AUTH_URL}/api/verify-email?token=${htmlContent}">Verificar correo electrónico</a>
             </body>
         </html>
         `

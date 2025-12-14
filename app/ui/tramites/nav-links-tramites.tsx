@@ -4,7 +4,7 @@ import Link from 'next/link';
 import clsx from 'clsx';
 import { usePathname } from 'next/navigation';
 
-import { Frente } from '@/app/ui/marcos';
+import { Frente, Fondo } from '@/app/ui/marcos';
 import type { TramiteMd } from "@/app/lib/definitions"
 
 
@@ -13,43 +13,43 @@ export default function NavLinksTramites({allTramites }:{allTramites:TramiteMd[]
   const pathname = usePathname();
   
   return (
-
-    <div className="hidden min-[900px]:block ">
-      <h1 className="flex items-center text-start pl-2 pt-1 pb-3 font-semibold text-lg text-[#39507fcc] md:leading-none ">
-        Seleccioná un trámite:
-      </h1>
-      <Frente className='!bg-[#020b1d14] p-[3px] flex flex-col gap-0.5 '>
-
-        {allTramites.map((tramite:TramiteMd) => (
-          <Link
-            as={`/iniciar-tramite/${tramite.slug}`}
-            href="/iniciar-tramite/[slug]"
-            className={clsx(`group py-[3px] pl-0.5 pr-2 bg-[#ffffff0e] first:rounded-t-md last:rounded-b-md flex gap-1 items-start duration-200 hover:bg-[#ffffff88] hover:text-[#020b1d] `,
+    <Frente className="hidden !bg-[#548eff16] h-full flex-col min-[900px]:flex">
+      <div className="mt-0.5 text-sm flex justify-center bg-[#548effdd] rounded-t-md text-[#ffffff]  sm:text-[15px] text-center py-1 [text-shadow:_1px_1px_#3d61ad] ">
+        Seleccioná un trámite
+      </div>
+      <div className="flex grow flex-row justify-between space-x-2 md:flex-col md:space-x-0 md:space-y-2">
+        <div className="flex md:flex-col w-full">
+          {allTramites.map((tramite:TramiteMd) => (
+            <Link
+              as={`/iniciar-tramite/${tramite.slug}`}
+              href="/iniciar-tramite/[slug]"
+              className={clsx('group mx-[3px] w-[calc(100%_-_6px)] h-[33px] flex items-center justify-start first:rounded-t-none last:rounded-b-md last:mb-[3px]  duration-150 text-[#020b1da2]  hover:bg-[#ffffff88] hover:text-[#020b1dd9] active:opacity-80',
                 {
-                  'text-[#020b1e] bg-[#ffffff89] ': pathname === `/iniciar-tramite/${tramite.slug}`
+                  'text-[#020b1dd8] bg-[#ffffff89] ':  pathname === `/iniciar-tramite/${tramite.slug}`,
                 }
               )}
-            key={tramite.slug} 
-          >
-            <div className="h-5 w-5 flex items-center justify-center">
-              <img 
-                src= "/dnrpa.png" 
-                alt="icono trámites" 
-                width={12} 
-                height={"auto"}
-                className={clsx(`opacity-90 h-[7px] w-[7px] group-hover:w-[10px] group-hover:h-[10px]`,
-                  {
-                    '[width:_10px] [height:_10px] ': pathname === `/iniciar-tramite/${tramite.slug}`
-                  }
-                )} 
-              />
-            </div>
-            <p className="text-[14px] text-start md:text-[15px] ">{tramite.tramite} {tramite.estado === "Derogado" && <span className="text-xs text-[#e42f2fc9] ">
-                {`(${tramite.estado})`}</span>}
-            </p>
-          </Link>
-        ))}
-      </Frente>
-    </div>
+              key={tramite.slug} 
+            >
+              <div className="h-5 w-5 mx-1 flex items-center justify-center">
+                <img 
+                  src= "/dnrpa.png" 
+                  alt="icono trámites" 
+                  width={12} 
+                  height={"auto"}
+                  className={clsx(`opacity-90 h-[6px] w-[6px] group-hover:w-[7px] group-hover:h-[7px]`,
+                    {
+                      '[width:_7px] [height:_7px] ': pathname === `/iniciar-tramite/${tramite.slug}`
+                    }
+                  )} 
+                />
+              </div>
+              <p className="text-[13px] text-start md:text-[14px] ">
+                {tramite.tramite}
+              </p>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </Frente>
   );
 }

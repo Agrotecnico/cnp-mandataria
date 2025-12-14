@@ -1,83 +1,122 @@
 'use client';
 
-import { useFormState } from 'react-dom';
-import { FormEvent, useState, useEffect, useMemo, useRef } from 'react';
+import { FormEvent, useState, useEffect, useRef, useActionState } from 'react';
 import { ExclamationCircleIcon } from '@heroicons/react/24/outline'
 import { Disclosure, DisclosurePanel } from '@headlessui/react';
 import clsx from 'clsx';
-import { User } from '@/app/lib/definitions';
-import Link from 'next/link';
+import { usePathname, useSearchParams } from 'next/navigation';
+import { ToastContainer, toast, Zoom, Flip } from 'react-toastify';
 
-import IconConsultaRight from "@/app/ui/logosIconos/icon-consulta-right"
-import IconConsulta from "@/app/ui/logosIconos/icon-consulta"
-import { createConsulta, StateConsulta } from '@/app/lib/actions';
+import { createConsulta, createVerificationToken, StateConsulta, StateVerificationToken, updateUserEmail, StateUserEmail, updateCommentEmail, StateUpdateCommentEmail, createUser2, StateUser, authenticate3, authenticate, authenticate2, handleFormPedido } from '@/app/lib/actions';
 import { Frente } from '@/app/ui/marcos';
 import useToggleState from "@/app/lib/hooks/use-toggle-state";
+import IconConsulta from "@/app/ui/logosIconos/icon-consulta"
 import IconCambio from '@/app/ui/logosIconos/icon-cambio';
-import IconArchivo from '@/app/ui/logosIconos/icon-archivo';
-import { ImageListType } from "@/app/ui/consultas/typings";
-import ImageUploading from "@/app/ui/consultas/ImageUploading"
 import IconDragDrop from '@/app/ui/logosIconos/icon-drag-drop';
-import { ButtonB, ButtonA, Button } from '@/app/ui/button';
 import IconCuenta from "@/app/ui/logosIconos/icon-cuenta"
 import IconEmail2 from "@/app/ui/logosIconos/icon-email2"
+import IconRegistro from "@/app/ui/logosIconos/icon-registro"
+import IconAdjunto from '@/app/ui/logosIconos/icon-adjunto';
+import { ImageListType } from "@/app/ui/consultas/typings";
+import ImageUploading from "@/app/ui/consultas/ImageUploading"
+import { ButtonB, ButtonA } from '@/app/ui/button';
 import { InputCnp } from "@/app/ui/uiRadix/input-cnp";
 import { TextareaCnp } from "@/app/ui/uiRadix/textarea-cnp";
-import IconRegistro from "@/app/ui/logosIconos/icon-registro"
-import { createUser, StateUser } from '@/app/lib/actions';
-import IconEnvioEmail from '../logosIconos/icon-envio-email';
-import { handleFormRegistro } from '@/app/lib/actions';
-import { handleFormPedido } from '@/app/lib/actions';
+import { nanoid } from "nanoid";
+import { User } from '@/app/lib/definitions';
+import 'react-toastify/dist/ReactToastify.css';
+import NotifyVerified from '@/app/ui/consultas/notify-verified';
+import NotifyVerify from '@/app/ui/consultas/notify-verify';
+import './styles.css';
 
+const wait = () => new Promise((resolve) => setTimeout(resolve, 1000));
 
-export default function RealizarConsulta( { user }: { user: User | undefined } ) {
+export default function RealizarConsulta({ 
+  user
+}: { 
+  user: User | undefined 
+}) {
   
   const [consulta, setConsulta] = useState('');
   const [successState, setSuccessState] = useState(false)
 
+  // Archivos adjuntos a consulta (imageUrl e images)
   const [imageUrl, setImageUrl] = useState<string>("");
-  const [spin, setSpin] = useState(false);
   const [images, setImages] = useState<ImageListType>([]);
 
+  const [nameVisitor, setNameVisitor] = useState("");
+
+  const [spin, setSpin] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-
-  // const [name, setName] = useState(`${user?.name}`);
-  // const [email, setEmail] = useState(`${user?.email}`);
-
   const [open, setOpen] = useState(false);
-  const [openConsulta, setOpenConsulta] = useState(true);
-  const [emailSession, setEmailSession] = useState(false);
-
-  const [estadoRegistrar, setEstadoRegistrar] = useState(false)
-
+  const [token, setToken] = useState("");
 
   const { state, close, toggle } = useToggleState()
+  const [consultaDisabled, setConsultaDisabled] = useState(false);
+
+  const pathname = usePathname();
+  const tokenx= nanoid()
+  const isEmailVisitor= user?.email.slice(16) === "@cnpmandataria.com"
+  const id= user?.email!
   const maxNumber = 2;
 
-  const buttonRefRegistro = useRef<HTMLButtonElement>(null);
-  const handleClickButtonRegistro= () => {
-    if (buttonRefRegistro.current) buttonRefRegistro.current.click()
-  };
+  const isEmailValid= (email: string) => {
+    const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(?:\.[a-zA-Z]{2,})?$/;
+    return regex.test(email);
+  }
 
-  const buttonRefPedido = useRef<HTMLButtonElement>(null);
-  const handleClickButtonPedido= () => {
-    if (buttonRefPedido.current) buttonRefPedido.current.click()
-  };
+  const searchParams = useSearchParams();
+  const isVerified = searchParams.get('verified')
 
   const files: File[]= []
   images.map((image) => {
     files.push(image.file!)
   })
 
-  const buttonyRef = useRef<HTMLButtonElement>(null);
+  const buttonRefPedido = useRef<HTMLButtonElement>(null);
+  const handleClickButtonPedido= () => {
+    if (buttonRefPedido.current) buttonRefPedido.current.click()
+  };
+
+  const buttonyRef = useRef<HTMLButtonElement>(null); // create consulta
   const handleClickButton= () => {
     if (buttonyRef.current) buttonyRef.current.click()
   };
 
+  const buttonRefVerification = useRef<HTMLButtonElement>(null);
+  const handleClickButtonVerification= () => {
+    if (buttonRefVerification.current) buttonRefVerification.current.click()
+  };
+
+  const buttonRefAuth = useRef<HTMLButtonElement>(null); // authentication
+  const handleClickButtonAuth= () => {
+    if (buttonRefAuth.current) buttonRefAuth.current.click()
+  };
+
+  const buttonRefxxxx = useRef<HTMLButtonElement>(null); // update comment email
+  const handleClickButtonxxxx= () => {
+    if (buttonRefxxxx.current) buttonRefxxxx.current.click()
+  };
+
+  const buttonRefxxx = useRef<HTMLButtonElement>(null); // update user email
+  const handleClickButtonxxx= () => {
+    if (buttonRefxxx.current) buttonRefxxx.current.click()
+  };
+
+  const refCreateUser = useRef<HTMLButtonElement>(null);
+  const handleCreateUser= () => {
+    if (refCreateUser.current) refCreateUser.current.click()
+  };
+
   const enviarConsulta= () => {
     setTimeout(handleClickButton, 200) 
-    setTimeout(() => setSpin(false), 200) 
+    console.log("Consulta creada")
+  }
+  const enviarConsultaxxxx= () => {
+    setTimeout( () => handleClickButtonxxxx(), 200) // update comment email
+    setTimeout( () => handleClickButtonxxx(), 200) // update user email
+    console.log("Email comment and user updated")
   }
 
   const handleToggle = () => {
@@ -85,43 +124,54 @@ export default function RealizarConsulta( { user }: { user: User | undefined } )
     setTimeout(() => toggle(), 100);
   };
   
-
   const clearState = () => {
     setSuccessState(false)
   }
 
+  ///////////////////////////////////////////////////////////////
   const uploadToServer1 = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
+      setSpin(true)
       enviarConsulta();
     } catch (error) {
       console.error(error);
     }
+    setSpin(false)
   };
-
   const uploadToServer2 = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (files.length === 0) return;
 
-    try {
-      const data = new FormData();
+    const resizedBlobs: Blob[] = [];
+    for (const file of files) {
+      if ( file.type === "application/pdf" ) {
+        resizedBlobs.push(file);
+      } else {
+        const resizedBlob = await resizeImage(file, 1024, 1024);
+        resizedBlobs.push(resizedBlob);
+      }
+    }
 
-      {files.map((file, index) => {
-        data.append(`file${index}`, file );
+    try {
+      setSpin(true)
+      const data = new FormData();
+      {resizedBlobs.map((resizedBlob, index) => {
+        data.append(`file${index}`, resizedBlob );
       })}
+
       const response = await fetch('/api/upload-query', {
         method: 'POST',
         body: data,
       });
+
       const responseData = await response.json();
-
       const polo: string[]= responseData.urls
-
       const respon= JSON.stringify(polo )
 
       setImageUrl(respon);
       if (response.ok) {
-        console.log('File uploaded successfully');
+        console.log('Ok imagen subida');
       }
 
       enviarConsulta();
@@ -131,6 +181,49 @@ export default function RealizarConsulta( { user }: { user: User | undefined } )
     }
     setSpin(false)
   };
+  const uploadToServer3 = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      setSpin(true)
+      enviarConsultaxxxx();
+    } catch (error) {
+      console.error(error);
+    }
+    setSpin(false)
+  };
+
+  const resizeImage = (file: File, maxWidth: number, maxHeight: number): Promise<Blob> => {
+    return new Promise((resolve) => {
+      const canvas = document.createElement('canvas');
+      const reader = new FileReader();
+      const img= document.createElement('img')
+
+      reader.onload = (e) => {
+        img.src = e.target?.result as string;
+      };
+
+      img.onload = () => {
+        let scale = Math.min(maxWidth / img.width, maxHeight / img.height);
+
+        const scaleMin = scale > 1 ? 1 : scale
+
+        const width = img.width * scaleMin;
+        const height = img.height * scaleMin;
+
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext('2d');
+        ctx?.drawImage(img, 0, 0, width, height);
+
+        canvas.toBlob((blob) => {
+          if (blob) resolve(blob);
+        }, file.type);
+      };
+
+      reader.readAsDataURL(file);
+    });
+  };
 
   const renderFilePreview = (file: File ) => { 
     const fileType = file?.type; 
@@ -139,14 +232,14 @@ export default function RealizarConsulta( { user }: { user: User | undefined } )
         <img 
           src={URL.createObjectURL(file)} 
           alt={file.name} 
-          className="min-h-[80px] object-contain bg-[#ffffffaa] w-20 border border-[#1d021544] [border-radius:_6px_6px_0_6px] " />
+          className="h-[64px] object-cover bg-[#ffffffaa] w-16 border border-[#1d021544] [border-radius:_6px_6px_0_6px] " />
       ); 
       } else if ( fileType === 'application/pdf' ) { 
         return ( 
         <embed 
           src={URL.createObjectURL(file)} 
           type="application/pdf" 
-          className="min-h-[80px] object-contain bg-[#ffffffaa] w-[80px] h-[100px]  border border-[#1d021544]  [border-radius:_6px_6px_0_6px] " />
+          className="h-[64px] object-cover bg-[#ffffffaa] w-[60px] border border-[#1d021544]  [border-radius:_6px_6px_0_6px] " />
         ); 
       } else { return ( 
       <p className=" text-[#fff] break-words p-2 text-xs text-left">
@@ -160,68 +253,91 @@ export default function RealizarConsulta( { user }: { user: User | undefined } )
     if (successState) {
       close()
     }
-    sessionStorage.getItem('name') && setName(`${sessionStorage.getItem('name')}`)
-    // sessionStorage.getItem('nombre') && setName(`${sessionStorage.getItem('nombre')}`)
+    setToken(tokenx)
 
-    sessionStorage.getItem('email') && setEmail(`${sessionStorage.getItem('email')}`)
-    if (sessionStorage.getItem('email')) {
-      setEmailSession(true);
-    }
-  }, [successState, close, name, email ])
+    isVerified && toast(<NotifyVerified /> , {
+      autoClose: undefined,
+      closeButton:  false ,
+      transition: Flip,
+      className: `!w-full !min-h-min !mt-0 !p-0 !shadow-[0px_4px_12px_#a0b8e996] !bg-transparent !mb-0`,
+    });
+
+    !user || !isEmailVisitor && !isVerified && 
+    toast(<NotifyVerify isEmailVisitor= {isEmailVisitor} consulta={consulta} email={email} user={user} />, {
+      customProgressBar: true,
+      hideProgressBar: true,
+      transition: Flip,
+      className: '!w-full !min-h-min !mt-8 !p-0 !shadow-[0_10px_20px_#c0cde7] ',
+    });
+  }, [])
 
   const onChange = (imageList: ImageListType, addUpdateIndex: Array<number> | undefined) => {
     setImages(imageList);
   };
 
   const initialStatex: StateUser = { message: null, errors: {} };
-  const [estadox, dispatchx] = useFormState(createUser, initialStatex);
+  const [estadox, formActionx, isPendingx] = useActionState(createUser2, initialStatex);
 
   const initialState: StateConsulta = { message: null, errors: {} };
-  const [estado, dispatch] = useFormState(createConsulta, initialState);
+  const [estado, formAction, isPending] = useActionState(createConsulta, initialState);
 
+  const initialStatexx: StateVerificationToken  = { message: null, errors: {} };
+  const [estadoxx, formActionxx, isPendingxx] = useActionState(createVerificationToken, initialStatexx);
+
+  const [errorMessage, formActionAuth, isPendingAuth] = useActionState(authenticate3, undefined, );
+
+  const initialStatexxx: StateUserEmail = { message: null, errors: {} };
+  const updateUserEmailWithId = updateUserEmail.bind(null, id);
+  const [estadoxxx, formActionxxx, isPendingxxx] = useActionState(updateUserEmailWithId, initialStatexxx);
+
+  const initialStatexxxx: StateUpdateCommentEmail = { message: null, errors: {} };
+  const updateCommentEmailWithId = updateCommentEmail.bind(null, id);
+  const [estadoxxxx, formActionxxxx, isPendingxxxx] = useActionState(updateCommentEmailWithId, initialStatexxxx);
+
+
+  const limpiarNotificaciones = () => {
+      toast.dismiss();
+    };
+  const notifyVerify = () =>
+    toast(<NotifyVerify isEmailVisitor= {isEmailVisitor} consulta={consulta} user={user} email={email} />, {
+      autoClose: undefined,
+      closeButton:  false ,
+      transition: Flip,
+      className: `!w-full !min-h-min !mt-8 !p-0 !shadow-[0px_4px_12px_#a0b8e996] bg-transparent items-start mb-0`,
+    });
 
   return (
     <>
-      {/* consult */}
-      <Frente className=" p-2 text-small-regular sm:p-4 !bg-[#020b1d16] ">
+      <Frente className=" p-2 text-small-regular sm:p-4 !bg-[#548eff16] ">
         <div className="flex items-center justify-between sm:flex-row" >
-          <div className="relative flex items-center">
-            {/* <IconConsultaRight className=" ml-1.5 h-[36px] w-[30px] sm:ml-3 " /> */}
+          <div className="relative flex items-center gap-2.5 sm:gap-5">
             <IconConsulta 
-                className=" ml-1.5 w-[22px] sm:ml-3 " 
-                color="#fffc" color2="#39507fcc"
-                />
-            {/* <div className="absolute top-[1px] left-6 text-[#ffffff] text-xs sm:left-[30px]">?</div> */}
-            <p className="ml-4 text-sm text-[#39507f]">Consulta <span className=" text-[#ff0000]">*</span></p>
+              className=" ml-1.5 w-[18px] sm:ml-3 sm:w-[22px] fill-[#39507fcc] " 
+            />
+            <p className="text-sm text-[#39507f]">Consulta <span className={` text-[#ff0000] ${consulta && "text-[#0000]"}`}>*</span></p>
           </div>
           <ButtonB
             className={`h-8 text-[13px] w-max `}
             onClick={() => { 
               setConsulta('')
-              setOpenConsulta(!openConsulta)
             }}
             data-testid="edit-button"
             type='button'
+            disabled= {!consulta}
           >
-            {openConsulta ? ( 'Cancelar' ) : ( <div> {' '} Realizar <span className="text-xs uppercase">Consulta</span>
-              </div> )}
+            Cancelar
           </ButtonB>
         </div>
 
         <div 
-          className={clsx('mt-0 overflow-visible transition-[max-height,opacity] duration-300 ease-in-out',
-            {
-              'max-h-[1000px] opacity-100 mt-4': openConsulta,
-              'max-h-0 opacity-0 invisible': !openConsulta,
-            },
-          )}>
+          className={'mt-2 overflow-visible transition-[max-height,opacity] duration-300 ease-in-out sm:mt-4'}>
           <TextareaCnp
             className={` ${consulta && "opacity-90"}`}
             id="consulta"
             name="consulta"
             placeholder= "..."
             required
-            rows={4}
+            rows={2}
             maxLength={1024}
             wrap="hard"
             value={consulta}
@@ -229,18 +345,18 @@ export default function RealizarConsulta( { user }: { user: User | undefined } )
               setConsulta(e.target.value);
             }}
             autoFocus
+            disabled={consultaDisabled }
           />
         </div>
       </Frente>
 
       {/* adjuntar archivos */}
       <Frente 
-        // className={`flex flex-col mt-2 text-small-regular !p-2 !bg-[#020b1d16] ${!state && 'pb-0'} sm:!p-4 `}
-       className=" p-2 mt-2 text-small-regular sm:p-4 !bg-[#020b1d16] "
+       className=" p-2 mt-2 text-small-regular sm:p-4 !bg-[#548eff16] "
       >
         <div className="flex items-center justify-between sm:flex-row" >
-          <div className="relative flex items-center gap-5">
-            <IconArchivo className=" ml-1.5 w-8 sm:ml-3 " />
+          <div className="relative flex items-center gap-2.5 sm:gap-5">
+            <IconAdjunto className=" ml-1.5 w-[22px] sm:ml-3 sm:w-[27px]" />
             <div className={`w-full text-start text-[14px] text-[#39507f] `}>
               Adjuntar archivos <span className="text-xs opacity-80">(Opcional)</span>
             </div>
@@ -254,8 +370,9 @@ export default function RealizarConsulta( { user }: { user: User | undefined } )
             type={state ? 'reset' : 'button'}
             data-testid="edit-button"
             data-active={state}
+            disabled={consultaDisabled }
           >
-            {state ? ( 'Cancelar' ) : ( <div> {' '} Adjuntar {/* <span className="text-xs uppercase">Archivos</span> */}
+            {state ? ( 'Cancelar' ) : ( <div> {' '} Adjuntar
               </div> )}
           </ButtonB>
         </div>
@@ -290,71 +407,66 @@ export default function RealizarConsulta( { user }: { user: User | undefined } )
                 dragProps,
                 errors,
               }) => (
-                <div className={`flex flex-col bg-[#020b1db8] rounded-lg ${!images.length ? 'gap-0' : 'gap-0.5'} ${!state && "invisible"} `} >
+                <div className={` ${!state && "invisible"} flex flex-col ${!images.length ? 'gap-0' : 'gap-1.5'} `} >
                   <button
                     type="button"
                     onClick={onImageUpload}
                     {...dragProps}
                     className={`group rounded-lg w-full disabled:!cursor-default `}
-                    disabled= {!state}
                   >
-                    <div className={`relative label-dnd  ${!images.length ? 'rounded-lg' : 'rounded-t-lg'} bg-[#020b1d] text-[#ffffffdd] w-full p-2 duration-150 text-sm flex flex-col justify-center items-center active:opacity-80 sm:p-4 `}>
-                      <div className="flex flex-col items-center duration-150 opacity-90 group-hover:opacity-100 min-[512px]:flex-row ">
-                        <IconDragDrop className= "w-9 opacity-80  min-[512px]:mr-7" />
-                        <div>
-                          Click y elegí un archivo o arrastralo y sueltá aquí <br />
-                          <p className="text-xs mt-1.5 text-[#ffffffbb]">Máximo: <b>{maxNumber} </b> archivos <b>jpg</b>, <b>png</b> o <b>pdf</b> <span className="">(de una sola página)</span>  <br />Tamaño Max de cada archivo: <b>4 MB</b>
-                            </p>
+                    <div className={`relative label-dnd  ${!images.length ? 'rounded-lg' : 'rounded-t-lg'} bg-[#ffffffd7] text-[#020b1ddd] w-[calc(100%_-_8px)] mx-auto px-2 py-3 duration-150 flex flex-col justify-center items-center `}>
+                      <div className="flex items-center gap-3 text-[13px] duration-150 sm:text-sm">
+                        <IconDragDrop className= "w-[30px]  min-[512px]:mr-7" />
+                        <div className='leading-[1]'>
+                          Elegí un archivo o arrastralo y sueltá aquí <br />
+                          <p className="text-xs mt-1.5 "> archivos <span className='font-medium'>jpg</span >, <span className='font-medium'>png</span > o <span className='font-medium' >pdf</span >
+                          </p>
                         </div>
                       </div>
                       {errors && (
-                        <div className={`w-max mb-1 mt-4 mx-auto text-[12.5px] ${!state && "hidden"} border border-[#ffffff1e] tracking-wide text-[#ffffffee] leading-[1.5] py-0.5 px-2 bg-[#91359185] rounded-xl `}>
+                        <div className={`w-max mb-1 mt-4 mx-auto text-[12.5px] border border-[#ffffff1e] tracking-wide text-[#ffffffee] leading-[1.5] px-2 bg-[#4d70b5] rounded-xl `}>
                           {errors.maxNumber && (
-                            // <span>La cantidad excede el máximo permitido</span>
                             <span>Cantidad máxima: {maxNumber} archivos</span>
+                          )}
+                          {errors.maxFileSize && (
+                            <span>El tamaño excede el máximo permitido (4 MB)</span>
                           )}
                           {errors.acceptType && (
                             <span>El tipo de archivo no está permitido</span>
                           )}
-                          {errors.maxFileSize && (
-                            <span>El tamaño excede el máximo permitido</span>
-                          )}
-                          {errors.resolution && (
-                            <span>
-                              La resolución no coincide con la permitida
-                            </span>
-                          )}
                         </div>
                       )}
-                      <div className={`absolute w-full h-full outline-2 outline-dashed outline-[#00000003]  ${isDragging ? '!outline-[#000000cc] bg-[#ffffff33] ' : undefined}  ${!images.length ? 'rounded-lg' : 'rounded-t-lg'} hover:outline-[#0000006e] hover:border-b-2 hover:border-[#ffffff69] hover:border-dashed `}>
+                      <div 
+                        className={`absolute mx-auto w-[calc(100%_+_2px)] h-full bg-[#548eff10] outline-1 duration-150 outline-offset-2 outline-dashed outline-[#00000070] ${isDragging ? ' hover:bg-[#4369b566] rounded-lg hover:outline-[#000000ee] ' : !images.length ? " hover:bg-[#ffffff00] hover:outline-[#000000ee] rounded-lg  " : " hover:bg-[#ffffff00] hover:outline-[#000000ee] rounded-t-lg" }`}
+                        >
                       </div>
                     </div>
                   </button>
 
                   <div className= "flex flex-col rounded-b-lg bg-[#020b1d] ">
-                    <div className= {`flex items-baseline justify-start px-3 gap-x-2 flex-wrap text-sm w-full cursor-default max-[512px]:justify-center sm:px-9 sm:gap-x-4 `}>
+                    <div className= {`flex items-baseline justify-start px-3 gap-x-4 flex-wrap text-sm w-full cursor-default max-[512px]:justify-center sm:px-9 sm:gap-x-4 `}>
                       { images.map((image, index) => (
-                        <div key={index} className="flex flex-col items-start pb-4 pt-5">
+                        <div key={index} className="flex flex-col items-start pb-2 pt-2.5">
                           <div className="image-item flex justify-start">
 
                             {renderFilePreview( image.file! )} 
 
-                            <div className="flex flex-col text-[13px] justify-end gap-0.5 ">
+                            <div className="flex flex-col text-[12px] justify-end gap-[1px] ">
                               <div onClick={() => {
                                 onImageUpdate(index)
-                                }} className="border border-[#e9dae9] border-l-0 bg-[#d7d7d7] px-1.5 py-0.5 cursor-pointer rounded-e-md duration-200 text-[#1d0215aa] hover:border-[#d8c0d7] hover:text-[#1d0215dd]  hover:bg-[#ffffff] active:bg-[#ffffffaa]  "
+                                }} className="border border-[#e9dae9] border-l-0 bg-[#d7d7d7] px-1.5 cursor-pointer rounded-e-md duration-200 text-[#1d0215aa] hover:border-[#d8c0d7] hover:text-[#1d0215dd]  hover:bg-[#ffffff] active:bg-[#ffffffaa]  "
                               >
                                 Cambiar
                               </div>
                               <div onClick={() => {
                                 onImageRemove(index)
-                                }} className="border border-[#e9dae9] border-l-0 bg-[#d7d7d7] px-1.5 py-0.5 cursor-pointer rounded-e-md duration-200 text-[#1d0215aa] hover:text-[#1d0215dd] hover:border-[#d8c0d7] hover:bg-[#ffffff] active:bg-[#ffffffaa] "
+                                }} className="border border-[#e9dae9] border-l-0 bg-[#d7d7d7] px-1.5 cursor-pointer rounded-e-md duration-200 text-[#1d0215aa] hover:text-[#1d0215dd] hover:border-[#d8c0d7] hover:bg-[#ffffff] active:bg-[#ffffffaa] "
                                 >
                                 Eliminar
                               </div>
                             </div>
                           </div>
-                          <div className="text-xs break-words w-36 text-[#ffffffee] mt-[3px] opacity-60 text-start ">
+                          <div className="text-xs break-words text-[#ffffffee] mt-[3px] opacity-60 text-start ">
                             {image.file?.name } 
                           </div>
                         </div>
@@ -364,184 +476,246 @@ export default function RealizarConsulta( { user }: { user: User | undefined } )
                 </div>
               )}
             </ImageUploading>
+
           </DisclosurePanel>
         </Disclosure>
       </Frente>
 
-      {/* registrar email */}
-      {!user && (
-        emailSession === false ? (
-          <Frente className="!p-2 mt-2 text-small-regular sm:!p-4 !bg-[#020b1d16] ">
-            <div className="flex items-center justify-between gap-5 ">
-              <div className="mt-1.5 ">
-                <IconRegistro className=" w-[24px] ml-1.5 sm:ml-3" />
-              </div>
-  
-              <div className={`w-full text-start text-[14px] text-[#39507f] `}>
-                Registrá tu e-mail para mandarte la respuesta <span className=" text-[#ff0000]">*</span>
-              </div>
-                
-              <ButtonB
-                className={`h-8 text-[13px]  w-max`}
-                onClick={() => { 
-                  setOpen(!open); 
-                  setEmail(""); 
-                  setName("");
-                  sessionStorage.removeItem("email")
-                  sessionStorage.removeItem("name")
-                }}
-
-                data-testid="edit-button"
-                data-active={open}
-              >
-                {open ? "Cancelar" :  <div className="text-[13px] overflow-auto whitespace-nowrap">Registrar</div>  }
-              </ButtonB>
+      {/* registrar email consulta */}
+      <Frente className={`${!user || isEmailVisitor ? "block" : "hidden"} py-1.5 px-2 mt-2 text-small-regular !bg-[#548effe2] sm:!px-4 `}>
+        <div className={`${open ? "justify-end py-1.5 " : "justify-between "} flex items-start gap-3 sm:items-center sm:gap-5 `}>
+          <div className={`${open && "hidden"} flex items-center justify-start gap-3 w-full text-[13px] text-[#ffffff] [text-shadow:_1px_1px_#3d61ad] sm:text-[15px] `}>
+            <div className="mt-[3px] mb-auto sm:mt-[3px] ">
+              <IconRegistro className=" w-[16px] ml-1.5 sm:w-[22px] sm:ml-3" />
             </div>
-            
-            <div
-              className={clsx(
-                "transition-[max-height,opacity] duration-300 ease-in-out overflow-visible",
-                {
-                  "max-h-[1000px] opacity-100": open,
-                  "max-h-0 opacity-0": !open,
-                }
-              )}
-            >
-              {/* create user */}
-              <div className={`pt-2 sm:pt-4`}> 
-                <form action={dispatchx}>
-                  <fieldset className={`flex flex-col items-center gap-2 md:flex-row md:gap-4`}>
-                    <InputCnp
-                      className="text-sm h-8"
-                      id="name"
-                      type="text"
-                      name="name"
-                      minLength={3}
-                      maxLength={100}
-                      value={name}
-                      placeholder= "Nombre"
-                      required
-                      disabled={ !open  }
-                      onChange={(e) => {
-                        setName(e.target.value);
-                      }} >
-                      <div className="absolute rounded-l-[4px] h-[32px] w-[32px] left-0 top-0 bg-[#020b1d0b]" >
-                      </div>
-                      <IconCuenta  className="absolute w-[14px] left-[9px] top-[9px] " color="#39507faa" />
-                    </InputCnp>
-  
-                    <InputCnp
-                      className={`text-sm h-8 `}
-                      id="email"
-                      type="email"
-                      name="email"
-                      minLength={3}
-                      maxLength={100}
-                      value={email}
-                      placeholder= "Email"
-                      required
-                      disabled={ !open  }
-                      onChange={(e) => {
-                        setEmail(e.target.value);
-                      }} 
-                      >
-                      <div className="absolute rounded-l-[4px] h-[32px] w-[32px] left-0 top-0 bg-[#020b1d0b]" >
-                      </div>
-                      <IconEmail2  className="absolute w-[14px] left-[9px] top-[9px] " color="#39507faa" />
-                    </InputCnp>
-                  </fieldset>
-  
-                  {/* Massages erros */}
-                  <div
-                    className="flex items-end relative space-x-8"
-                    aria-live="polite"
-                    aria-atomic="true"
-                  >
-                    {estadox?.message && estadox?.message !== "usuario" && estadox?.message === "Database Error: Error al crear consulta." && (
-                      <>
-                        <ExclamationCircleIcon className="absolute top-4 h-5 w-5 text-red-500" />
-                        <p className="pt-4 text-sm text-red-500">{estadox?.message}</p>
-                      </>
-                    )}
-                  </div>
-  
-                  {/* button submit */}
-                  <div className="mt-2 text-sm sm:mt-4">
-                    <ButtonA
-                      className={`h-8 text-[13px] w-max ml-auto ${!open && "hidden"}`}
-                      onClick={() => { 
-                        email && name && sessionStorage.setItem('name', `${name}`);
-                        email && name && sessionStorage.setItem('email', `${email}`);
-                        handleClickButtonRegistro()
-                      }}
-                    >
-                      Registrar
-                    </ButtonA>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </Frente>
-          ) : (
-            <Frente className="p-2 mt-2 text-small-regular sm:p-4 !bg-[#e0e6e1]">
-              <div className={`w-full text-start text-[13px] text-[#1d0215dd] transition-[opacity] duration-300 sm:text-sm `}>
-                <span className="font-semibold text-sm sm:text-[15px]">{ /* !estadox.message ? "" : */ name }</span> Para enviarte la respuesta se registró el e-mail <span className="font-semibold mx-1 text-sm sm:text-[15px] ">{email}</span>
-              </div>
-            </Frente> 
-          )
-        )
-      }
-
-      {estado?.message === "consultaCreada" && (
-        <Frente className="!p-2 mt-2 !bg-[#d7e5d9] sm:!p-4 ">
-          <div className={`w-full text-start text-sm text-[#1d0215dd] transition-[opacity] duration-300 sm:text-[15px] `}>
-            Recibimos la consulta. Te responderemos a la brevedad.
+            {isEmailVisitor ? (
+              <p><b>{ user.name }</b>, enviame un e-mail para mandarte la respuesta<span className="text-[15px] text-[#ff0000]  [text-shadow:_1px_1px_#fff9,_-1px_-1px_#fff9,_1px_1px_#fff9,_-1px_1px_#fff9] ml-1.5">*</span>
+              </p>
+            ) : (
+              <p className='leading-[1.1] sm:leading-normal'>Envíame un Email para que pueda mandarte la respuesta<span className="text-[15px] text-[#ff0000]  [text-shadow:_1px_1px_#fff9,_-1px_-1px_#fff9,_1px_1px_#fff9,_-1px_1px_#fff9] ml-1.5">*</span>
+              </p>
+            )}
           </div>
-        </Frente> 
-      ) }
 
-      {/* Massages error consult */}
-      <div
+          <div className='flex items-center gap-3'>
+            {/* button submit */}
+            <ButtonB
+              className={`group ${!open && "hidden"} ${email && name && "!bg-[#ffffff]" } w-max h-[28px] !rounded-md text-[13px] !text-[#020b1daa] ml-auto !opacity-100 disabled:!opacity-85  disabled:hover:!opacity-85 hover:!text-[#020b1dee] `}
+              onClick={() => { 
+                handleCreateUser()
+                setTimeout(handleClickButtonAuth, 200)
+                setTimeout(notifyVerify, 2000)
+              }}
+              disabled= { (name || user?.name) && email && isEmailValid(`${email}`)  ? false : true}
+            >
+              <IconCambio fill="#548eff" className={`${(isPendingx || isPendingAuth) && "animate-spin"} fill-[#fff0] stroke-[#548eff36] mr-2 w-[26px] h-[26px] opacity-70  group-hover:opacity-100`} />{/*  */}
+
+              <p className="w-full" >Enviar</p>
+            </ButtonB>
+
+            <ButtonB
+              className={`h-[28px] text-[13px] !rounded-md w-max !opacity-100 !bg-[#ffffffcc] hover:!bg-[#ffffff] active:!opacity-70 `}
+              onClick={() => { 
+                setOpen(!open); 
+                setEmail(""); 
+                setName("");
+              }}
+              data-testid="edit-button"
+              data-active={open}
+            >
+              {open ? "Cancelar" :  <div className="text-[13px] overflow-auto whitespace-nowrap">Email</div>  }
+            </ButtonB>
+          </div>
+        </div>
+        
+        <div
+          className={clsx(
+            "transition-[max-height,opacity] duration-300 ease-in-out overflow-visible",
+            {
+              "max-h-[1000px] opacity-100 pb-1.5": open,
+              "max-h-0 opacity-0": !open,
+            }
+          )}
+        >
+          <div className={`pt-1.5 ${!open && "invisible"} `}> 
+            <fieldset className={` grid grid-cols-1 items-center gap-2 md:grid-cols-2 md:flex-row md:gap-4`}>
+              <InputCnp
+                className={`${email ? "bg-[#ffffff]" : "bg-[#ffffffcc]"} text-sm h-[30px] pb-[3px] !opacity-100 hover:!bg-[#ffffff] focus:!bg-[#ffffff]`}
+                id="email"
+                type="email"
+                name="email"
+                minLength={3}
+                maxLength={100}
+                value={email}
+                placeholder= "Email"
+                required
+                disabled={ !open }
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                }} 
+                >
+                <div className="absolute rounded-l-[4px] h-[32px] w-[32px] left-0 top-0 bg-[#548eff26]" >
+                </div>
+                <IconEmail2  className="absolute w-[14px] left-[9px] top-[7px] " color="#39507fcc" />
+              </InputCnp>
+              
+              <div className={` ${isEmailVisitor && "hidden"}`}>
+                <InputCnp
+                  className={`${name ? "!bg-[#ffffff]" : "!bg-[#ffffffcc]"} text-sm h-[30px] pb-[3px] !opacity-100 hover:!bg-[#ffffff] focus:!bg-[#ffffff]`}
+                  id="name"
+                  type="text"
+                  name="name"
+                  minLength={2}
+                  maxLength={100}
+                  value={ name /* ? name : nameVisitor ? nameVisitor : "" */ }
+                  placeholder= "Nombre"
+                  required
+                  disabled={ !open }
+                  onChange={(e) => {
+                    setName(e.target.value);
+                  }} >
+                  <div className="absolute rounded-l-[4px] h-[32px] w-[32px] left-0 top-0 bg-[#548eff26]" >
+                  </div>
+                  <IconCuenta  className="absolute w-[14px] left-[9px] top-[7px] " color="#39507fcc" />
+                </InputCnp>
+              </div>
+            </fieldset>
+
+            {/* Massages erros */}
+            <div
+              className="flex items-end relative space-x-8"
+              aria-live="polite"
+              aria-atomic="true"
+            >
+              {estadox?.message && estadox.message !== "usuario" && (
+                <>
+                  <ExclamationCircleIcon className="absolute top-4 h-5 w-5 text-red-500" />
+                  <p className="pt-4 text-sm text-red-500">{estadox?.message}</p>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      </Frente>
+
+      {/* <div
         className="mb-3 mt-3 flex items-end space-x-1"
         aria-live="polite"
         aria-atomic="true"
-      >
+        >
         {estado?.message && estado?.message !== "consultaCreada" && (
           <>
             <ExclamationCircleIcon className="h-5 w-5 text-red-500" />
             <p className="text-sm text-red-500">{estado?.message}</p>
           </>
         )}
+      </div> */}
+
+      {/*Boton Enviar consult */}
+      <div className="mt-3 w-full flex justify-between items-start ">{/* items-center */}
+
+        <p className={`text-xs ml-2 ${consulta && user?.email && !isEmailVisitor  && "opacity-0" } sm:text-[13px]`}><span className=" text-[#ff0000]">*</span> Requeridos</p>
+        
+
+        {estado?.message !== "consultaCreada" ? (
+          <form onSubmit={ files.length === 0 ? uploadToServer1 : uploadToServer2 } >
+            <div className="group relative w-full flex justify-between items-center">
+
+              <div className="w-[188px] absolute bottom-8 pt-3">
+
+                {/* <span className={`opacity-0 invisible text-xs text-[#020b1d] absolute w-[170px] bottom-[12px] bg-[#ffffff] pt-[3px] pb-[5px] pl-1.5 pr-3 rounded-lg duration-150 shadow-[0_20px_25px_-5px_rgb(0_0_0_/_0.2),_0_8px_10px_-6px_rgb(0_0_0_/_0.2),_0px_-5px_10px_#00000012] ${ consulta && user?.email ? "" : "group-hover:opacity-100"} sm:text-[13px] group-hover:visible`}><span className="text-base text-[#ff0000]">* </span>Completar requeridos</span> */}
+
+                <span className={`items-center hidden text-[13px] text-[#020b1dcc] absolute h-8 w-max -bottom-[32px] right-[200px] bg-[#ffffff] py-auto pl-2 pr-3 rounded-lg duration-150 shadow-[0_20px_25px_-5px_rgb(0_0_0_/_0.2),_0_8px_10px_-6px_rgb(0_0_0_/_0.2),_0px_-5px_10px_#00000012] ${ consulta && user?.email ? "bottom-9" : "group-hover:opacity-100"} sm:text-[13px] group-hover:flex`}><span className=" text-[#ff0000] mx-1">* </span>Completar requeridos</span>
+
+
+              </div>
+
+              <ButtonA
+                className={`h-8 w-max !px-3 text-[13px] !justify-start disabled:!opacity-100 `}
+                type="submit"
+                disabled={ consulta && user?.email && !isEmailVisitor ? false : true }
+                onClick={() => {
+                  setSpin(true);
+                  user?.role === "member" && handleClickButtonVerification()
+                  user?.role === "member" && handleClickButtonPedido()
+                  limpiarNotificaciones()
+                  wait().then(() => {
+                    setConsultaDisabled(true)
+                    notifyVerify()
+                  })
+                }}
+              >
+                <IconCambio
+                  className={`${(spin || isPending || isPendingxx ) && "animate-spin"} fill-[#fff0] stroke-[#ffffff55] mr-1.5 w-[22px] h-[22px] `}
+                />
+                <div className="w-full text-start">
+                  Enviar consulta
+                </div>
+              </ButtonA>
+            </div>
+          </form>
+        ) : (
+          <div className="flex justify-end items-center gap-4">
+            <ButtonA
+              className="h-8 text-sm !justify-start"
+              type="button"
+              onClick={() => {
+                location.reload()
+              }}
+            >
+              Realizá nueva consulta
+            </ButtonA>
+          </div>
+        )}
       </div>
       
-      {/* crear consulta */}
-      <form action={dispatch}>
-        {/* archivos Adjuntos */}
+      <ToastContainer  className={ !isVerified  ? "foo" : "foo2" } autoClose={false} />
+
+
+      {/* authentication */}
+      <form action={formActionAuth} className="">
         <input
           type="hidden"
-          id="archivos_url"
-          name="archivos_url"
-          value={imageUrl ? imageUrl :  `["https://res.cloudinary.com/dchmrl6fc/image/upload/v1740640515/sin-adjuntos_ut7col.png"]` }
+          name="email"
+          value={email}
           readOnly
         />
-        {/* consulta */}
         <input
           type="hidden"
-          id="consulta"
+          name="password"
+          value= {token}
+          readOnly
+        />
+        <input type="hidden" name="redirectTo" value={pathname} readOnly/>
+        <button
+          type="submit" 
+          ref={buttonRefAuth}
+          className="hidden"
+        >
+          Continuar
+        </button>
+      </form>
+
+      {/*crear consulta */}
+      <form action={formAction}>
+        <input
+          type="hidden"
+          name="archivos_url"
+          value={imageUrl ? imageUrl : '["https://res.cloudinary.com/dchmrl6fc/image/upload/v1740640515/sin-adjuntos_ut7col.png"]' }
+          readOnly
+        />
+        <input
+          type="hidden"
           name="consulta"
           value={consulta}
           readOnly
         />
-
-        {/* email */}
         <input
           type="hidden"
-          id="email_id"
           name="email_id"
-          value={email}
+          value={user?.email ? user.email : email}
           readOnly
         />
-
         <button
           type="submit"
           ref={buttonyRef}
@@ -551,260 +725,155 @@ export default function RealizarConsulta( { user }: { user: User | undefined } )
         </button>
       </form>
 
-      {/* Enviar consult */}
-      <div className="w-full flex justify-between items-center">
-        <p className={`text-xs ml-2 ${consulta && (emailSession || user)  && "opacity-0" } sm:text-[13px]`}><span className=" text-[#ff0000]">*</span> Requeridos</p>
-
-        <div className="flex gap-4">
-          <div className={`text-[#1d0215bb] rounded-md ${ estado.message !== "consultaCreada"  &&  "hidden"} bg-[#1d02150d] duration-150 hover:bg-[#1d021517] hover:text-[#1d0215]`} >
-            <button
-              type="button"
-              className={` py-1 px-5`}
-              onClick={() => {
-                sessionStorage.removeItem("email")
-                sessionStorage.removeItem("name")
-                location.reload()
-              }}
-            >{/* !emailSession */}
-              Salir
-            </button> 
-          </div>
-
-          {estado?.message !== "consultaCreada" ? (
-            <form onSubmit={ files.length === 0 ? uploadToServer1 : uploadToServer2 } >
-              <div className="group relative w-full flex justify-end items-center">
-                <span className={`opacity-0 invisible text-xs text-[#1d0215] absolute bottom-[150%] bg-[#ffffff] pt-[3px] pb-[5px] pl-1.5 pr-3 rounded-xl duration-150 shadow-[0_20px_25px_-5px_rgb(0_0_0_/_0.2),_0_8px_10px_-6px_rgb(0_0_0_/_0.2),_0px_-5px_10px_#00000012] ${consulta && (emailSession || user) ? "" : "group-hover:opacity-100"} sm:text-[13px] group-hover:visible`}><span className="text-base text-[#d400aa]">* </span>Completar requeridos</span>
-                <ButtonA
-                  className={`h-8 !px-4 text-sm !justify-start disabled:!opacity-60`}
-                  type="submit"
-                  disabled={ consulta && (emailSession || user) ? false : true }
-                  onClick={() => {
-                    email && name && sessionStorage.setItem('name', `${name}`);
-                    email && name && sessionStorage.setItem('email', `${email}`);
-                    setSpin(true);
-                    handleClickButtonPedido()
-                  }}
-                >
-                  <IconCambio
-                    className={`${spin && "animate-spin"} mr-2 w-[22px] h-[22px] `}
-                    // fill2="#fffc"
-                    // fill="#ff00ff"
-                  />
-                  <div className="w-full">
-                    Enviar consulta
-                  </div>
-                </ButtonA>
-              </div>
-            </form>
-          ) : (
-            <div className="flex justify-end items-center gap-4">
-              <Link href={"/dashboard/consultas"}>
-                <ButtonA
-                  className={`h-8 text-sm !justify-start ${!user && "hidden"}`}
-                >
-                  Ver Consultas
-                </ButtonA>
-              </Link>
-
-              <ButtonA
-                className="h-8 text-sm !justify-start"
-                type="button"
-                onClick={() => {
-                  location.reload()
-                }}
-              >
-                Nueva consulta
-              </ButtonA>
-            </div>
-            )
-          }
-        </div>
-      </div>
-
-      {/* Envio e-mail confirmar registro e-mail */}
-      <Frente className={`hidden !bg-[#1d021513] mt-6 py-4 mb-4 px-4 text-sm sm:px-4 `} >
-        <div className="w-full items-start flex gap-3 justify-end sm:items-center sm:mb-0">
-          <div className={`flex items-center gap-4 w-full text-[15px] sm:text-base`}>
-            <IconEnvioEmail  className="w-9 h-4 fill-[#50073aaa]" size={32} />
-            <p>Confirmacion de recepcion e-mail</p>
-          </div>
-
-          <Button
-            className="relative h-[30px] rounded-md border border-[#e9dae9] min-h-[24px] w-[72px] justify-center bg-[#ffffffaa] !px-2.5 py-1 text-[13px] !font-normal text-[#1d0215aa] hover:bg-[#ffffff] hover:text-[#1d0215dd] hover:border-[#d8c0d7] active:!bg-[#eee]"
-            onClick={() => { setEstadoRegistrar(!estadoRegistrar)}}
-            data-testid="edit-button"
-            data-active={state}
-            type='button'
-          >
-            {estadoRegistrar ? "Cerrar" :  <div><span className="text-[12px] uppercase">Ver</span></div> }
-          </Button>
-        </div>
-        <div
-          className={clsx(
-            "transition-[max-height,opacity] duration-300 ease-in-out overflow-visible",
-            {
-              "max-h-[1000px] opacity-100 pt-4": estadoRegistrar,
-              "max-h-0 opacity-0": !estadoRegistrar,
-              "invisible": !estadoRegistrar,
-            }
-          )}
+      {/* crear verificationToken */}
+      <form action={formActionxx}>
+        <input
+          type="hidden"
+          name="identifier"
+          value={user?.email}
+          readOnly
+        />
+        <input
+          type="hidden"
+          name="token"
+          value={token}
+          readOnly
+        />
+        <input
+          type="hidden"
+          name="expires"
+          value={`${new Date(Date.now() + 1000 * 60 * 60 * 24)}`}
+          readOnly
+        />
+        <input
+          type="hidden"
+          name="pathname"
+          value= {pathname}
+          readOnly
+        />
+        <button
+          type="submit"
+          ref={buttonRefVerification }
+          className= "hidden " 
         >
-          <form action={handleFormRegistro}  className="rounded-lg w-full p-4 ">
-            <div className="flex items-start w-full mb-4 gap-3">
-              <p className="mt-2 leading-none text-[13px]">
-                Para
-              </p>
-              <div className="flex flex-col gap-1 w-full">
-                <InputCnp 
-                  type="text" 
-                  name="to_name" 
-                  placeholder="Nombre" 
-                  className="h-8 !text-sm "
-                  value={name}
-                  autoFocus
-                  required
-                  readOnly
-                  >
-                  <div className="absolute rounded-l-[4px] h-[32px] w-[28px] left-0 top-0 bg-[#00000007]" >
-                    <span className={`absolute w-3 font-semibold left-[9px] top-1.5 opacity-40 text-[#1d021599]  `}>
-                    </span>
-                    <IconCuenta 
-                      color="#50073a50"
-                      className="w-5 absolute top-[7px] left-[5px]"
-                    />
-                  </div>
-                </InputCnp>
-                
-                <InputCnp 
-                  type="email" 
-                  name="to_email" 
-                  placeholder="Email" 
-                  className="h-8 !text-sm " 
-                  defaultValue="agrotecnicog@gmail.com"
-                  // defaultValue= {email} 
-                  required
-                  readOnly
-                  >
-                  <div className="absolute rounded-l-[4px] h-[32px] w-[28px] left-0 top-0 bg-[#00000007]" >
-                    <span className={`absolute w-3 font-semibold left-[9px] top-1.5 opacity-40 text-[#1d021599] `}>
-                    </span>
-                    <IconEmail2 
-                      color="#50073a50"
-                      className="w-4 absolute top-[9px] left-1.5"
-                      />
-                  </div>
-                </InputCnp>
-              </div>
-            </div>
+          Crear VerificationToken
+        </button>
+      </form>
 
-            <div className="flex flex-col gap-1 mb-4">
-              <fieldset className="flex flex-col">
-                <label
-                  className="text-start text-[13px] "
-                  htmlFor="title"
-                >
-                  Asunto
-                </label>
-                <TextareaCnp 
-                  name="title" 
-                  className="!pl-4 !text-sm"
-                  rows={1}
-                  value="Registro e-mail"
-                  required
-                  readOnly
-                  >
-                  <div className="w-0" >
-                  </div>
-                </TextareaCnp>
-              </fieldset>
-
-              <fieldset>
-                <label
-                  className="text-start text-[13px] "
-                  htmlFor="content"
-                >
-                  Mensaje
-                </label>
-                <TextareaCnp
-                  name="content" 
-                  placeholder="Mensaje de confirmación" 
-                  className=" !pl-4 !text-sm"
-                  value={`Para mandarte una Respuesta por tu Consulta se registró el e-mail: ${email}`}
-                  rows={3}
-                  required
-                  readOnly
-                />
-              </fieldset>
-            </div>
-
-            <button 
-              type="submit" 
-              ref={buttonRefRegistro}
-              className="py-1">
-              Enviar
-            </button>
-          </form>
-        </div>
-      </Frente>
-
-      {/* Envio e-mail confirmar recepción consulta */}
-      <form action={handleFormPedido}  className="hidden rounded-lg bg-[#50073a66] w-full border border-gray-700 m-4 p-4 ">
-        <div className="flex items-start w-full mb-4 gap-3">
-          <p className="mt-2 leading-none text-[13px]">
-            Para
-          </p>
-          <div className="flex flex-col gap-1 w-full">
-            <input 
-              type="text" 
-              name="to_name" 
-              placeholder="Nombre" 
-              value={name}
-              required
-              readOnly
-              />
-            
-            <input
-              type="email" 
-              name="to_email" 
-              placeholder="Email" 
-              value= "agrotecnicog@gmail.com"
-              // value=  {email}
-              required
-              readOnly
-              />
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-1 mb-4">
-          <fieldset className="flex flex-col">
-            <label htmlFor="title">Asunto</label>
-            <textarea
-              name="title" 
-              rows={1}
-              value="Recepción Consulta"
-              required
-              readOnly
-              />
-          </fieldset> 
-
-          <fieldset className="flex flex-col">
-            <label htmlFor="content">Mensaje</label>
-            <textarea
-              name="content" 
-              placeholder="Mensaje de confirmación" 
-              value={`Recibimos tu consulta: "${consulta}"`}
-              rows={3}
-              required
-              readOnly
-            />
-          </fieldset>
-        </div>
-
+      {/* Envio e-mail verificacion email */}
+      <form action={handleFormPedido}>
+        <input 
+          type="hidden"
+          name="to_name" 
+          value={user?.name}
+          readOnly
+        />
+        <input
+          type="hidden"
+          name="to_email" 
+          value= "agrotecnicog@gmail.com"
+          // value= {email}
+          readOnly
+        />
+        <input
+          type="hidden"
+          name="content" 
+          value="/realizar-consulta"
+          readOnly
+        />
+        <input
+          type="hidden"
+          id="token"
+          name="token"
+          value={token}
+          readOnly
+        />
         <button 
           type="submit" 
           ref={buttonRefPedido}
-          className="bg-slate-600 text-white p-2">
+          className="hidden">
           Enviar
+        </button>
+      </form>
+      
+      {/*update comment email */}
+      <form action={formActionxxxx}>
+        <input
+          type="hidden"
+          name="email_id"
+          value={ email }
+          readOnly
+        />
+        <input
+          type="hidden"
+          name="pathname"
+          value= {pathname}
+          readOnly
+        />
+        <button
+          type="submit"
+          ref={buttonRefxxxx}
+          className= "hidden " 
+        >
+          Enviar Consulta
+        </button>
+      </form>
+
+      {/*update user email */}
+      <form action={formActionxxx}>
+        <input
+          type="hidden"
+          name="email"
+          value={ email }
+          readOnly
+        />
+        <input
+          type="hidden"
+          name="pathname"
+          value= {pathname}
+          readOnly
+        />
+        <button
+          type="submit"
+          ref={buttonRefxxx}
+          className= "hidden " 
+        >
+          Enviar Consulta
+        </button>
+      </form>
+
+      {/*create user */}
+      <form action={formActionx}>
+        <input
+          type="hidden"
+          name="email"
+          value={ email }
+          readOnly
+        />
+        <input
+          type="hidden"
+          name="name"
+          value={ name ? name : user?.name }
+          readOnly
+        />
+        <input
+          type="hidden"
+          name="image"
+          value={ "" }
+          readOnly
+        />
+        <input
+          type="hidden"
+          name="token"
+          value= {token }
+          readOnly
+        />
+        <button
+          type="submit"
+          ref={refCreateUser}
+          className= "hidden " 
+        >
+          Enviar Consulta
         </button>
       </form>
     </>

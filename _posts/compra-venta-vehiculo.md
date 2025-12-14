@@ -1,7 +1,7 @@
 ---
 title: "Compra o venta de un vehículo"
 excerpt: "Ante la compra o venta de un vehículo, ¿Qué documentación tengo que solicitar o entregar?"
-date: "2024-08-01"
+date: "2025-02-01"
 image: "/hero.png"
 avatar: "/customers/carina-blog.jpg"
 autor: "Carina Noemi Pacheco"

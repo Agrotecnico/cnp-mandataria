@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-// import { useFormState } from 'react-dom';
 import { useActionState } from 'react';
 import clsx from 'clsx';
 import { useState, useRef } from 'react';
@@ -10,7 +9,7 @@ import { Consulta } from '@/app/lib/definitions';
 import { Button, ButtonA } from '@/app/ui/button';
 import { handleFormRespuesta, updateConsulta, StateUpdateConsulta } from '@/app/lib/actions';
 import { User } from '@/app/lib/definitions';
-import { formatDateToLocal, formatCurrency } from '@/app/lib/utils';
+import { formatDateToLocal } from '@/app/lib/utils';
 import { Frente } from '@/app/ui/marcos';
 import { TextareaCnp } from "@/app/ui/uiRadix/textarea-cnp";
 import IconEnvioEmail from '../logosIconos/icon-envio-email';
@@ -19,6 +18,7 @@ import IconRespuesta from '@/app/ui/logosIconos/icon-respuesta';
 import {InputCnp} from "@/app/ui/uiRadix/input-cnp"
 import IconCuenta from "@/app/ui/logosIconos/icon-cuenta"
 import IconEmail2 from "@/app/ui/logosIconos/icon-email2";
+import IconAdjunto from "@/app/ui/logosIconos/icon-adjunto";
 
 
 export default function EditConsultaForm({
@@ -30,15 +30,19 @@ export default function EditConsultaForm({
 }) {
 
   const [estado, setEstado] = useState(false)
-  const [estadoRespuesta, setEstadoRespuesta] = useState(false)
   const [estadoRegistrar, setEstadoRegistrar] = useState(false)
+  const [estadoAdjunto, setEstadoAdjunto] = useState(false)
 
   const [consultaAsunto, setConsultaAsunto] = useState("")
   const [respuesta, setRespuesta] = useState("")
 
+
+  const archivosAdjuntos= consulta.archivos_url
+  const archivos: string[] = JSON.parse(`${archivosAdjuntos}`)
+
   const consultaA:string[] | undefined= consulta.consulta.split(": ")
 
-  const consultaEmail= `${consultaAsunto}:  ${consulta.consulta}`
+  const consultaEmail= `${consultaAsunto}:: ${consulta.consulta}`
   const extrConsulta= consultaEmail.slice(0, 150)
 
   const id= consulta.id
@@ -56,13 +60,13 @@ export default function EditConsultaForm({
   return (
     <>
       <div className="flex flex-col justify-between rounded-xl ">
-        <div className="flex items-center mb-6 ">
+        <div className="flex items-center mb-6 ml-4 ">
           <div className=" relative mr-4" data-testid="image-container">
             {userMember?.image ? (
                 <img
                   decoding="async" 
                   src= {userMember?.image}
-                  className="rounded-full bg-cover h-14 bject-cover w-full " alt="header-image-profile">
+                  className="rounded-full bg-cover h-10 object-cover w-full " alt="header-image-profile">
                   
                 </img>
               ) : (
@@ -73,15 +77,78 @@ export default function EditConsultaForm({
           </div>
           <div className=" text-sm">
             <div className="font-medium">{userMember?.name} </div>
-            <div className=" text-[13px]">{userMember?.email}</div>
+            <div className="flex text-[13px]">
+              <p className="text-[#020b1daa] ">{userMember?.email}</p>
+              {!userMember?.email_verified && 
+              <span className='ml-2 text-red-600'>no verificado</span>
+              }
+            </div>
           </div>
         </div>
 
-        {/* Editar consulta */}
-        <Frente className="py-4 mb-4 px-4 text-sm sm:px-4" >
+        {/* adjuntos*/}
+        <Frente className="p-3 mb-2 text-sm sm:p-4" >
+          <div className="w-full items-start flex gap-3 justify-end sm:items-center sm:mb-0">
+            <div className={`flex items-center gap-4 w-full text-sm text-[#39507fdd]`}>
+              <IconAdjunto className="w-6 h-6" />
+              <p>ADJUNTOS</p>
+            </div>
+
+            <Button
+              className="relative h-[30px] rounded-md border border-[#548eff33)] min-h-[24px] w-[72px] justify-center bg-[#ffffffaa] !px-2.5 py-1 text-[13px] !font-normal text-[#020b1daa] hover:bg-[#ffffff] hover:text-[#020b1ddd] hover:border-[#548eff66] active:!bg-[#eee]"
+              onClick={() => { setEstadoAdjunto(!estadoAdjunto)}}
+              data-testid="edit-button"
+              data-active={estadoAdjunto}
+              type='button'
+            >
+              {estadoAdjunto ? "Cerrar" :  <div><span className="text-[12px] uppercase">Ver</span></div> }
+            </Button>
+          </div>
+
+          <div
+            className={clsx(
+              "transition-[max-height,opacity] duration-300 ease-in-out overflow-visible bg-[#020b1d] rounded-lg ",
+              {
+                "max-h-[1000px] opacity-100 mt-4 p-3 ": estadoAdjunto,
+                "max-h-0 opacity-0 mt-0 p-0 ": !estadoAdjunto,
+                "invisible": !estadoAdjunto,
+              }
+            )}
+          >
+            <div className={`flex flex-wrap gap-2`}>
+              <div className="text-[#020b1ddd] bg-[#020b1d] rounded flex gap-5 items-baseline ">
+                {archivos?.map((archivo, index) => (
+                  <div key={index } className=" text-[13px] leading-[18px] opacity-80 hover:opacity-100 ">
+                    <Link 
+                      href={archivo.slice(-4) === ".pdf" ? 
+                        archivo.replace(".pdf", ".png") 
+                        : 
+                        archivo
+                      } 
+                      target="_blank">
+                      <img 
+                        src={archivo.slice(-4) === ".pdf" ? 
+                          archivo.replace(".pdf", ".png") 
+                          : 
+                          archivo
+                        } 
+                        alt="imagen archivo"
+                        width={96}
+                        height={96}
+                        className="rounded w-20 border border-[#777]" />
+                    </Link>
+                  </div> 
+                ))}
+              </div>
+            </div>
+          </div>
+        </Frente>
+
+        {/* consulta */}
+        <Frente className="p-3 mb-2 text-sm sm:p-4" >
           <div className="w-full items-center flex gap-3 justify-end sm:mb-0">
-            <div className={`flex gap-4 w-full text-[15px] sm:text-base`}>
-              <IconConsulta  className="w-5 h-5" color="#ffffff" color2="#39507fcc" />
+            <div className="flex gap-4 w-full">
+              <IconConsulta  className="w-5 h-5 fill-[#39507fcc]" />
               <p className={`font-medium text-[14px] text-[#39507fdd]`}>
                 CONSULTA 
                 <span className="text-[13px]" > - {formatDateToLocal(consulta.created_at)}</span>
@@ -89,13 +156,13 @@ export default function EditConsultaForm({
             </div>
 
             <Button
-              className="relative h-[30px] rounded-md border border-[#e9dae9] min-h-[24px] w-[72px] justify-center bg-[#ffffffaa] !px-2.5 py-1 text-[13px] !font-normal text-[#020b1daa] hover:bg-[#ffffff] hover:text-[#020b1ddd] hover:border-[#d8c0d7] active:!bg-[#eee]"
+              className="relative h-[30px] rounded-md border border-[#548eff33] min-h-[24px] w-[72px] justify-center bg-[#ffffffaa] !px-2.5 py-1 text-[13px] !font-normal text-[#020b1daa] hover:bg-[#ffffff] hover:text-[#020b1ddd] hover:border-[#5483ff66] active:!bg-[#eee]"
               onClick={() => { setEstado(!estado)}}
               data-testid="edit-button"
               data-active={estado}
               type='button'
             >
-              {estado ? "Cerrar" : consulta.respuesta ? <div><span className="text-[12px] uppercase">Ver</span></div> : <div><span className="text-[12px] uppercase">Editar</span></div> }
+              {estado ? "Cerrar" : <div><span className="text-[12px] uppercase">Ver</span></div> }
             </Button>
           </div>
 
@@ -109,111 +176,136 @@ export default function EditConsultaForm({
               }
             )}
           >
-            <div className={`px-10 mb-6 ${estado && "mt-4"} `}>
+            <div className={`text-[#020b1dbb] mb-3 ${estado && "mt-4"} `}>
               {!consulta.respuesta ? (
                 consulta.consulta
               ) : (
-                <>
-                <p className="font-semibold">Asunto: <span className="font-normal">{consultaA[0]}</span></p>
-                <p className="font-semibold">Consulta: <span className="font-normal">{consultaA[1]}</span></p>
-                </>
-              ) }
+                consultaA[1]
+              )}
               
             </div>
-            {!consulta.respuesta && (
-              <div className="">
-                <label
-                  htmlFor="consulta"
-                  className="mb-1 ml-3 block text-[#39507fdd] text-sm font-medium"
-                >
-                  ASUNTO
-                </label>
-                <TextareaCnp
-                  id="consulta"
-                  name="consulta"
-                  rows={2}
-                  value={consultaAsunto}
-                  className="!text-sm "
-                  aria-describedby="consulta-error"
-                  placeholder='Asunto...'
-                  onChange={(e) => setConsultaAsunto(e.target.value)}
-                />
-              </div>
-            )} 
           </div>
         </Frente>
 
         {/* Editar respuesta */}
-        <Frente className="py-4 mb-4 px-4 text-sm sm:px-4" >
+        <Frente className={`p-3 mb-4 text-sm sm:p-4 ${ !userMember?.email_verified && "hidden"}`} >
           <div className="w-full items-center flex gap-3 justify-end sm:mb-0">
             <div className={`flex gap-4 w-full text-[15px] sm:text-base`}>
                {!consulta.updated_at ? (
-                  <p className={`flex items-center font-medium text-[14px] text-[#39507fdd]`}>
+                  <p className={`flex items-center font-medium text-[#39507fdd] text-[14px]`}>
                     <IconRespuesta color="#ffffff" color2="#80a2e5" size="20"  className="mr-4 scale-x-[-1]"/>
                     ENVIAR RESPUESTA
                   </p>
                 ): (
-                  <div className="flex items-center">
+                  <div className="flex items-start">
                     <IconRespuesta color="#ffffff" color2="#39507fcc" size="20"  className=" mr-4"/>
-                    <p className={`font-medium text-[14px] text-[#39507fdd]`}>
-                      RESPUESTA 
-                      <span className="text-[13px]" > - {formatDateToLocal(consulta.created_at)}</span>
-                    </p>
+                    <div className="flex-wrap items-center sm:gap-4">
+                      <p className={`font-medium text-sm`}>
+                        RESPUESTA 
+                        <span className="text-[13px]" > - {formatDateToLocal(consulta.created_at)}</span>
+                      </p>
+                      <p className="text-sm font-semibold">Asunto: <span className="font-normal">{consultaA[0]}</span></p>
+                    </div>
                   </div>
                )}
             </div>
-
-            <Button
-              className="relative h-[30px] rounded-md border border-[#e9dae9] min-h-[24px] w-[72px] justify-center bg-[#ffffffaa] !px-2.5 py-1 text-[13px] !font-normal text-[#020b1daa] hover:bg-[#ffffff] hover:text-[#1d0215dd] hover:border-[#d8c0d7] active:!bg-[#eee]"
-              onClick={() => { setEstadoRespuesta(!estadoRespuesta)}}
-              data-testid="edit-button"
-              data-active={estadoRespuesta}
-              type='button'
-            >
-              {estadoRespuesta ? "Cerrar" : consulta.respuesta ? <div><span className="text-[12px] uppercase">Ver</span></div> : <div><span className="text-[12px] uppercase">Editar</span></div> }
-            </Button>
           </div>
 
-          <div
-            className={clsx(
-              "transition-[max-height,opacity] duration-300 ease-in-out overflow-visible",
-              {
-                "max-h-[1000px] opacity-100 ": estadoRespuesta,
-                "max-h-0 opacity-0 ": !estadoRespuesta,
-                "invisible": !estadoRespuesta,
-              }
-            )}
-          >
-            <div className={`px-10 ${estadoRespuesta ? "mt-4 mb-6" : "mt-0 mb-0"} `}>
-              {consulta.respuesta}
-            </div>
-            {!consulta.respuesta && (
+          {consulta.respuesta ? (
+            <p className='mt-4 mb-6'>{consulta.respuesta}</p>
+          ) : (
+            <div className="flex flex-col gap-2 mt-4">
+              <div className="">
+                <TextareaCnp
+                  id="consulta"
+                  name="consulta"
+                  rows={1}
+                  value={consultaAsunto}
+                  className="!text-sm placeholder:text-[#616161] !px-3 sm:!px-4"
+                  aria-describedby="consulta-error"
+                  placeholder='Asunto...'
+                  onChange={(e) => setConsultaAsunto(e.target.value)}
+                  required
+                />
+              </div>
               <div className="relative ">
-                <label
-                  htmlFor="respuesta"
-                  className="mb-1 ml-3 block text-[#39507fdd] text-sm  font-medium"
-                >
-                  EDITAR 
-                </label>
                 <TextareaCnp
                   id="respuesta"
                   name="respuesta"
                   rows={4}
-                  defaultValue={consulta.respuesta}
-                  placeholder={consulta.respuesta}
-                  className={`!text-sm `}
+                  defaultValue={respuesta}
+                  placeholder="Respuesta..."
+                  className={`!text-sm placeholder:text-[#616161] mb-3 !px-3 sm:mb-4 sm:!px-4 `}
                   aria-describedby="respuesta-error"
                   onChange={(e) => setRespuesta(e.target.value)}
                   required
                 />
               </div>
-            )}
-          </div>
+            </div>
+          )}
+
+          <form action={formAction}>
+            {/* Campos datos*/}
+            <div className="hidden flex-col ">
+              <textarea
+                id="consulta"
+                name="consulta"
+                value={consultaEmail}
+                aria-describedby="consulta-error"
+                required
+                readOnly
+              />
+
+              <textarea
+                id="respuesta"
+                name="respuesta"
+                value={respuesta}
+                aria-describedby="respuesta-error"
+                required
+                readOnly
+              />
+
+              <input 
+                name="updated_at" 
+                id="updated_at" 
+                type="text"
+                defaultValue= { new Date().toISOString() }
+                readOnly
+              />
+            </div>
+
+            {/* msj error*/}
+            <div aria-live="polite" aria-atomic="true">
+              {state.message ? (
+                <p className="mt-2 text-sm text-red-500">{state.message}</p>
+              ) : null}
+            </div>
+
+            <div className="flex justify-end gap-4">
+              <Link
+                href="/dashboard/consultas"
+                className={`flex h-10 items-center rounded-lg bg-[#ffffffcc] px-4 text-sm font-medium text-gray-500 transition-colors hover:bg-[#ffffff] hover:text-gray-800 ${consulta.respuesta && "hidden"}`}
+              >
+                Cancelar
+              </Link>
+              {!consulta.respuesta && (
+                <ButtonA 
+                  type="submit"
+                  onClick={() => {
+                  handleClickButton()
+                  }}
+                  disabled= {!respuesta || !consultaAsunto ? true : false}
+                  className={`${isPending && "before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_1s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/30 before:to-transparent"} disabled:!opacity-55 relative overflow-hidden `}
+                  >
+                  Enviar respuesta</ButtonA>
+              )}
+            </div>
+          </form>
         </Frente>
 
         {/* Email Consulta */}
         {!consulta.respuesta && (
-          <Frente className={`hidden py-4 mb-4 px-4 text-sm sm:px-4 `} >
+          <Frente className={`block py-4 mb-4 px-4 text-sm sm:px-4 `} >
             <div className="w-full items-start flex gap-3 justify-end sm:items-center sm:mb-0">
               <div className={`flex items-center gap-4 w-full text-[15px] sm:text-base`}>
                 <IconEnvioEmail  className="w-9 h-4 fill-[#50073aaa]" size={32} />
@@ -346,8 +438,6 @@ export default function EditConsultaForm({
                       </div>
                     </TextareaCnp>
                   </fieldset>
-
-                  
                 </div>
 
                 <button 
@@ -361,64 +451,6 @@ export default function EditConsultaForm({
           </Frente>
         )}
       </div>
-
-      <form action={formAction}>
-        {/* Campos datos*/}
-        <div className="hidden flex-col ">
-          <textarea
-            id="consulta"
-            name="consulta"
-            value={consultaEmail}
-            aria-describedby="consulta-error"
-            required
-            readOnly
-          />
-
-          <textarea
-            id="respuesta"
-            name="respuesta"
-            value={respuesta}
-            aria-describedby="respuesta-error"
-            required
-            readOnly
-          />
-
-          <input 
-            name="updated_at" 
-            id="updated_at" 
-            type="text"
-            defaultValue= { new Date().toISOString() }
-            readOnly
-          />
-        </div>
-
-        {/* msj error*/}
-        <div aria-live="polite" aria-atomic="true">
-          {state.message ? (
-            <p className="mt-2 text-sm text-red-500">{state.message}</p>
-          ) : null}
-        </div>
-
-        <div className="flex justify-end gap-4">
-          <Link
-            href="/dashboard/consultas"
-            className="flex h-10 items-center rounded-lg bg-gray-100 px-4 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200"
-          >
-            {!consulta.respuesta ? "Cancelar" : "Consultas"} 
-          </Link>
-          {!consulta.respuesta && (
-            <ButtonA 
-              type="submit"
-              onClick={() => {
-              handleClickButton()
-              }}
-              disabled= {!respuesta || !consultaAsunto ? true : false}
-              className={`${isPending && "before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_1s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/30 before:to-transparent"}  relative overflow-hidden `}
-              >
-              Enviar respuesta</ButtonA>
-          )}
-        </div>
-      </form>
     </>
   );
 }

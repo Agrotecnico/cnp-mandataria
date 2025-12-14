@@ -10,7 +10,7 @@ export function Fondo({ children, className, ...rest }: HTLMElemment) {
       <div
         {...rest}
         className={clsx(
-          "bg-[#020b1d13] [box-shadow:_inset_0_1px_#0000002e,inset_0_-1px_#ffffff] rounded-lg ",
+          "bg-[#548eff18] [box-shadow:_inset_0_1px_#0000002e,inset_0_-1px_#ffffff] rounded-lg ",
           className,
         )}
         >

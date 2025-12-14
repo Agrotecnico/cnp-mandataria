@@ -17,12 +17,6 @@ const IconLink: React.FC<IconProps> = ({
       width={size}
       viewBox="0 0 50 50"
       xmlns="http://www.w3.org/2000/svg"
-      // fill="none" 
-      // stroke="currentColor" 
-      // stroke-width="2" 
-      // stroke-color={color} 
-      // stroke-linecap="round" 
-      // stroke-linejoin="round" 
       {...attributes}
       >
       <g>
@@ -39,10 +33,6 @@ const IconLink: React.FC<IconProps> = ({
           >
         </path>
       </g>
-      {/* <polyline points="15 3 21 3 21 9" stroke="#bf12bf">
-      </polyline>
-      <line x1="10" x2="21" y1="14" y2="3" stroke="#bf12bf">
-      </line> */}
     </svg>
   )
 }

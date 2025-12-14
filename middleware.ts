@@ -1,6 +1,7 @@
 import NextAuth from "next-auth"
 import authConfig from "./auth.config"
 import { NextResponse } from "next/server"
+import { log } from "console"
  
 const { auth: middleware } = NextAuth(authConfig)
 
@@ -11,16 +12,19 @@ const publicRoutes= [
   "/faq/denuncia-de-venta",
   "/faq/dif-gestor-mandatario",
   "/realizar-consulta",
-  // "/iniciar-tramite/denuncia-de-venta",
+  // "/iniciar-tramite/verificacion-policial",
+  // "/iniciar-tramite/cambio-de-radicacion",
   // "/iniciar-tramite/:path+",
   // "/^\/iniciar-tramite\/[\w-]+$/.test(pathname)",
   "/login",
-  // "/register",
-  // "/api/auth/verify-email",
+  "/register",
+  "/email-verified",
+  "/api/auth/signIn",
+  "/api/auth/auth",
+  "/api/verify-email",
   "/api",
   "/api/upload-query",
   // "/api/auth/providers",
-  "/query",
   // "/query",
   "/pruebas"
 ]
@@ -28,8 +32,17 @@ const publicRoutes= [
 export default middleware((req) => {
   const {nextUrl, auth} = req
   const isLoggedIn= !!auth?.user
+  // const account= auth?.user.role === "memberAccount"
+  // const verified= auth?.user.role === "memberVerified"
+  const polo= auth?.user.role
+  const account= polo === "memberAccount"
+  const verified= polo === "memberVerified"
+  // const isLoggedIn= !account || !verified
+  // const isLoggedIn= auth?.user.role == "memberAccount" || auth?.user.role == "memberVerified"
+  const isLoggedInx= !account || !verified
 
   const { pathname } = req.nextUrl
+
   // Autorizar solo rutas que coinciden con /faq/[slug]
 
  

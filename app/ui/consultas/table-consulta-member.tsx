@@ -8,7 +8,6 @@ import Link from 'next/link';
 import { Consulta } from '@/app/lib/definitions';
 import { Button } from '@/app/ui/button';
 import { Frente } from '@/app/ui/marcos';
-import IconConsultaRight from "@/app/ui/logosIconos/icon-consulta-right"
 import useToggleState from "@/app/lib/hooks/use-toggle-state"
 import { formatDateToLocal } from '@/app/lib/utils';
 import distanceToNow from '@/app/lib/dateRelative';
@@ -16,8 +15,14 @@ import distanceToNow from '@/app/lib/dateRelative';
 
 export default function TableConsultaMember( { 
   consulta,
+  countcon,
+  currentPage,
+  index,
 }: { 
   consulta: Consulta;
+  countcon: number;
+  currentPage: number;
+  index: number;
 } ) {
   
   const [palabrasConsulta, setTextconsulta] = useState(consulta.consulta.split(" "))
@@ -46,51 +51,36 @@ export default function TableConsultaMember( {
 
   const tituloConsulta= palabrasConsulta.slice(0, 12)
 
+  const indexz = consulta.consulta.search("::");
+  const tema= consulta.consulta.slice(0, indexz + 1)
+
+  const temaConsulta= indexz === -1 ? consulta.consulta.slice(indexz + 1) : consulta.consulta.slice(indexz + 2)
+  const onsultaSplit= temaConsulta.split(" ")
+  const tituloConsultax= onsultaSplit.slice(0, 12)
+
+  const numeroFormateado = ( ( countcon - currentPage * 6 ) + 6 - index ).toString().padStart(3, "0")
+
 
   return (
-    <Frente  className="p-2 text-sm sm:p-4" >
+    <Frente  className="p-2.5 text-[13px] sm:p-4 sm:text-sm" >
       <div className="flex flex-col items-start " >
-        <div className="w-full items-start flex gap-4 justify-between">
-          <div className="relative">
-            <IconConsultaRight className="opacity-[0.55] text-[#50073a] w-8 "/>
-            <span className="text-white absolute -top-0.5 left-[20px] text-[11px]  ">
-              ?
-            </span>
-          </div>
+        <div className="w-full items-end flex gap-2 justify-between sm:gap-4">
+          <div className="flex items-center flex-wrap text-[#39507f]">
+            <p className="font-medium text-sm mr-2 sm:text-[15px]">
+              <span className="text-[13px] sm:text-[14px]">CONSULTA</span>
+              <span className={`${consulta.respuesta ? "bg-[#548effdd]" : "bg-[#39507fcc]"}  ml-1 px-1 text-xs text-[#ffffff] rounded-md sm:text-[13px]`}>{numeroFormateado}</span>
+            </p>
+            <p className="flex flex-nowrap items-center">
+              <span className="">realizada el </span>
 
-          <div className="w-full mt-12 -ml-7 -mr-20 sm:px-1 sm:m-0 ">
-            <div className="text-[#39507f] w-full mb-2 font-medium text-[13.5px] sm:text-[14.5px] ">
-              CONSULTA
-              <span className={`ml-1 ${!consulta.respuesta && "hidden"}`}>
-                respondida el
-                <span className="text-[#020b1dcc] text-[13px] bg-[#22ff0014] ml-1  px-1.5 py-0.5 rounded-lg "  >
-                  {formatDateToLocal(consulta.updated_at)}
-                </span>
-              </span>
-
-              <span className={`ml-1 ${consulta.respuesta && "hidden"}`}>
-                realizada
-                <span className={` text-[13px] bg-[#ff000014] ml-1 px-1.5 py-0.5 rounded-lg ${consulta.respuesta && "hidden"}`}>
-                  {distanceToNow(new Date(consulta.created_at))}
-                </span> 
-              </span>
-            </div>
-
-            <div className={`mb-2`}>
-              <span className={` decoration-[#020b1d44] underline underline-offset-[3px] ${state && "underline-offset-0 no-underline"}`}>
-                {tituloConsulta.join(" ") }
-              </span>
-              <span className=" ">
-                { tituloConsulta.length < 12 ? "" :
-                  !state ? " ... " :
-                  ` ${palabrasConsulta.slice(12).join(" ")}` 
-                }
-              </span>
-            </div>
+              <time className="text-[#39507f99] leading-[1.2] ml-1 rounded-lg px-1.5 bg-[#ffffff]">
+                {formatDateToLocal(`${consulta.created_at}`)}
+              </time>
+            </p>
           </div>
 
           <Button
-            className="relative h-[30px] rounded-md border border-[#e9dae9] min-h-[24px] w-[72px] justify-center bg-[#ffffffaa] !px-2.5 py-1 text-[13px] !font-normal hover:bg-[#ffffff] hover:text-[#020b1ddd] hover:border-[#d8c0d7] active:!bg-[#eee]"
+            className="mb-auto relative text-[#020b1daa] h-[30px] rounded-md border border-[#548eff33] min-h-[24px] w-[72px] justify-center bg-[#ffffffaa] !px-2.5 py-1 text-[13px] !font-normal hover:bg-[#ffffff] hover:text-[#020b1ddd] hover:border-[#548eff66] active:!bg-[#eee]"
             onClick={() => { handleToggle()}}
             data-testid="edit-button"
             data-active={state}
@@ -98,7 +88,21 @@ export default function TableConsultaMember( {
             {state ? "Cerrar" :  <div><span className="text-[12px] uppercase">Ver</span></div> }
           </Button>
         </div>
+
+        <div className="mt-2 text-sm sm:text-[15px]">
+          <div className=" [font-variant-caps:_small-caps]  underline decoration-[#39507f81] mb-1 underline-offset-2">{tema} </div>
+          <p >
+            {tituloConsultax.join(" ") }
+            <span>
+              { tituloConsulta.length < 12 ? "" :
+                !state ? " ... " :
+                ` ${palabrasConsulta.slice(12).join(" ")}` 
+              }
+            </span>
+          </p>
+        </div>
       </div>
+
       <Disclosure>
         <DisclosurePanel
           static
@@ -110,61 +114,59 @@ export default function TableConsultaMember( {
             }
           )}
         >
-          <div className={`flex flex-col gap-4 mb-4 text-sm cursor-default transition-[visibility] duration-300 ease-in-out ${!state && "invisible"}`}>
-            <div className="mt-4 text-[14.5px]">
-              <div className="text-[#39507f] mb-0.5 font-medium text-[13.5px] sm:text-[14.5px] ">
-                RESPUESTA
-              </div>
+          <div className={`flex flex-col gap-4 mb-2.5 text-sm cursor-default transition-[visibility] duration-300 ease-in-out ${!state && "invisible"}`}>
+            <div className={`mt-7 mx-5 pl-2 border-l-[3px] ${!consulta.respuesta ? "border-[#39507f88]" : "border-[#548effaa]"}  text-[13px] sm:text-sm`}>
+              <p className="text-[#39507f] mb-2 font-medium text-sm sm:text-[15px] ">
+                <span className='text-[13px] sm:text-[14px]'>RESPUESTA</span>
+                {consulta.updated_at ? 
+                <span className='text-[#38507f] ml-1 text-[13px] font-normal sm:text-sm'>enviada<span className={`leading-[1.2] text-[13px] sm:text-sm bg-[#ffffff] text-[#39507f99] ml-1 px-1.5 py-0.5 rounded-lg `}>{distanceToNow(new Date(consulta.updated_at))}</span>
+                </span> : 
+                <span className={`leading-[1.2] text-[13px] sm:text-sm bg-[#ffffff] text-[#39507f99] ml-1 px-1.5 py-0.5 rounded-lg `}>en proceso...</span> } 
+              </p>
 
-              <div>
-                { consulta.respuesta ? (
-                  <p className="p-1 border border-[#50073a22] bg-[#ffffffdd] rounded-[2px] sm:p-4">{ consulta.respuesta } </p>
-                ) : (
-                  <p className="p-2 border text-[#39507fcc] border-[#50073a22] bg-[#ffffffdd] rounded-[2px] sm:p-4">
-                    <i>Recibimos la consulta.</i><br></br>
-                    <i>Te enviaremos la respuesta en la mayor brevedad.</i>
-                  </p>
-                )}
-              </div>
+              { consulta.respuesta ? (
+                <p className="text-sm sm:text-[15px] ">{ consulta.respuesta } </p>
+              ) : (
+                <p className="text-sm text-[#39507fcc] sm:text-[15px] ">
+                  <i>Recibimos la consulta. </i>
+                  <i>Te enviaremos la respuesta en la mayor brevedad.</i>
+                </p>
+              )}
             </div>
           </div>
 
-          <div className={`flex flex-col items-center transition-[visibility] duration-300 ease-in-out ${!state && "invisible"} `}>
-            <div className="mb-1.5 text-base">Archivos Adjuntos</div>
-            <div className="w-full bg-[#020b1d] pt-6 pb-4 px-3 rounded-lg flex gap-6 flex-wrap justify-center">
-
-
-              <div className="">
-                {archivos ? (
-                  <div className=" flex gap-5 items-baseline ">
-                    {archivos?.map((archivo, index) => (
-                      <div key={index } className=" text-[13px] leading-[18px] opacity-80 hover:opacity-100 ">
-                        
-                        <Link 
-                          href={archivo.slice(-4) === ".pdf" ? 
-                            archivo.replace(".pdf", ".png") 
-                            : 
-                            archivo
-                          } 
-                          target="_blank">
-                          <img 
-                            src={archivo.slice(-4) === ".pdf" ? 
-                              archivo.replace(".pdf", ".png") 
-                              : 
-                              archivo
-                            } 
-                            alt="imagen archivo"
-                            width={96}
-                            height={96}
-                            className="rounded w-16 border border-[#777] " />
-                        </Link>
-                      </div> 
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-[#ffffffaa] ">No tiene archivos adjuntos</div>
-                )}
-              </div>
+          <div className={`mt-2 pt-5 flex flex-col transition-[visibility] duration-300 ease-in-out ${!state && "invisible"} `}>
+            <div className="mb-1.5 text-[#39507f] text-[13px] sm:text-sm ">
+              ADJUNTOS
+            </div>
+            
+            <div className="w-full bg-[#020b1d] p-2 pl-3 rounded-md flex gap-6 ">
+              {archivos?.map((archivo, index) => (
+                <div key={index } className=" text-[13px] leading-[18px] ">
+                  {archivo !== "https://res.cloudinary.com/dchmrl6fc/image/upload/v1740640515/sin-adjuntos_ut7col.png" ? 
+                  <Link 
+                    href={archivo.slice(-4) === ".pdf" ? 
+                      archivo.replace(".pdf", ".png") 
+                      : 
+                      archivo
+                    } 
+                    target="_blank">
+                    <img 
+                      src={archivo.slice(-4) === ".pdf" ? 
+                        archivo.replace(".pdf", ".png") 
+                        : 
+                        archivo
+                      } 
+                    alt="imagen archivo"
+                    width={96}
+                    height={96}
+                    className="rounded w-16 opacity-80 border border-[#777] hover:opacity-100 " />
+                  </Link>
+                    : 
+                    <div className="ml-3 text-[15px] font-semibold text-[#ffffffcc]">Sin archivos adjuntos</div>
+                    }
+                </div> 
+              ))}
             </div>
           </div>
         </DisclosurePanel>

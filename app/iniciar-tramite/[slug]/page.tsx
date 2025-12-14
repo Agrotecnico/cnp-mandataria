@@ -22,13 +22,15 @@ export default async function Page({ params }: Params) {
   const session = await auth();
   const user = await fetchUserById(session?.user?.email)
 
-  const tramiteMd = getTramiteBySlug(params.slug);
+  const { slug } = await params
+  const tramiteMd = await getTramiteBySlug(slug);
 
-  const content = await markdownToHtml(tramiteMd.content || '');
+
+  const content = await markdownToHtml(tramiteMd?.content || '');
 
 
   return (
-    <main className="min-h-[93vh] mx-auto w-full max-w-[64rem] flex-auto">
+    <main className=" mx-auto w-full max-w-[64rem] flex-auto">{/* min-h-[93vh] */}
       <div className="mx-auto flex flex-col pb-16 ">
         <div className=" flex flex-col-reverse min-[1024px]:flex-row md:gap-4 md:overflow-hidden ">
           <div className="w-full flex-grow first-line:flex ">

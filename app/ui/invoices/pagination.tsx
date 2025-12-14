@@ -5,6 +5,7 @@ import clsx from 'clsx'
 import Link from 'next/link'
 import { generatePagination } from '@/app/lib/utils'
 import { usePathname, useSearchParams } from 'next/navigation'
+import IconFlecha from '@/app/ui/logosIconos/icon-flecha'
 
 export default function Pagination({ totalPages }: { totalPages: number }) {
   const pathname = usePathname();
@@ -24,14 +25,14 @@ export default function Pagination({ totalPages }: { totalPages: number }) {
     <>
       {/* NOTE: comment in this code when you get to this point in the course */}
 
-      <div className="inline-flex">
+      <div className="inline-flex items-center">
         <PaginationArrow
           direction="left"
           href={createPageURL(currentPage - 1)}
           isDisabled={currentPage <= 1}
         />
 
-        <div className="flex -space-x-px">
+        <div className="flex space-x-[1px] rounded-md py-[1px] [box-shadow:_inset_0_1px_#ffffff,inset_0_-1px_#0000002e]">{/* -space-x-px gap-[1px] */}
           {allPages.map((page, index) => {
             let position: 'first' | 'last' | 'single' | 'middle' | undefined;
 
@@ -74,13 +75,12 @@ function PaginationNumber({
   isActive: boolean;
 }) {
   const className = clsx(
-    'flex h-10 w-10 items-center justify-center text-sm border',
+    'flex h-8 w-8 items-center justify-center text-sm hover:bg-[#ffffffe3] gap-[1px]',
     {
       'rounded-l-md': position === 'first' || position === 'single',
       'rounded-r-md': position === 'last' || position === 'single',
-      // 'z-10 bg-[#e580d0] border-[#c76eb5] text-white': isActive,
-      'z-10 bg-[#548effaa] border-[#548effcc] text-white': isActive,
-      'hover:bg-gray-100': !isActive && position !== 'middle',
+      'z-10 bg-[#ffffff] text-[#020b1dcc]': isActive,
+      'bg-[#ffffff88] text-[#020b1d88] hover:text-[#020b1d] hover:bg-[#ffffff]': !isActive && position !== 'middle',
       'text-gray-300': position === 'middle',
     },
   );
@@ -104,20 +104,20 @@ function PaginationArrow({
   isDisabled?: boolean;
 }) {
   const className = clsx(
-    'flex h-10 w-10 items-center justify-center rounded-md border',
+    'group flex w-10 h-8 items-center justify-center rounded-md border',
     {
-      'pointer-events-none text-gray-300': isDisabled,
-      'hover:bg-gray-100': !isDisabled,
-      'mr-2 md:mr-4': direction === 'left',
-      'ml-2 md:ml-4': direction === 'right',
+      'pointer-events-none ': isDisabled,
+      // 'hover:bg-[#ffffff88]': !isDisabled,
+      'pr-4 ': direction === 'left',
+      'pl-4': direction === 'right',
     },
   );
 
   const icon =
     direction === 'left' ? (
-      <ArrowLeftIcon className="w-4" />
+      <IconFlecha className={`w-[14px] scale-[-1]  ${isDisabled ? "fill-[#39507f30]" : " fill-[#39507faa] group-hover:fill-[#39507f]"} `} />
     ) : (
-      <ArrowRightIcon className="w-4" />
+      <IconFlecha className={`w-[14px] ${isDisabled ? "fill-[#39507f30]" : "fill-[#39507faa]  group-hover:fill-[#39507f]"} `} />
     );
 
   return isDisabled ? (
@@ -128,4 +128,3 @@ function PaginationArrow({
     </Link>
   );
 }
-

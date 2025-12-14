@@ -1,10 +1,10 @@
 ---
 title: "Diferencias entre un gestor y un mandatario"
 excerpt: "¿Cuál es la diferencia entre un Gestor y un Mandatario Nacional?"
-date: "2024-04-25"
+date: "2025-05-25"
 image: "/carina-oficina.jpg"
-avatar: "/customers/carina-blog.jpg"
-autor: "Carina Noemi Pacheco"
+avatar: "/customers/lee-robinson.png"
+autor: "Daniel Cabreras"
 ---
 
 #### Mandatario

@@ -19,14 +19,14 @@ export default function DeleteTramite({ id }: { id: string }) {
   return (
     <>
       <div className="flex justify-center gap-4 ">
-        <ButtonB 
+        <button 
           type='button' 
-          className="border-none inline-flex h-[35px] !duration-0 items-center justify-center !rounded-md !bg-[#ffffff99] opacity-70 py-2 !px-2 font-medium leading-none text-violet11 outline-none outline-offset-1 hover:!bg-[#ffffffdd] hover:opacity-100 focus-visible:outline-2 focus-visible:outline-violet6 select-none"
+          className="group border-none inline-flex h-[35px] !duration-0 items-center justify-center !rounded-md !bg-[#ffffffbb] py-2 !px-2 font-medium leading-none text-violet11 outline-none outline-offset-1 hover:!bg-[#ffffff] focus-visible:outline-2 focus-visible:outline-violet6 select-none"
           onClick={() => setIsModalOpen(true)}
           >
           <span className="sr-only">Delete</span>
-          <TrashIcon className="w-[22px] text-[#b53f51]" />
-        </ButtonB>
+          <TrashIcon className="w-[22px] text-[#b53f51aa] group-hover:text-[#b53f51]" />
+        </button>
 
         <div className={`fixed z-10 inset-0 bg-gray-600 bg-opacity-50 items-center justify-center ${isModalOpen ? "flex" : "hidden"}`}>
           <div className="bg-white p-6 rounded-lg shadow-lg w-96">

@@ -16,15 +16,15 @@ export default  function UserButtonMenuIni() {
     <div>
       <Link 
         href={ini ? "/realizar-consulta" : "/iniciar-tramite/cambio-de-radicacion" } 
-        className={`text-sm opacity-80 duration-150 sm:text-base ${ini || pathname.startsWith('/realizar-consulta') ? "block" : "hidden" } hover:opacity-90 `}>
+        className={`text-[14px] opacity-80 duration-150 sm:text-[15px] ${ini || pathname.startsWith('/realizar-consulta') ? "block" : "hidden" } hover:opacity-90 `}>
         {ini ? (
-          <div className="flex flex-col items-center justify-center">
-            <IconConsulta size="20" />
+          <div className="flex flex-col items-center justify-center gap-1">
+            <IconConsulta className="w-[18px] sm:w-[20px] fill-[#ffffffcc] " />
             <p className=" text-[#ffffff] leading-[1.1]">Consulta</p>
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center">
-            <IconPresupuesto size="20" />
+          <div className="flex flex-col items-center justify-center gap-1">
+            <IconPresupuesto className="w-[18px] sm:w-[20px] fill-[#ffffffcc] "/>
             <p className=" text-[#ffffff] leading-[1.1]">Presupuesto</p>
           </div>
         )}

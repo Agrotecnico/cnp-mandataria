@@ -1,16 +1,17 @@
 'use server';
 
-import { z } from 'zod';
+import { unknown, z } from 'zod';
 import { sql } from '@vercel/postgres';
 import { revalidatePath } from 'next/cache';
-import { redirect, useRouter } from 'next/navigation';
+import { redirect } from 'next/navigation';
 import { signIn } from '@/auth';
 import { AuthError } from 'next-auth';
 import bcrypt from "bcrypt";
 import { emailPresupuesto } from "@/app/lib/brevo/email-presupuesto";
 import { emailRespuesta } from "@/app/lib/brevo/email-respuesta";
 import { emailConfirmRegistro } from "@/app/lib/brevo/email-confirm-registro";
-import { emailConfirmPedido } from "@/app/lib/brevo/email-confirm-pedido";
+import { emailVerification } from "@/app/lib/brevo/email-verification";
+
 
 const FormSchema = z.object({
   id: z.string(),
@@ -35,14 +36,20 @@ const FormSchemaCustomer = z.object({
 
 const FormSchemaUser = z.object({
   id: z.string(),
-  name: z.string().min(2, { message: "Must be 2 or more characters long" }),
-  email: z.string().email({ message: "Invalid email address" }),
+  name: z.string().min(2, { message: "El nombre debe tener 2 o más caracteres" }),
+  email: z.string().email({ message: "Correo electrónico no válido." }),
   password: z.string().min(5, { message: "Must be 5 or more characters long" }),
   confirmPassword: z.string().min(5, { message: "Must be 5 or more characters long" }),
-  role: z.enum(['admin', 'member', 'memberAccount'], {
+  role: z.enum(['admin', 'memberAccount', 'memberVerified', 'member', 'visitor'], {
     invalid_type_error: 'Seleccione un rol de usuario.',
   }),
   image: z.string(),
+  email_verified: z.string(),
+  created_at: z.string(),
+  updated_at: z.string(),
+  account: z.enum(['cerrado', 'abierto'], {
+    invalid_type_error: 'Seleccione un estado de cuenta.',
+  }),
 });
 
 const FormSchemaConsulta = z.object({
@@ -80,25 +87,49 @@ const FormSchemaComment = z.object({
   post_slug: z.string().max(1024, { message: "Must be 1024 or fewer characters long" }),
   comment: z.string().max(1024, { message: "Must be 1024 or fewer characters long" }),
   created_at: z.string(),
+  deleted_at: z.string(),
   nombre: z.string().min(2, { message: "Must be 2 or more characters long" }),
+  avatar: z.string(),
+});
+
+const FormSchemaVerificationToken = z.object({
+  identifier: z.string(),
+  token: z.string(),
+  expires: z.string(),
 });
 
 
 const CreateInvoice = FormSchema.omit({ id: true, date: true });
 const CreateCustomer = FormSchemaCustomer.omit({ id: true });
-const CreateUser = FormSchemaUser.omit({ id: true, image: true, role: true, password: true, confirmPassword: true });
+
+const CreateUser = FormSchemaUser.omit({ confirmPassword: true, account: true, id: true, role: true, password: true, email_verified: true, created_at: true, updated_at: true });
+
+const CreateUserAccount = FormSchemaUser.omit({ confirmPassword: true, account: true, id: true, role: true, email_verified: true, created_at: true, updated_at: true });
+
 const CreateConsulta = FormSchemaConsulta.omit({ created_at: true, respuesta: true,  id: true,  updated_at: true });
 const CreateTramite = FormSchemaTramite.omit({ id: true, presupuesto: true, created_at: true, budgeted_at: true, started_at: true, canceled_at: true, finished_at: true, estado: true });
-const CreateComment = FormSchemaComment.omit({ id: true, created_at: true });
+const CreateComment = FormSchemaComment.omit({ id: true, created_at: true, deleted_at: true });
+const CreateVerificationToken = FormSchemaVerificationToken;
+
 
 const UpdateInvoice = FormSchema.omit({ date: true, id: true });
 const UpdateCustomer = FormSchemaCustomer.omit({ id: true });
-const UpdateUser = FormSchemaUser.omit({ role: true, id: true, password: true, confirmPassword: true, image: true, name: true });
-const UpdateUserImage = FormSchemaUser.omit({ role: true, id: true, password: true, confirmPassword: true, name: true, email: true });
-const UpdateUserName = FormSchemaUser.omit({ role: true, id: true, password: true, confirmPassword: true, image: true, email: true });
-const UpdateUserEmail = FormSchemaUser.omit({ role: true, id: true, password: true, confirmPassword: true, image: true, name: true });
+const UpdateUser = FormSchemaUser.omit({ confirmPassword: true, account: true, role: true, id: true, password: true, image: true, name: true, email_verified: true, created_at: true, updated_at: true });
+const UpdateUserImage = FormSchemaUser.omit({ confirmPassword: true, account: true, role: true, id: true, password: true, name: true, email: true, email_verified: true, created_at: true, updated_at: true });
+const UpdateUserName = FormSchemaUser.omit({ confirmPassword: true, account: true, role: true, id: true, password: true, image: true, email: true, email_verified: true, created_at: true, updated_at: true });
+
+const UpdateUserEmail = FormSchemaUser.omit({ confirmPassword: true, account: true, role: true, id: true, password: true, image: true, name: true, email_verified: true, created_at: true, updated_at: true });
+
+const UpdateUserPassword = FormSchemaUser.omit({ account: true, role: true, id: true, email: true, image: true, name: true, email_verified: true, created_at: true, updated_at: true });
+
+const UpdateAccountOpen = FormSchemaUser.omit({ confirmPassword: true, password: true, role: true, id: true, email: true, image: true, name: true, email_verified: true, created_at: true, updated_at: true });
+
+
 const UpdateConsulta = FormSchemaConsulta.omit({  created_at: true, id: true, email_id: true, archivos_url: true });
 const UpdateTramite = FormSchemaTramite.omit({ created_at: true, id: true, email_id: true, documentos_url: true, tramite: true, informacion: true });
+const UpdateComment = FormSchemaComment.omit({ created_at: true, id: true, comment: true, nombre: true });
+const UpdateCommentAvatar = FormSchemaComment.omit({ created_at: true, id: true, comment: true, nombre: true, email_id: true, deleted_at: true });
+const UpdateCommentEmail = FormSchemaComment.omit({ created_at: true, id: true, comment: true, nombre: true, avatar: true, deleted_at: true, post_slug: true });
 
 
 // This is temporary
@@ -124,10 +155,17 @@ export type StateUser = {
   errors?: {
     name?: string[];
     email?: string[];
+    image?: string[] | undefined;
     // password?: string[];
-    // confirmPassword?: string[];
-    // role?: string[] | undefined;
-    // image?: string[] | undefined;
+  };
+  message?: string | null;
+};
+export type StateUserAccount = {
+  errors?: {
+    name?: string[];
+    email?: string[];
+    image?: string[] | undefined;
+    password?: string[];
   };
   message?: string | null;
 };
@@ -149,6 +187,20 @@ export type StateUserName = {
 export type StateUserEmail = {
   errors?: {
     email?: string[];
+  };
+  message?: string | null;
+};
+
+export type StateUserPassword = {
+  errors?: {
+    password?: string[];
+    confirmPassword?: string[];
+  };
+  message?: string | null;
+};
+export type StateAccountOpen = {
+  errors?: {
+    account?: string[];
   };
   message?: string | null;
 };
@@ -199,18 +251,50 @@ export type StateComment = {
     post_slug?: string[];
     comment?: string[];
     nombre?: string[] | undefined;
+    avatar?: string[] | undefined;
   };
   message?: string | null;
 };
 
-// export type StateUpdateComment = {
-//   errors?: {
-//     email_id?: string[];
-//     respuesta?: string[];
-//     updated_at?: string[];
-//   };
-//   message?: string | null;
-// };
+export type StateUpdateComment = {
+  errors?: {
+    email_id?: string[] | undefined;
+    post_slug?: string[];
+    avatar?: string[] | undefined;
+  };
+  message?: string | null;
+};
+
+export type StateUpdateCommentEmail = {
+  errors?: {
+    email_id?: string[] | undefined;
+  };
+  message?: string | null;
+};
+
+export type StateUpdateCommentAvatar = {
+  errors?: {
+    avatar?: string[] | undefined;
+    post_slug?: string[];
+  };
+  message?: string | null;
+};
+export type StateUpdateCommentAvatarMenu = {
+  errors?: {
+    avatar?: string[] | undefined;
+    post_slug?: string[];
+  };
+  message?: string | null;
+};
+
+export type StateVerificationToken = {
+  errors?: {
+    identifier?: string[];
+    token?: string[];
+    expires?: string[];
+  };
+  message?: string | null;
+};
 
 
 export async function createInvoice(prevState: State, formData: FormData) {
@@ -387,11 +471,9 @@ export async function deleteCustomer(id: string) {
 export async function createConsulta(prevStateConsulta: StateConsulta, formData: FormData) {
   // Validate form fields using Zod
   const validatedFields = CreateConsulta.safeParse({
-    // user_id: formData.get('user_id'),
     email_id: formData.get('email_id'),
     archivos_url: formData.get('archivos_url'),
     consulta: formData.get('consulta'),
-    // respuesta: formData.get('respuesta'),
   });
 
   // If form validation fails, return errors early. Otherwise, continue.
@@ -412,7 +494,7 @@ export async function createConsulta(prevStateConsulta: StateConsulta, formData:
       VALUES ( ${email_id}, ${archivos_url}, ${consulta})
     `;
     return {
-      message: `consultaCreada`,
+      message: "consultaCreada",
     };
   } catch (error) {
     // If a database error occurs, return a more specific error.
@@ -422,11 +504,8 @@ export async function createConsulta(prevStateConsulta: StateConsulta, formData:
   }
 
   // Revalidate the cache for the invoices page and redirect the user.
-  // revalidatePath('/dashboard/tusConsultas');
-  // redirect('/dashboard/tusConsultas');
-
-  revalidatePath('/');
-  redirect('/');
+  // revalidatePath('/');
+  // redirect('/');
 }
 export async function updateConsulta(
   id: string,
@@ -434,8 +513,6 @@ export async function updateConsulta(
   formData: FormData,
 ) {
   const validatedFields = UpdateConsulta.safeParse({
-    // name: formData.get('name'),
-    // email: formData.get('email'),
     consulta: formData.get('consulta'),
     respuesta: formData.get('respuesta'),
     updated_at: formData.get('updated_at'),
@@ -499,7 +576,7 @@ export async function createTramite(prevStateTramite: StateCreateTramite, formDa
   try {
     await sql`
       INSERT INTO tramites (  email_id, documentos_url, informacion, tramite )
-      VALUES ( ${email_id}, ${documentos_url}, ${informacion}, ${tramite})
+      VALUES ( ${email_id}, ${documentos_url}, ${informacion}, ${tramite} )
     `;
     return {
       message: `tramiteIniciado`,
@@ -512,9 +589,6 @@ export async function createTramite(prevStateTramite: StateCreateTramite, formDa
   }
 
   // Revalidate the cache for the invoices page and redirect the user.
-  // revalidatePath('/dashboard/tusConsultas');
-  // redirect('/dashboard/tusConsultas');
-
   revalidatePath('/');
   redirect('/');
 }
@@ -574,26 +648,32 @@ export async function deleteTramite(id: string) {
 
 
 export async function createUser(prevStateUser: StateUser, formData: FormData) {
-  console.log("formData:", formData)
+
   // Validate form fields using Zod
   const validatedFields = CreateUser.safeParse({
     name: formData.get('name'),
     email: formData.get('email'),
+    image: formData.get('image'),
     // password: formData.get('password'),
     // confirmPassword: formData.get('confirmPassword'),
-    // role: formData.get('role'),
-    /* image: formData.get('image'), */
   });
+
+  const pathname= formData.get("pathname")
+  const token= formData.get("token")
+
+  // const password= formData.get("password")
+  // const confirmPassword= formData.get("confirmPassword")
   
   // Validate confirm password
-  const pwd= formData.get("password")
-  const confirmPwd= formData.get("confirmPassword")
-  if (pwd !== confirmPwd) {
-    return {
-      errors: {},
-      message: 'Las contraseñas no coinciden.',
-    };
-  }
+  // const pwd= formData.get("password")
+  // const confirmPwd= formData.get("confirmPassword")
+  // if (pwd !== confirmPwd) {
+  //   return {
+  //     errors: {},
+  //     message: 'Las contraseñas no coinciden.',
+  //   };
+  // }
+
   // If form validation fails, return errors early. Otherwise, continue.
   if (!validatedFields.success) {
     return {
@@ -603,77 +683,167 @@ export async function createUser(prevStateUser: StateUser, formData: FormData) {
   }
   
   // Prepare data for insertion into the database
-  const { name, email, /* password */  } = validatedFields.data;
-  let passwordMember= "xxxxxx"
-  // password === "" ? passwordMember = "xxxxxx" : passwordMember = password
-  const hashedPassword = await bcrypt.hash(passwordMember, 10); 
-  
-  let role= "member"
-  // password === "xxxxxx" ? rol = "member" : rol = "memberAccount"
-  // password === "" ? rol = "member" : rol = "memberAccount"
+  const { name, email, image  } = validatedFields.data;
+
+  const contraseña = await bcrypt.hash("xxxxxx", 10); 
+  const hashedPassword= /* pwd ? `${pwd}` : */ contraseña
+
+  const role= email === "comment@gmail.com" ? "visitor" : /* pwd ? "memberAccount" : */  "member"
+
+  const emailToken= email === "comment@gmail.com" ? `${token}@cnpmandataria.com` : email
+  const imageNull= image === "" ? null : image
 
   // Insert data into the database
   try {
     await sql`
-      INSERT INTO users (name, email, password, role )
-      VALUES (${name}, ${email}, ${hashedPassword}, ${role} )
+      INSERT INTO users (name, email, image, password, role )
+      VALUES (${name}, ${emailToken}, ${imageNull}, ${hashedPassword}, ${role} )
       ON CONFLICT(email)
       DO UPDATE SET
-      name = EXCLUDED.name,
-      password = EXCLUDED.password,
-      role = EXCLUDED.role
+      name = EXCLUDED.name
+      -- image = EXCLUDED.image,
+      -- password = EXCLUDED.password,
+      -- role = EXCLUDED.role
     `;
+
+    // return {
+    //   message: `usuario`,
+    // };
+  } catch (error) {
+    // If a database error occurs, return a more specific error.
+    return {
+      message: `Database Error`,
+    };
+  }
+
+  // Revalidate the cache for the invoices page and redirect the user.
+  revalidatePath(`${pathname}`);
+  redirect(`${pathname}`);
+}
+export async function createUser2(prevStateUser: StateUser, formData: FormData) {
+
+  // Validate form fields using Zod
+  const validatedFields = CreateUser.safeParse({
+    name: formData.get('name'),
+    email: formData.get('email'),
+    image: formData.get('image'),
+  });
+
+  // const pathname= formData.get("pathname")
+  const token= formData.get("token")
+  
+  // Validate confirm password
+  // const pwd= formData.get("password")
+  // const confirmPwd= formData.get("confirmPassword")
+  // if (pwd !== confirmPwd) {
+  //   return {
+  //     errors: {},
+  //     message: 'Las contraseñas no coinciden.',
+  //   };
+  // }
+  // If form validation fails, return errors early. Otherwise, continue.
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Campos faltantes. No se pudo verificar.',/* crear el Usuario */
+    };
+  }
+  
+  // Prepare data for insertion into the database
+  const { name, email, image  } = validatedFields.data;
+
+  const hashedPassword = await bcrypt.hash("xxxxxx", 10); 
+
+  // const role= "member"
+  const role= email === "comment@gmail.com" ? "visitor" : "member"
+
+
+  const emailToken= email === "comment@gmail.com" ? `${token}@cnpmandataria.com` : email
+  const imageNull= image === "" ? null : image
+
+  // Insert data into the database
+  try {
+    await sql`
+      INSERT INTO users (name, email, image, password, role )
+      VALUES (${name}, ${emailToken}, ${imageNull}, ${hashedPassword}, ${role} )
+      ON CONFLICT(email)
+      DO UPDATE SET
+      name = EXCLUDED.name
+      -- image = EXCLUDED.image,
+      -- password = EXCLUDED.password,
+      -- role = EXCLUDED.role
+    `;
+
     return {
       message: `usuario`,
     };
   } catch (error) {
     // If a database error occurs, return a more specific error.
     return {
-      message: `Database Error: El email ya existe.`,
+      message: `Database Error`,
     };
   }
 
   // Revalidate the cache for the invoices page and redirect the user.
-  // revalidatePath('/login');
-  // redirect('/login');
-  
-  revalidatePath('/realizar-consulta');
-  redirect('/realizar-consulta');
-
+  // revalidatePath(`${pathname}`);
+  // redirect(`${pathname}`);
 }
-export async function updateUser(
-  id: string,
-  prevStateUser: StateUser,
-  formData: FormData,
-) {
-  const validatedFields = UpdateUser.safeParse({
-    // name: formData.get('name'),
+export async function createUserAccount(prevStateUserAccount: StateUserAccount, formData: FormData) {
+
+  // Validate form fields using Zod
+  const validatedFields = CreateUserAccount.safeParse({
+    name: formData.get('name'),
     email: formData.get('email'),
-    /* image: formData.get('image'), */
+    image: formData.get('image'),
+    password: formData.get('password'),
   });
 
+  // If form validation fails, return errors early. Otherwise, continue.
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
-      message: 'Missing Fields. No se pudo actualizar a el Usuario.',
+      // message: 'Campos faltantes. No se pudo crear el Usuario.',
+    };
+  }
+  
+  // Prepare data for insertion into the database
+  const { name, email, image, password  } = validatedFields.data;
+
+  const role= "member"
+
+  const imageNull= image === "" ? null : image
+
+  const hashedPassword = await bcrypt.hash("xxxxxx", 10); 
+
+  // Insert data into the database
+  try {
+    await sql`
+      INSERT INTO users (name, email, image, password, role )
+      VALUES (${name}, ${email}, ${imageNull}, ${hashedPassword}, ${role} )
+    `;
+
+    return {
+      message: `usuario`,
+    };
+  } catch (error ) {
+    // console.log("error:", error )
+
+    // if (error.code === "23505") {
+    //   return {
+    //     message: 'El email ya existe.',
+    //   };
+    // }
+    // If a database error occurs, return a more specific error.
+    return {
+      message: `Database Error`,
     };
   }
 
-  const { /* name, */ email/* , image */ } = validatedFields.data;
-
-  try {
-    await sql`
-      UPDATE users
-      SET email = ${email}
-      WHERE id = ${id}
-    `;
-  } catch (error) {
-    return { message: 'Database Error: No se pudo actualizar a el Usuario.' };
-  }
-
-  revalidatePath('/dashboard/perfil');
-  redirect('/dashboard/perfil');
+  // Revalidate the cache for the invoices page and redirect the user.
+  revalidatePath('/login');
+  redirect('/login');
 }
+
 export async function updateUserImage(
   id: string,
   prevStateUserImage: StateUserImage,
@@ -682,6 +852,8 @@ export async function updateUserImage(
   const validatedFields = UpdateUserImage.safeParse({
     image: formData.get('image'),
   });
+
+  const pathname= formData.get("pathname")
 
   if (!validatedFields.success) {
     return {
@@ -701,9 +873,8 @@ export async function updateUserImage(
   } catch (error) {
     return { message: 'Database Error: No se pudo actualizar la imagen del Usuario.' };
   }
-
-  revalidatePath('/dashboard/perfil');
-  redirect('/dashboard/perfil');
+  revalidatePath(`${pathname}`);
+  redirect(`${pathname}`);
 }
 export async function updateUserName(
   id: string,
@@ -713,6 +884,8 @@ export async function updateUserName(
   const validatedFields = UpdateUserName.safeParse({
     name: formData.get('name'),
   });
+
+  const pathname= formData.get("pathname")
 
   if (!validatedFields.success) {
     return {
@@ -733,8 +906,8 @@ export async function updateUserName(
     return { message: 'Database Error: No se pudo actualizar el nombre  del Usuario.' };
   }
 
-  revalidatePath('/dashboard/perfil');
-  redirect('/dashboard/perfil');
+  revalidatePath(`${pathname}`);
+  redirect(`${pathname}`);
 }
 export async function updateUserEmail(
   id: string,
@@ -745,6 +918,8 @@ export async function updateUserEmail(
     email: formData.get('email'),
   });
 
+  const pathname= formData.get("pathname")
+
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
@@ -753,20 +928,154 @@ export async function updateUserEmail(
   }
 
   const { email } = validatedFields.data;
+  const role= "member"
 
   try {
     await sql`
       UPDATE users
-      SET email = ${email}
-      WHERE id = ${id}
+      SET email = ${email}, 
+          role = ${role}
+      WHERE email = ${id}
     `;
+
+    return {
+      message: `emailOk`,
+    };
+
   } catch (error) {
     return { message: 'Database Error: No se pudo actualizar el nombre  del Usuario.' };
   }
 
-  revalidatePath('/dashboard/perfil');
-  redirect('/dashboard/perfil');
+  revalidatePath(`${pathname}`);
+  redirect(`${pathname}`);
 }
+export async function updateUserPassword(
+  id: string,
+  prevStateUserPassword: StateUserPassword,
+  formData: FormData,
+) {
+  const validatedFields = UpdateUserPassword.safeParse({
+    password: formData.get('password'),
+    confirmPassword: formData.get('confirmPassword'),
+  });
+
+  // Validate confirm password
+  const pwd= formData.get("password")
+  const confirmPwd= formData.get("confirmPassword")
+  if (pwd !== confirmPwd) {
+    return {
+      errors: {},
+      message: 'Las contraseñas no coinciden.',
+    };
+  }
+
+  // const pathname= formData.get("pathname")
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Missing Fields. No se pudo crear la contraseña.',
+    };
+  }
+
+  const { password } = validatedFields.data;
+
+  const contraseña = await bcrypt.hash(password, 10); 
+  // const hashedPassword= /* pwd ? `${pwd}` : */ contraseña
+  const role= "memberAccount"
+
+  try {
+    await sql`
+      UPDATE users
+      SET password = ${contraseña}, 
+          role = ${role}
+      WHERE email = ${id}
+    `;
+
+    return {
+      message: `Cuenta creada`,
+    };
+
+  } catch (error) {
+    return { message: 'Database Error: No se pudo crear la contraseña.' };
+  }
+
+  // revalidatePath(`${pathname}`);
+  // redirect(`${pathname}`);
+}
+export async function createAccountOpen(
+  id: string,
+  prevStateAccountOpen: StateAccountOpen,
+  formData: FormData,
+) {
+
+  const validatedFields = UpdateAccountOpen.safeParse({
+    account: formData.get('account'),
+  });
+
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Missing Fields. No se pudo abrir la cuenta.',
+    };
+  }
+
+  const { account } = validatedFields.data;
+
+  try {
+    await sql`
+      UPDATE users
+      SET account = ${account}
+      WHERE email = ${id}
+    `;
+
+    return {
+      message: `Cuenta abierta`,
+    };
+
+  } catch (error) {
+    return { message: 'Database Error: No se pudo crear la contraseña.' };
+  }
+
+  // revalidatePath(`${pathname}`);
+  // redirect(`${pathname}`);
+}
+
+
+export async function updateUserEmailVerified(
+  identifier: string
+) {
+  const newDate= new Date().toISOString()
+  try {
+    await sql`
+      UPDATE users
+      SET email_verified = ${newDate},
+          role = 'memberVerified'
+      WHERE email = ${identifier}
+    `;
+  } catch (error) {
+    return { message: 'Database Error: No se pudo actualizar a el Usuario.' };
+  }
+}
+// export async function updateUserEmailVerifiedx(
+//   identifier: string,
+//   email_verified: string,
+// ) {
+//   // const newDate= new Date().toISOString()
+//   let role
+//   email_verified === "null" ? role = "member" : role = "memberAccount"
+//   try {
+//     await sql`
+//       UPDATE users
+//       SET role = ${role}
+//       WHERE email = ${identifier}
+//     `;
+//   } catch (error) {
+//     return { message: 'Database Error: No se pudo actualizar a el Usuario.' };
+//   }
+// }
+
 
 export async function createComment(prevStateComment: StateComment, formData: FormData) {
   // Validate form fields using Zod
@@ -775,7 +1084,11 @@ export async function createComment(prevStateComment: StateComment, formData: Fo
     post_slug: formData.get('post_slug'),
     comment: formData.get('comment'),
     nombre: formData.get('nombre'),
+    avatar: formData.get('avatar'),
   });
+
+  const pathname= formData.get("pathname")
+  const token= formData.get("token")
 
   // If form validation fails, return errors early. Otherwise, continue.
   if (!validatedFields.success) {
@@ -786,13 +1099,18 @@ export async function createComment(prevStateComment: StateComment, formData: Fo
   }
 
   // Prepare data for insertion into the database
-  const { email_id, post_slug, comment, nombre } = validatedFields.data;
+  const { email_id, post_slug, comment, nombre, avatar } = validatedFields.data;
+
+  const emailToken= email_id === "" ? `${token}@cnpmandataria.com` : email_id
+
+  const date=  null
+  const avatarNull= avatar === "" ? null : avatar 
 
   // Insert data into the database 
   try {
     await sql`
-      INSERT INTO comments ( email_id, post_slug, comment, nombre )
-      VALUES ( ${email_id}, ${post_slug}, ${comment}, ${nombre})
+      INSERT INTO comments ( email_id, post_slug, deleted_at, comment, nombre, avatar )
+      VALUES ( ${emailToken}, ${post_slug}, ${date}, ${comment}, ${nombre}, ${avatarNull} )
     `;
     // return {
     //   message: 'ok',
@@ -805,48 +1123,195 @@ export async function createComment(prevStateComment: StateComment, formData: Fo
   }
 
   // Revalidate the cache for the invoices page and redirect the user.
-  revalidatePath(`/faq/${post_slug}`);
-  redirect(`/faq/${post_slug}`);
-
-  // revalidatePath('/dashboard/tusConsultas');
-  // redirect('/dashboard/tusConsultas');
+  revalidatePath(`${pathname}`);
+  redirect(`${pathname}`);
 
 }
-// export async function updateComment(
-//   id: string,
-//   prevStateUpdateComment: StateUpdateComment,
-//   formData: FormData,
-// ) {
-//   const validatedFields = UpdateConsulta.safeParse({
-//     // name: formData.get('name'),
-//     // email: formData.get('email'),
-//     consulta: formData.get('consulta'),
-//     respuesta: formData.get('respuesta'),
-//     updated_at: formData.get('updated_at'),
-//   });
+export async function updateCommentEmail(
+  id: string,
+  prevStateUpdateCommentEmail: StateUpdateCommentEmail,
+  formData: FormData,
+) {
+  const validatedFields = UpdateCommentEmail.safeParse({
+    email_id: formData.get('email_id'),
+  });
 
-//   if (!validatedFields.success) {
-//     return {
-//       errors: validatedFields.error.flatten().fieldErrors,
-//       message: 'Missing Fields. Failed to Update Consulta.',
-//     };
-//   }
+  const pathname= formData.get("pathname")
 
-//   const { consulta, respuesta, updated_at } = validatedFields.data;
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Missing Fields. Failed to Update Comment.',
+    };
+  }
 
-//   try {
-//     await sql`
-//       UPDATE consultas
-//       SET consulta = ${consulta}, respuesta = ${respuesta}, updated_at = ${updated_at}
-//       WHERE id = ${id}
-//     `;
-//   } catch (error) {
-//     return { message: 'Database Error: Failed to Update Consulta.' };
-//   }
+  const { email_id } = validatedFields.data;
 
-//   revalidatePath('/dashboard/consultas');
-//   redirect('/dashboard/consultas');
-// }
+  try {
+    await sql`
+
+    UPDATE comments
+    SET email_id = ${email_id}
+    WHERE email_id = ${id} 
+
+    `;
+  } catch (error) {
+    return { message: 'Database Error: Failed to Update Comment.' };
+  }
+
+  revalidatePath(`${pathname}`);
+  redirect(`${pathname}`);
+}
+export async function updateCommentAvatar(
+  id2: string,
+  prevStateUpdateCommentImage: StateUpdateCommentAvatar,
+  formData: FormData,
+) {
+  const validatedFields = UpdateCommentAvatar.safeParse({
+    avatar: formData.get('avatar'),
+    post_slug: formData.get('post_slug'),
+  });
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Missing Fields. No se pudo actualizar la imagen del Usuario.',
+    };
+  }
+
+  const { avatar, post_slug } = validatedFields.data;
+
+  try {
+    await sql`
+      UPDATE comments
+      SET avatar = ${avatar}
+      WHERE email_id = ${id2}
+    `;
+  } catch (error) {
+    return { message: 'Database Error: No se pudo actualizar la imagen del Usuario.' };
+  }
+
+  // revalidatePath('/realizar-consulta');
+  // redirect('/realizar-consulta');
+  revalidatePath(`/faq/${post_slug}`);
+  redirect(`/faq/${post_slug}`);
+}
+
+export async function updateComment(
+  id2: string,
+  prevStateStateComment: StateUpdateComment,
+  formData: FormData,
+) {
+  const validatedFields = UpdateComment.safeParse({
+    email_id: formData.get('email_id'),
+    post_slug: formData.get('post_slug'),
+    // deleted_at: formData.get('deleted_at'),
+    // nombre: formData.get('nombre'),
+    avatar: formData.get('avatar'),
+  });
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Missing Fields. Failed to Update Comment.',
+    };
+  }
+
+  const { email_id, post_slug,/* deleted_at, nombre, */ avatar } = validatedFields.data;
+
+  // const date = new Date(deleted_at).toISOString();
+
+  try {
+    await sql`
+
+    UPDATE comments
+    SET avatar = ${avatar},
+        email_id = ${email_id},
+        
+    WHERE comment = ${id2} 
+
+    `;
+  } catch (error) {
+    return { message: 'Database Error: Failed to Update Comment.' };
+  }
+
+  // revalidatePath('/dashboard/consultas');
+  // redirect('/dashboard/consultas');
+  revalidatePath(`/faq/${post_slug}`);
+  redirect(`/faq/${post_slug}`);
+}
+export async function updateCommentDelete(
+  id: string
+) {
+  const newDate= new Date().toISOString()
+  try {
+    await sql`
+      UPDATE comments
+      SET deleted_at = ${newDate}
+      WHERE id = ${id}
+    `;
+  } catch (error) {
+    return { message: 'Database Error: No se pudo actualizar el comentario.' };
+  }
+}
+
+
+export async function updateCommentComment(
+  id: string
+) {
+  try {
+    await sql`
+      UPDATE comments
+      SET comment = ${id}
+      WHERE comment = ${id}
+    `;
+  } catch (error) {
+    return { message: 'Database Error: No se pudo actualizar a el comentario.' };
+  }
+}
+export async function updateCommentxxxx(
+  id2: string,
+  prevStateStateComment: StateUpdateComment,
+  formData: FormData,
+) {
+  const validatedFields = UpdateComment.safeParse({
+    email_id: formData.get('email_id'),
+    post_slug: formData.get('post_slug'),
+    // comment: formData.get('comment'),
+    // nombre: formData.get('nombre'),
+    avatar: formData.get('avatar'),
+  });
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Missing Fields. Failed to Update Comment.',
+    };
+  }
+
+  const { email_id,  post_slug, /*comment, nombre, */ avatar } = validatedFields.data;
+
+  try {
+    await sql`
+      INSERT INTO comments ( id, email_id, /* post_slug, comment, nombre, */ avatar )
+      VALUES ( ${id2}, ${email_id},  ${avatar} )
+      ON CONFLICT(id2)
+      DO UPDATE SET
+      -- email_id = EXCLUDED.email_id,
+      post_slug = EXCLUDED.post_slug,
+      comment = EXCLUDED.comment,
+      nombre = EXCLUDED.nombre
+      -- avatar = EXCLUDED.avatar
+    `;
+  } catch (error) {
+    return { message: 'Database Error: Failed to Update Comment.' };
+  }
+
+  // revalidatePath('/dashboard/consultas');
+  // redirect('/dashboard/consultas');
+  revalidatePath(`/faq/${post_slug}`);
+  redirect(`/faq/${post_slug}`);
+}
 export async function deleteComment(id: string) {
   // throw new Error('Failed to Delete Comment');
   try {
@@ -858,11 +1323,56 @@ export async function deleteComment(id: string) {
   }
 }
 
+export async function updateCommentAvatarMenu(
+  id: string,
+  prevStateUpdateCommentAvatarMenu: StateUpdateCommentAvatarMenu,
+  formData: FormData,
+) {
+  const validatedFields = UpdateCommentAvatar.safeParse({
+    avatar: formData.get('avatar'),
+    post_slug: formData.get('post_slug'),
+  });
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Missing Fields. No se pudo actualizar la imagen del Usuario.',
+    };
+  }
+
+  const { avatar, post_slug } = validatedFields.data;
+
+  console.log({id, avatar, post_slug})
+
+  // const idxx= '2024-01-01 00:00:00+00'
+
+  try {
+    await sql`
+      UPDATE comments
+      SET avatar = ${avatar}
+      WHERE avatar = ${id}
+    `;
+  } catch (error) {
+    return { message: 'Database Error: No se pudo actualizar la imagen del Usuario.' };
+  }
+
+  // revalidatePath('/realizar-consulta');
+  // redirect('/realizar-consulta');
+  revalidatePath(post_slug);
+  redirect(post_slug);
+}
 
 export async function authenticate(
   prevState: string | undefined,
   formData: FormData,
 ) {
+
+  const token= formData.get("token")
+
+  formData.set("email", `${token}@cnpmandataria.com`);
+  
+  formData.set("password", "xxxxxx");
+  formData.set("conConsulta", "consulta")
   
   try {
     await signIn('credentials', formData );
@@ -878,6 +1388,118 @@ export async function authenticate(
     throw error;
   }
 }
+export async function authenticate2(
+  prevState: string | undefined,
+  formData: FormData,
+) {
+
+  formData.set("password", "xxxxxx")
+  formData.set("redirectTo", "/dashboard")
+  formData.set("conConsulta", "noconsulta")
+
+  // const password= formData.get("passsword")
+  // password === "" ? formData.set("password", "xxxxxx") : formData.set("password", `${password}`) ;
+  
+  try {
+    await signIn('credentials', formData );
+  } catch (error) {
+    if (error instanceof AuthError) {
+      switch (error.type) {
+        case 'CredentialsSignin':
+          return 'Credencial no válida.';
+        default:
+          return 'Algo salió mal.';
+      }
+    }
+    throw error;
+  }
+}
+export async function authenticate3(
+  prevState: string | undefined,
+  formData: FormData,
+) {
+
+  formData.set("password", "xxxxxx")
+  formData.set("conConsulta", "consulta")
+
+  // const password= formData.get("passsword")
+  // password === "" ? formData.set("password", "xxxxxx") : formData.set("password", `${password}`) ;
+  
+  try {
+    await signIn('credentials', formData );
+  } catch (error) {
+    if (error instanceof AuthError) {
+      switch (error.type) {
+        case 'CredentialsSignin':
+          return 'Credenciales no válidas.';
+        default:
+          return 'Algo salió mal.';
+      }
+    }
+    throw error;
+  }
+}
+export async function authenticate4(
+  prevState: string | undefined,
+  formData: FormData,
+) {
+
+  const passwordAccount= formData.get("password")
+  const contraseña= !passwordAccount ? "xxxxxx"  : passwordAccount
+
+  const redirect= formData.get("redirectTo")
+
+  formData.set("password", `${contraseña}` )
+  // formData.set("password", "xxxxxx" )
+  formData.set("redirectTo", `${redirect}`)
+  // formData.set("redirectTo", "/dashboard/resumen")
+  formData.set("conConsulta", "noconsulta")
+  
+  try {
+    await signIn('credentials', formData );
+  } catch (error) {
+    if (error instanceof AuthError) {
+      // switch (error.type) {
+        // case 'CredentialsSignin':
+          return error.cause?.err?.message;
+        // default:
+        //   return 'Algo salió mal.';
+      }
+      throw error;
+    }
+    
+  
+}
+// export async function authenticate4(
+//   prevState: string | undefined,
+//   formData: FormData,
+// ) {
+
+//   // formData.set("password", "xxxxxx")
+
+//   // const password= formData.get("passsword")
+//   // password === "" ? formData.set("password", "xxxxxx") : formData.set("password", `${password}`) ;
+
+//   formData.set("password", "xxxxxx")
+//   formData.set("redirectTo", "/dashboard")
+//   formData.set("conConsulta", "noconsulta")
+//   // formData.set("redirectTox", "/dashboard")
+  
+//   try {
+//     await signIn('credentials', formData );
+//   } catch (error) {
+//     if (error instanceof AuthError) {
+//       // switch (error.type) {
+//         // case 'CredentialsSignin':
+//           return error.cause?.err?.message;
+//         // default:
+//         //   return 'Algo salió mal.';
+//       }
+//       throw error;
+//     }
+    
+  
+// }
 
 
 
@@ -950,21 +1572,106 @@ export async function handleFormRegistro(formData: FormData) {
 }
 
 export async function handleFormPedido(formData: FormData) {
-  const title= formData.get("title")
+  // const title= formData.get("title")
   const to_name= formData.get("to_name")
   const to_email= formData.get("to_email")
   const content= formData.get("content")
+  const token= formData.get("token")
 
-  if (!title || !to_name || !to_email || !content ) {
+  if (/* !title || */ !to_name || !to_email || !content || !token ) {
     return console.log("Por favoe llene todos los campos")
   }
   
-  await emailConfirmPedido({
-    subject: title as string,
+  await emailVerification({
+    // subject: title as string,
     to: [{
       name: to_name as string,
       email: to_email as string
       }],
-    htmlContent: content as string
+    htmlContent: content as string,
+    token: token as string
   })
+}
+
+
+
+export async function createVerificationToken(prevStateVerificationToken: StateVerificationToken, formData: FormData ) {
+  // Validate form fields using Zod
+  const validatedFields = CreateVerificationToken.safeParse({
+    identifier: formData.get('identifier'),
+    token: formData.get('token'),
+    expires: formData.get('expires'),
+  });
+
+  const pathname= formData.get("pathname")
+  
+  // If form validation fails, return errors early. Otherwise, continue.
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Campos faltantes. No se pudo crear VerificationToken.',
+    };
+  }
+
+  // Prepare data for insertion into the database
+  const { identifier, token, expires } = validatedFields.data;
+
+  const date = new Date(expires).toISOString();
+
+  try {
+    await sql`
+      INSERT INTO verification_token (identifier, token, expires)
+      VALUES ( ${identifier}, ${token}, ${date}  )
+    `;
+
+  } catch (error) {
+    // If a database error occurs, return a more specific error.
+    return {
+      message: 'Database Error: Failed to Create VerificationToken.',
+    };
+  }
+      
+  // Revalidate the cache for the invoices page and redirect the user.
+  revalidatePath(`${pathname}`);
+  redirect(`${pathname}`);
+}
+export async function deleteVerificationToken(email: string) {
+  try {
+    await sql`DELETE FROM verification_token WHERE identifier = ${email}`;
+    return { message: 'Verificacion token eliminado' };
+  } catch (error) {
+    return { message: 'Database Error: Failed to Delete Verificacion token.' };
+  }
+}
+export async function deleteVerification(identifier: string) {
+  try {
+    await sql`DELETE FROM verification_token WHERE identifier = ${identifier}`;
+    // return { message: 'Verificacion token eliminado' };
+  } catch (error) {
+    return { message: 'Database Error: Failed to Delete Verificacion token.' };
+  }
+
+  // // Revalidate the cache for the invoices page and redirect the user.
+  // revalidatePath('/realizar-consulta');
+  // redirect('/realizar-consulta');
+}
+
+
+
+export async function createVerificationToken2(email: string, token:string ) {
+  const expires= new Date(Date.now() + 1000 * 60 * 60 * 24)
+  const date = new Date(expires).toISOString();
+
+  try {
+    await sql`
+      INSERT INTO verification_token (identifier, token, expires)
+      VALUES ( ${email}, ${token}, ${date}  )
+    `;
+
+  } catch (error) {
+    // If a database error occurs, return a more specific error.
+    return {
+      message: 'Database Error: Failed to Create VerificationToken.',
+    };
+  }
 }

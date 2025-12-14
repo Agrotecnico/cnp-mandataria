@@ -1,34 +1,38 @@
 'use client';
 
-import { useActionState } from 'react';
-import { FormEvent, useState, useEffect, useRef } from 'react';
+import { FormEvent, useState, useEffect, useRef, useActionState } from 'react';
 import { ExclamationCircleIcon, ArrowPathIcon } from '@heroicons/react/24/outline'
 import clsx from 'clsx';
 import * as Tabs  from '@radix-ui/react-tabs';
-import Link from 'next/link';
 import Image from 'next/image'
+import { usePathname, useSearchParams } from 'next/navigation';
+import { nanoid } from "nanoid";
+import { ToastContainer, toast, Zoom, Flip } from 'react-toastify';
+
 
 import { User } from '@/app/lib/definitions';
-import { createTramite, StateCreateTramite } from '@/app/lib/actions';
-
+import { createTramite, StateCreateTramite, createVerificationToken, StateVerificationToken, updateUserEmail, StateUserEmail, updateCommentEmail, StateUpdateCommentEmail,createUser2, StateUser, authenticate, authenticate3, handleFormPedido  } from '@/app/lib/actions';
 import { Frente } from '@/app/ui/marcos';
 import IconCambio from '@/app/ui/logosIconos/icon-cambio';
-import { ImageListType} from '@/app/ui/consultas/typings';
-import ImageUploading from "@/app/ui/consultas/ImageUploading"
 import IconDragDrop from '@/app/ui/logosIconos/icon-drag-drop';
-import { ButtonB, ButtonA, Button } from '@/app/ui/button';
-import markdownStyles from './markdown-styles.module.css';
 import IconCuenta from "@/app/ui/logosIconos/icon-cuenta"
 import IconEmail2 from "@/app/ui/logosIconos/icon-email2"
+import IconRegistro from "@/app/ui/logosIconos/icon-registro"
+import IconInfo from '@/app/ui/logosIconos/icon-info';
+import IconEnvioEmail from '@/app/ui/logosIconos/icon-envio-email';
+import { ImageListType} from '@/app/ui/consultas/typings';
+import ImageUploading from "@/app/ui/consultas/ImageUploading"
+import { ButtonB, ButtonA } from '@/app/ui/button';
+import markdownStyles from '@/app/ui/tramites/markdown-styles.module.css';
 import { InputCnp } from "@/app/ui/uiRadix/input-cnp";
 import { TextareaCnp } from "@/app/ui/uiRadix/textarea-cnp";
-import IconRegistro from "@/app/ui/logosIconos/icon-registro"
-import { createUser, StateUser } from '@/app/lib/actions';
 import { TramiteMd } from "@/app/lib/definitions"
-import IconEnvioEmail from '../logosIconos/icon-envio-email';
-import { handleFormRegistro } from '@/app/lib/actions';
-import IconInfo from '../logosIconos/icon-info';
-import { handleFormPedido } from '@/app/lib/actions';
+import 'react-toastify/dist/ReactToastify.css';
+import NotifyVerifiedTramite from '@/app/ui/tramites/notify-verified-tramite';
+import NotifyVerifyTramite from '@/app/ui/tramites/notify-verify-tramite';
+import './styles.css';
+
+const wait = () => new Promise((resolve) => setTimeout(resolve, 1000));
 
 
 export default function IniciarTramite( {
@@ -36,48 +40,63 @@ export default function IniciarTramite( {
   content,
   user
 }: {
-  tramiteMd: TramiteMd;
+  tramiteMd: TramiteMd | null;
   content: string;
   user: User | undefined;
 } ) {
   
-  const [tramite, setTramite] = useState('');
-  const [imageUrl, setImageUrl] = useState<string>("");
+  const [tramite, setTramite] = useState("");
+  const [imageUrl, setImageUrl] = useState<string | null>(null)
   const [spin, setSpin] = useState(false);
   const [images, setImages] = useState<ImageListType>([]);
+
   const [name, setName] = useState("");
+  const [nameVisitor, setNameVisitor] = useState("");
+
   const [email, setEmail] = useState("");
   const [open, setOpen] = useState(false);
-  const [emailSession, setEmailSession] = useState(false);
   const [info, setInfo] = useState<string | undefined>("")
 
-   const [estadoRegistrar, setEstadoRegistrar] = useState(false)
+  const [token, setToken] = useState("");
 
+  const searchParams = useSearchParams();
+  const isVerified = searchParams.get('verified') === "true"
 
-  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-  const emailValid= emailRegex.test(email)
+  const pathname = usePathname()
 
-   const wait = () => new Promise((resolve) => setTimeout(resolve, 1000));
+  const tokenx= nanoid()
+  const isEmailVisitor= user?.email.slice(16) === "@cnpmandataria.com"
+  const id= user?.email!
 
-  const documentacions: string[] | undefined = tramiteMd.documentacion?.split(", ")
+  const isEmailValid= (email: string) => {
+    const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(?:\.[a-zA-Z]{2,})?$/;
+    return regex.test(email);
+  }
 
-  const documentos:string[] | undefined= tramiteMd.documentos?.split(", ")
-  const informations:string[] | undefined= tramiteMd.informacion?.split(", ")
+  const documentacions: string[] | undefined = tramiteMd?.documentacion?.split(", ")
 
-  const lengthDocumentos= documentos?.length
-  const lengthInformations= informations.length 
+  const documentos:string[] | undefined= tramiteMd?.documentos?.split(", ")
 
-  // const maxNumber = 5;
   const maxNumber = documentos?.length;
-
-  const buttonRefRegistro = useRef<HTMLButtonElement>(null);
-  const handleClickButtonRegistro= () => {
-    if (buttonRefRegistro.current) buttonRefRegistro.current.click()
-  };
 
   const buttonRefPedido = useRef<HTMLButtonElement>(null);
   const handleClickButtonPedido= () => {
     if (buttonRefPedido.current) buttonRefPedido.current.click()
+  };
+
+  const buttonRefAuth = useRef<HTMLButtonElement>(null);
+  const handleClickButtonAuth= () => {
+    if (buttonRefAuth.current) buttonRefAuth.current.click()
+  };
+
+  const buttonRefVerification = useRef<HTMLButtonElement>(null);
+  const handleClickButtonVerification= () => {
+    if (buttonRefVerification.current) buttonRefVerification.current.click()
+  };
+
+  const refCreateUser = useRef<HTMLButtonElement>(null);
+  const handleCreateUser= () => {
+    if (refCreateUser.current) refCreateUser.current.click()
   };
 
   const months = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Setiembre", "Octubre", "Noviembre", "Diciembre"];
@@ -94,52 +113,122 @@ export default function IniciarTramite( {
     if (buttonyRef.current) buttonyRef.current.click()
   };
 
-  const enviarConsulta= () => {
+  const buttonRefxxxx = useRef<HTMLButtonElement>(null); // update comment email
+  const handleClickButtonxxxx= () => {
+    if (buttonRefxxxx.current) buttonRefxxxx.current.click()
+  };
+
+  const buttonRefxxx = useRef<HTMLButtonElement>(null); // update user email
+  const handleClickButtonxxx= () => {
+    if (buttonRefxxx.current) buttonRefxxx.current.click()
+  };
+
+  const enviartramite= () => {
     setTimeout(handleClickButton, 200) 
-    setTimeout(() => setSpin(false), 200) 
+  }
+
+  const enviarConsultaxxxx= () => {
+    setTimeout( () => handleClickButtonxxxx(), 200) // update comment email
+    setTimeout( () => handleClickButtonxxx(), 200) // update user email
   }
   
+  ///////////////////////////////////////////////////////////////
   const uploadToServer1 = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       setImageUrl(`["https://res.cloudinary.com/dchmrl6fc/image/upload/v1740640515/sin-adjuntos_ut7col.png"]`);
 
-      enviarConsulta();
+      enviartramite();
     } catch (error) {
       console.error(error);
     }
   };
-
   const uploadToServer2 = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (files.length === 0) return;
 
+    const resizedBlobs: Blob[] = [];
+    for (const file of files) {
+      if ( file.type === "application/pdf" ) {
+        resizedBlobs.push(file);
+      }  else {
+        const resizedBlob = await resizeImage(file, 1024, 1024);
+        resizedBlobs.push(resizedBlob);
+      }
+    }
+
     try {
+      setSpin(true)
       const data = new FormData();
 
-      {files.map((file, index) => {
-        data.append(`file${index}`, file );
+      {resizedBlobs.map((resizedBlob, index) => {
+        data.append(`file${index}`, resizedBlob );
       })}
+
       const response = await fetch('/api/upload-query', {
         method: 'POST',
         body: data,
       });
+
       const responseData = await response.json();
-
       const polo: string[]= responseData.urls
-
       const respon= JSON.stringify(polo )
 
       setImageUrl(respon);
+
       if (response.ok) {
         console.log('File uploaded successfully');
       }
 
-      enviarConsulta();
+      enviartramite();
 
     } catch (error) {
       console.error(error);
     }
+    setSpin(false)
+  };
+  const uploadToServer3 = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      setSpin(true)
+      enviarConsultaxxxx();
+    } catch (error) {
+      console.error(error);
+    }
+    setSpin(false)
+  };
+
+  const resizeImage = (file: File, maxWidth: number, maxHeight: number): Promise<Blob> => {
+    return new Promise((resolve) => {
+      const canvas = document.createElement('canvas');
+      const reader = new FileReader();
+      const img= document.createElement('img')
+
+      reader.onload = (e) => {
+        img.src = e.target?.result as string;
+      };
+
+      img.onload = () => {
+        const scale = Math.min(maxWidth / img.width, maxHeight / img.height);
+
+        const scaleMin = scale > 1 ? 1 : scale
+
+        const width = img.width * scaleMin;
+        const height = img.height * scaleMin;
+
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext('2d');
+        ctx?.drawImage(img, 0, 0, width, height);
+
+        canvas.toBlob((blob) => {
+          if (blob) resolve(blob);
+        }, file.type);
+      };
+
+      reader.readAsDataURL(file);
+    });
   };
 
   const renderFilePreview = (file: File ) => { 
@@ -151,14 +240,14 @@ export default function IniciarTramite( {
           alt={file.name} 
           width={80}
           height={80}
-          className="min-h-[80px] object-contain bg-[#ffffffaa] w-20 border border-[#1d021544] [border-radius:_6px_6px_0_6px] " />
+          className="h-[64px] object-cover bg-[#ffffffaa] w-16 border border-[#1d021544] [border-radius:_6px_6px_0_6px] " />
       ); 
       } else if ( fileType === 'application/pdf' ) { 
         return ( 
         <embed 
           src={URL.createObjectURL(file)} 
           type="application/pdf" 
-          className="min-h-[80px] object-contain bg-[#ffffffaa] w-[80px] h-[100px]  border border-[#1d021544]  [border-radius:_6px_6px_0_6px] " />
+          className="h-[64px] object-cover bg-[#ffffffaa] w-[60px] border border-[#1d021544]  [border-radius:_6px_6px_0_6px] " />
         ); 
       } else { return ( 
       <p className=" text-[#fff] break-words p-2 text-xs text-left">
@@ -169,27 +258,68 @@ export default function IniciarTramite( {
   }
 
   useEffect(() => {
-    !tramite && tramiteMd.slug !== "x-Otros" && setTramite(`${tramiteMd.tramite}`);
-    sessionStorage.getItem('name') && setName(`${sessionStorage.getItem('name')}`)
-    sessionStorage.getItem('nombre') && setName(`${sessionStorage.getItem('nombre')}`)
+    !tramite && tramiteMd?.slug !== "x-Otros" && setTramite(`${tramiteMd?.tramite}`);
+    user?.email && setEmail(`${user.email}`)  
+    user?.name ? setName(`${user.name}`) : setName(`${sessionStorage.getItem('nameVisitor')}`)
+    sessionStorage.getItem('nameVisitor') && setNameVisitor(`${sessionStorage.getItem('nameVisitor')}`)
+    user?.image ? setImageUrl(`${user.image}`) : sessionStorage.getItem('imgUrlSession') && setImageUrl(`${sessionStorage.getItem('imgUrlSession')}`)
 
-    sessionStorage.getItem('email') && setEmail(`${sessionStorage.getItem('email')}`)
-    if (sessionStorage.getItem('email')) {
-      setEmailSession(true);
-    }
-  }, [tramiteMd, name, email, open, imageUrl ])
+    setToken(tokenx)
+
+    isVerified && toast(<NotifyVerifiedTramite /> , {
+      autoClose: undefined,
+      closeButton:  false ,
+      transition: Flip,
+      className: `!w-full !min-h-min !mt-0 !p-0 !shadow-[0px_4px_12px_#a0b8e996] !bg-transparent !mb-0`,
+    });
+
+    !user || !isEmailVisitor && !isVerified && 
+    toast(<NotifyVerifyTramite isEmailVisitor= {isEmailVisitor} tramite={tramite} email={email} user={user} />, {
+      customProgressBar: true,
+      position: "bottom-center",
+      transition: Flip,
+      className: '!w-full !min-h-min !mb-8 !p-0 !shadow-[0_10px_20px_#c0cde7] ',
+    });
+
+  }, [ ])
 
   const onChange = (imageList: ImageListType, addUpdateIndex: Array<number> | undefined) => {
     setImages(imageList);
   };
 
   const initialStatex: StateUser = { message: null, errors: {} };
-  const [estadox, formActionx] = useActionState(createUser, initialStatex);
+  const [estadox, formActionx, isPendingx] = useActionState(createUser2, initialStatex);
 
   const initialState: StateCreateTramite = { message: null, errors: {} };
   const [estado, formAction, isPending] = useActionState(createTramite, initialState);
 
+  const initialStatexx: StateVerificationToken  = { message: null, errors: {} };
+  const [estadoxx, formActionxx, isPendingxx] = useActionState(createVerificationToken, initialStatexx);
+
+  const [errorMessage, formActionAuth, isPendingAuth] = useActionState(authenticate3, undefined, );
+
+  const initialStatexxx: StateUserEmail = { message: null, errors: {} };
+  const updateUserEmailWithId = updateUserEmail.bind(null, id);
+  const [estadoxxx, formActionxxx, isPendingxxx] = useActionState(updateUserEmailWithId, initialStatexxx);
   
+  const initialStatexxxx: StateUpdateCommentEmail = { message: null, errors: {} };
+  const updateCommentEmailWithId = updateCommentEmail.bind(null, id);
+  const [estadoxxxx, formActionxxxx, isPendingxxxx] = useActionState(updateCommentEmailWithId, initialStatexxxx);
+
+  const limpiarNotificaciones = () => {
+    toast.dismiss();
+  };
+  const notifyVerifyTramite = () =>
+    toast(<NotifyVerifyTramite isEmailVisitor= {isEmailVisitor} tramite={tramite} user={user} email={email} />, {
+      customProgressBar: true,
+      // autoClose: 5000,
+      position: "bottom-center",
+      transition: Flip,
+      pauseOnHover: false,
+      className: '!w-full !min-h-min !mb-8 !mt-0 !p-0 !shadow-[0_10px_20px_#c0cde7]',
+    });
+
+
   return (
     <>
       <div className="flex items-center pb-3">
@@ -198,16 +328,16 @@ export default function IniciarTramite( {
           alt="icono trámites" 
           width={26} 
           height={26}
-          className="opacity-80 h-[14px] w-[14px] mr-2.5 sm:h-[16px] sm:w-[16px]"
+          className="opacity-80 mb-[3px] h-3 w-3 mr-2.5 sm:h-3.5 sm:w-3.5"
         />
-        <h1 className=" text-start text-lg text-[#39507fcc] font-semibold leading-tight tracking-tighter sm:text-[22px] md:leading-none ">
-          {tramiteMd.tramite}
+        <h1 className=" text-start text-[17px] text-[#39507fcc] font-semibold leading-tight tracking-tighter sm:text-[19px] md:leading-none ">
+          {tramiteMd?.tramite}
         </h1>
       </div>
 
-      <Frente className="!bg-[#020b1d14]  min-h-[200px]">
+      <Frente className="!bg-[#548eff16] ">
         <Tabs.Root
-          className="flex  flex-col"
+          className="flex flex-col min-h-[362px]"
           defaultValue="tab1"
         >
           <Tabs.List
@@ -215,21 +345,24 @@ export default function IniciarTramite( {
             aria-label="Manage your account"
           >
             <Tabs.Trigger
-              className="flex bg-[#ffffff63] flex-1 duration-150 cursor-pointer select-none items-center justify-center py-3 px-2.5 leading-none  text-[#020b1d77] outline-none hover:text-[#020b1daa] data-[state=active]:bg-[#f1eef000] data-[state=active]:cursor-default data-[state=active]:text-[#020b1dcc]"
-            value="tab1"
+              className="flex bg-[#ffffff66] mt-[1px] flex-1 duration-150 cursor-pointer select-none items-center justify-center py-3 px-2.5 leading-none  text-[#020b1d77] outline-none hover:text-[#020b1daa] data-[state=active]:bg-[#f1eef000] data-[state=active]:cursor-default data-[state=active]:text-[#020b1dcc]"
+              value="tab1"
             >
-              Descripción
+              Descripción<span className={`ml-1 font-semibold text-xs text-[#ff0000] ${tramiteMd?.slug === "x-Otros" && tramite !== "" && "text-transparent"} ${tramiteMd?.slug !== "x-Otros" && "text-transparent" } `}>*</span>
             </Tabs.Trigger>
 
             <Tabs.Trigger
-              className="border-x border-[#e6e0e3] flex bg-[#ffffff63] flex-1 duration-150 cursor-pointer select-none items-center justify-center py-3 px-2.5 leading-none  text-[#020b1d77] outline-none hover:text-[#020b1daa] data-[state=active]:bg-[#f1eef000] data-[state=active]:cursor-default data-[state=active]:text-[#020b1dcc]"
+              className="border-x border-[#d7dfef] flex bg-[#ffffff66] mt-[1px] flex-1 duration-150 cursor-pointer select-none items-center justify-center py-3 px-2.5 leading-none  text-[#020b1d77] outline-none hover:text-[#020b1daa] data-[state=active]:bg-[#f1eef000] data-[state=active]:cursor-default data-[state=active]:text-[#020b1dcc]"
               value="tab2"
             >
-              Adjuntar Comprobantes
+              <div className='flex flex-wrap justify-center '>
+                Adjuntar
+                <span className='ml-1'>Comprobantes<span className={`ml-1 font-semibold text-xs text-[#ff0000] ${images.length === maxNumber  && "text-transparent"}  ${tramiteMd?.slug === "x-Otros" && "text-transparent" } `}>*</span></span>
+              </div>
             </Tabs.Trigger>
 
             <Tabs.Trigger
-              className="flex bg-[#ffffff63] flex-1 duration-150 cursor-pointer select-none items-center justify-center py-3 px-2.5 leading-none  text-[#020b1d77] outline-none hover:text-[#020b1daa] data-[state=active]:bg-[#f1eef000] data-[state=active]:cursor-default data-[state=active]:text-[#020b1dcc]"
+              className="flex bg-[#ffffff66] mt-[1px] flex-1 duration-150 cursor-pointer select-none items-center justify-center py-3 px-2.5 leading-none  text-[#020b1d77] outline-none hover:text-[#020b1daa] data-[state=active]:bg-[#f1eef000] data-[state=active]:cursor-default data-[state=active]:text-[#020b1dcc]"
               value="tab3"
             >
               Adjuntar Informacíon
@@ -237,75 +370,74 @@ export default function IniciarTramite( {
           </Tabs.List>
 
           <Tabs.Content
-            className="grow rounded-b-md p-2 outline-none leading-[1.15] text-[13px] text-[#020b1dcc] sm:p-4 sm:leading-normal sm:text-[15px]"
+            className="grow rounded-b-md p-2 outline-none text-[13px] text-[#020b1dcc] sm:p-4 sm:text-[15px]"
             value="tab1"
           >
-            <p className="mb-3 mt-1 sm:mt-0 leading-normal">
-               {tramiteMd.slug === "x-Otros" ? "Describí el trámite" : "Descripción general del trámite" }  
-               <span className={`font-semibold text-[#ff0000] ${tramiteMd.slug !== "x-Otros" && "hidden"}`}> *</span>
-            </p>
+            <div className="flex flex-col justify-between min-h-[288px]">
+              <div className="flex flex-col">
+                <p className="mb-3 mt-1 sm:mt-0 ">
+                  {tramiteMd?.slug === "x-Otros" ? "Describí el trámite" : "Descripción general del trámite" }  
+                </p>
 
-            <div className=" duration-300 rounded-[4px] ">
-              {tramiteMd.slug === "x-Otros" ? (
-                <div className="flex flex-col gap-y-1">
-                  <TextareaCnp
-                    className=""
-                    id="tramite"
-                    name="tramite"
-                    placeholder= "Descripción..."
-                    required
-                    value={tramite}
-                    rows={8}
-                    maxLength={1024}
-                    wrap="hard"
-                    onChange={(e) => {
-                      setTramite(e.target.value);
-                    }}
-                  />
-                </div>
-              ) : (
-                <div className="bg-[#ffffff65]">
-                  <div
-                  className={`rounded-sm py-2 px-3  ${markdownStyles['markdown']}`}
-                  dangerouslySetInnerHTML={{ __html: content }}
-                  />
-                  <p className="px-3 underline underline-offset-2 decoration-[#020b1d55]">
-                    Comprobantes
-                  </p>
-                  <div className="py-2 px-3 rounded-sm">
-                    <ul>
+                <div className=" duration-300 rounded-[4px] leading-[1.2]">
+                  {tramiteMd?.slug === "x-Otros" ? (
+                    <div className="flex flex-col gap-y-1">
+                      <TextareaCnp
+                        className=""
+                        id="tramite"
+                        name="tramite"
+                        placeholder= "Descripción..."
+                        required
+                        value={tramite}
+                        rows={5}
+                        maxLength={1024}
+                        wrap="hard"
+                        onChange={(e) => {
+                          setTramite(e.target.value);
+                        }}
+                      />
+                    </div>
+                  ) : (
+                    <div className="bg-[#ffffffaa] text-[13px] sm:text-sm">
+                      <div
+                      className={`rounded-sm pt-2 px-3  ${markdownStyles['markdown']}`}
+                      dangerouslySetInnerHTML={{ __html: content }}
+                      />
+                      <h3 className="px-3 underline underline-offset-2 decoration-[#020b1d55]">
+                        Comprobantes
+                      </h3>
+                      <ul className="py-2 px-3 rounded-sm">
                         {documentacions?.map((documento, index) => (
-                            <li key={index} className="flex ">
-                                <span className="mr-1">-</span><span>{documento}</span>
-                            </li>
+                          <li key={index} className="flex ">
+                              <span className="mr-1">-</span><span>{documento}</span>
+                          </li>
                         ))}
-                    </ul>
-                  </div>
+                      </ul>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-            
-            <div className="hidden w-full  mt-3 sm:flex">
-              <div className="flex items-center text-[13px] opacity-90 md:text-[13.5px]">
-                  <ArrowPathIcon className="h-4 w-4 mr-2.5 text-[#39507f9d] stroke-2 " />
-                  <p className="text-[#39507f7d] font-medium ">{tramiteMd.date !== "actual" ? tramiteMd.date : date }</p>
+              </div>
+              
+              <div className="flex items-center mt-3 text-[13px] opacity-90 md:text-[13.5px]">
+                <ArrowPathIcon className="h-4 w-4 mr-2.5 text-[#39507f9d] stroke-2 " />
+                <p className="text-[#39507f7d] font-medium ">{tramiteMd?.date !== "actual" ? tramiteMd?.date : date }</p>
               </div>
             </div>
           </Tabs.Content>
 
           <Tabs.Content
-            className="grow rounded-b-md p-2 outline-none text-[13px] text-[#020b1dcc] sm:p-4 sm:text-[15px]"
+            className="grow rounded-b-md p-2 outline-none text-[#020b1dcc] sm:p-4"
             value="tab2"
           >
-            <p className="mb-3 mt-1 sm:mt-0">
-               {tramiteMd.slug === "x-Otros" ? "Podés cargar dos comprobantes:" : "Cargá los siguientes comprobantes:" }  
+            <p className="mb-3 mt-1 sm:mt-0 text-[13px] sm:text-[15px] ">
+               {tramiteMd?.slug === "x-Otros" ? "Podés cargar dos comprobantes:" : "Cargá los siguientes comprobantes:" }  
             </p>
 
-            <div className="py-2 px-3 mb-4 rounded-sm bg-[#ffffff65]">
+            <div className="py-2 px-3 mb-3 text-[12px] sm:text-sm rounded-sm bg-[#ffffffaa]">
               <ul className="list-none" >
                   {documentos?.map((documento, index) => (
-                    <li key={index} className=" ">
-                      {documento} <span className={`font-semibold text-xs text-[#ff0000] ${tramiteMd.slug === "x-Otros" && "hidden"}`}>*</span>
+                    <li key={index} className=" leading-[1.2] ">
+                      {documento} <span className={`font-semibold text-xs text-[#ff0000] ${tramiteMd?.slug === "x-Otros"  && "hidden"} ${index + 1 <= images.length && "text-transparent"}`}>*</span>
                     </li>
                   ))}
               </ul>
@@ -331,70 +463,67 @@ export default function IniciarTramite( {
                 dragProps,
                 errors,
               }) => (
-                <div className={`flex flex-col bg-[#26344f] rounded-lg ${!images.length ? 'gap-0' : 'gap-0.5'} $ `} >
+                <div className={`flex flex-col ${!images.length ? 'gap-0' : 'gap-1.5'} `} >
                   <button
                     type="button"
                     onClick={onImageUpload}
                     {...dragProps}
                     className={`group rounded-lg w-full disabled:!cursor-default `}
                   >
-                    <div className={`relative label-dnd  ${!images.length ? 'rounded-lg' : 'rounded-t-lg'} bg-[#020b1d] text-[#ffffffdd] w-full p-2 duration-150 text-sm flex flex-col justify-center items-center active:opacity-80 sm:p-4 `}>
-                      <div className="flex flex-col items-center duration-150 opacity-80 group-hover:opacity-100 min-[512px]:flex-row ">
-                        <IconDragDrop className= "w-9 opacity-80  min-[512px]:mr-7" />
-                        <div>
-                          Click y elegí un archivo o arrastralo y sueltá aquí <br />
-                          <p className="text-xs mt-1.5 text-[#ffffffbb]">Máximo: <b>{maxNumber}</b> arch. <b>jpg</b>, <b>png</b> o <b>(pdf</b> <span className="">de una sola página)</span>  <br />Tamaño Max de cada archivo: <b>4 MB</b>
-                            </p>
+                    <div className={`relative label-dnd  ${!images.length ? 'rounded-lg' : 'rounded-t-lg'} bg-[#ffffffd7] text-[#020b1ddd] w-[calc(100%_-_8px)] mx-auto px-2 py-3 duration-150 flex flex-col justify-center items-center `}>
+                      <div className="flex items-center gap-3 text-[13px] duration-150 sm:text-sm">
+                        <IconDragDrop className= "w-[30px]  min-[512px]:mr-7" />
+                        <div className='leading-[1]'>
+                          Elegí un archivo o arrastralo y sueltá aquí <br />
+                          <p className="text-xs mt-1.5 "> archivos <span className='font-medium'>jpg</span >, <span className='font-medium'>png</span > o <span className='font-medium' >pdf</span >
+                          </p>
                         </div>
                       </div>
-                      
                       {errors && (
-                        <div className={`w-max mb-1 mt-4 mx-auto text-[12.5px] border border-[#ffffff1e] tracking-wide text-[#ffffffee] leading-[1.5] py-0.5 px-2 bg-[#365491] rounded-xl `}>
+                        <div className={`w-max mb-1 mt-4 mx-auto text-[12.5px] border border-[#ffffff1e] tracking-wide text-[#ffffffee] leading-[1.5] px-2 bg-[#4d70b5] rounded-xl `}>
                           {errors.maxNumber && (
-                            <span>Cantidad máxima: {maxNumber} arch.</span>
+                            <span>Cantidad máxima: {maxNumber} archivos</span>
+                          )}
+                          {errors.maxFileSize && (
+                            <span>El tamaño excede el máximo permitido (4 MB)</span>
                           )}
                           {errors.acceptType && (
                             <span>El tipo de archivo no está permitido</span>
                           )}
-                          {errors.maxFileSize && (
-                            <span>El tamaño excede el máximo permitido</span>
-                          )}
-                          {errors.resolution && (
-                            <span>
-                              La resolución no coincide con la permitida
-                            </span>
-                          )}
                         </div>
                       )}
-                      <div className={`absolute w-full h-full outline-2 outline-dashed outline-[#00000003]  ${isDragging ? '!outline-[#000000cc] bg-[#ffffff33] ' : undefined}  ${!images.length ? 'rounded-lg' : 'rounded-t-lg'} hover:outline-[#0000006e] hover:border-b-2 hover:border-[#ffffff69] hover:border-dashed `}>
+                      <div 
+                        className={`absolute mx-auto w-[calc(100%_+_2px)] h-full bg-[#548eff10] outline-1 duration-150 outline-offset-2 outline-dashed outline-[#00000070] ${isDragging ? ' hover:bg-[#4369b566] rounded-lg hover:outline-[#000000ee] ' : !images.length ? " hover:bg-[#ffffff00] hover:outline-[#000000ee] rounded-lg  " : " hover:bg-[#ffffff00] hover:outline-[#000000ee] rounded-t-lg" }`}
+                        >
                       </div>
                     </div>
                   </button>
+
                   <div className= "flex flex-col rounded-b-lg bg-[#020b1d] ">
-                    <div className= {`flex items-baseline justify-start px-3 gap-x-2 flex-wrap text-sm w-full cursor-default max-[512px]:justify-center sm:px-9 sm:gap-x-4`}>
+                    <div className= {`flex items-baseline justify-start px-3 gap-x-4 flex-wrap text-sm w-full cursor-default max-[512px]:justify-center sm:px-9 sm:gap-x-4 `}>
                       { images.map((image, index) => (
-                        <div key={index} className="flex flex-col pb-4 pt-5">
+                        <div key={index} className="flex flex-col items-start pb-2 pt-2.5">
                           <div className="image-item flex justify-start">
 
                             {renderFilePreview( image.file! )} 
 
-                            <div className="flex flex-col text-[13px] justify-end gap-0.5 ">
+                            <div className="flex flex-col text-[12px] justify-end gap-[1px] ">
                               <div onClick={() => {
                                 onImageUpdate(index)
-                                }} className="border border-[#d9dee8] border-l-0 bg-[#d7d7d7] px-1.5 py-0.5 cursor-pointer rounded-e-md duration-200 text-[#020b1daa] hover:border-[#c0c8d8] hover:text-[#020b1ddd]  hover:bg-[#ffffff] active:bg-[#ffffffaa]  "
+                                }} className="border border-[#e9dae9] border-l-0 bg-[#d7d7d7] px-1.5 cursor-pointer rounded-e-md duration-200 text-[#1d0215aa] hover:border-[#d8c0d7] hover:text-[#1d0215dd]  hover:bg-[#ffffff] active:bg-[#ffffffaa]  "
                               >
                                 Cambiar
                               </div>
                               <div onClick={() => {
                                 onImageRemove(index)
-                                }} className="border border-[#d9dee8] border-l-0 bg-[#d7d7d7] px-1.5 py-0.5 cursor-pointer rounded-e-md duration-200 text-[#020b1daa] hover:text-[#020b1ddd] hover:border-[#c0c8d8] hover:bg-[#ffffff] active:bg-[#ffffffaa] "
+                                }} className="border border-[#e9dae9] border-l-0 bg-[#d7d7d7] px-1.5 cursor-pointer rounded-e-md duration-200 text-[#1d0215aa] hover:text-[#1d0215dd] hover:border-[#d8c0d7] hover:bg-[#ffffff] active:bg-[#ffffffaa] "
                                 >
                                 Eliminar
                               </div>
                             </div>
                           </div>
-                          <div className="text-xs break-words w-36 text-[#ffffffee] mt-[3px] opacity-80 text-start sm:text-sm sm:w-44">
-                            {documentos?.length && documentos[index].toLocaleUpperCase() }
+                          <div className="text-xs break-words text-[#ffffffee] mt-[3px] opacity-60 text-start ">
+                            {image.file?.name } 
                           </div>
                         </div>
                       ))}
@@ -406,7 +535,7 @@ export default function IniciarTramite( {
           </Tabs.Content>
 
           <Tabs.Content
-            className="grow rounded-b-md p-2 outline-none text-sm text-[#020b1dcc] sm:p-4 sm:text-[15px]"
+            className="grow rounded-b-md p-2 outline-none text-[13px] text-[#020b1dcc] sm:p-4 sm:text-[15px]"
             value="tab3"
           >
             <fieldset className="w-full mt-1 sm:mt-0">
@@ -417,10 +546,10 @@ export default function IniciarTramite( {
                 Información adicional
               </label>
               <TextareaCnp
-                className="text-sm mt-3 placeholder:opacity-50"
+                className="text-sm mt-3 placeholder:opacity-50 !border-0"
                 id="Información"
                 name="Información"
-                rows={3}
+                rows={5}
                 maxLength={1024}
                 wrap="hard"
                 value= {info }
@@ -439,203 +568,243 @@ export default function IniciarTramite( {
         </Tabs.Root>
       </Frente>
 
-      {/* registrar email */}
-      {!user && (
-        emailSession === false  ? (
-          <Frente className="p-2 mt-2 text-small-regular !bg-[#020b1d13] sm:p-4 sm:mt-4 ">
-            <div className="flex items-center justify-between gap-3 sm:gap-5">
-              <div className="mt-1.5 ">
-                <IconRegistro className="opacity-80 w-[24px] ml-1.5 sm:ml-3 " />
-              </div>
-  
-              <div className={`w-full text-start text-[14px] leading-[1.1] text-[#39507f] transition-[opacity, display] duration-300 sm:leading-normal `}>
-                Dejá tu e-mail para enviarte el presupuesto <span className=" text-[#ff0000]">*</span> 
-              </div>
-                
-              <ButtonB
-                className={`h-8 text-[13px]  w-max`}
-                onClick={() => { 
-                  setOpen(!open); 
-                  setEmail(""); 
-                  setName("")
-                  sessionStorage.removeItem("email")
-                  sessionStorage.removeItem("name")
-                }}
-                data-testid="edit-button"
-                data-active={open}
-              >
-                {open ? "Cancelar" :  <div className="text-[13px] overflow-auto whitespace-nowrap">Anotar</div>  }
-              </ButtonB>
+      {/* registrar email tramite */}
+      <Frente className={`${!user || isEmailVisitor ? "block" : "hidden"} py-1.5 px-2 mt-2 text-small-regular !bg-[#548effe2] sm:!px-4 `}>
+        <div className={`${open ? "justify-end py-1.5 " : "justify-between "} flex items-start gap-3 sm:items-center sm:gap-5 `}>
+          <div className={`${open && "hidden"} flex items-center justify-start gap-3 w-full text-[13px] text-[#ffffff] [text-shadow:_1px_1px_#3d61ad] sm:text-[15px] `}>
+            <div className="mt-[3px] mb-auto sm:mt-[3px] ">
+              <IconRegistro className=" w-[16px] ml-1.5 sm:w-[22px] sm:ml-3" />
             </div>
-            
-            <div
-              className={clsx(
-                "transition-[max-height,opacity] duration-300 ease-in-out overflow-visible",
-                {
-                  "max-h-[1000px] opacity-100": open,
-                  "max-h-0 opacity-0": !open,
-                }
-              )}
-            >
-              {/* create user*/}
-              <div className="pt-2 sm:pt-4">
-                <form action={formActionx}>
-                  <fieldset className="flex flex-col items-center gap-2 md:flex-row md:gap-4">
-                    <InputCnp
-                      className="text-sm h-8"
-                      id="name"
-                      type="text"
-                      name="name"
-                      minLength={3}
-                      maxLength={100}
-                      value={name}
-                      placeholder= "Nombre"
-                      required
-                      disabled={ !open }
-                      onChange={(e) => {
-                        setName(e.target.value);
-                      }} 
-                      >
-                      <div className="absolute rounded-l-[4px] h-[32px] w-[32px] left-0 top-0 bg-[#020b1d0b]" >
-                      </div>
-                      <IconCuenta  className="absolute w-[14px] left-[9px] top-[9px] " color="#39507f66" />
-                    </InputCnp>
-
-                    <InputCnp
-                      className="text-sm h-8"
-                      id="email"
-                      type="email"
-                      name="email"
-                      minLength={3}
-                      maxLength={100}
-                      value={email}
-                      placeholder= "Email"
-                      required
-                      disabled={ !open }
-                      onChange={(e) => {
-                        setEmail(e.target.value);
-                      }}
-                      >
-                      <div className="absolute rounded-l-[4px] h-[32px] w-[32px] left-0 top-0 bg-[#020b1d0b]" >
-                      </div>
-                      <IconEmail2  className="absolute w-[14px] left-[9px] top-[9px] " color="#39507f66" />
-                    </InputCnp>
-                  </fieldset>
-                  <input
-                    id="password"
-                    type="hidden"
-                    name="password"
-                    defaultValue={"xxxxxx"}
-                    readOnly
-                  />
-
-                  <input
-                    id="confirmPassword"
-                    type="hidden"
-                    name="confirmPassword"
-                    defaultValue={"xxxxxx"}
-                    readOnly
-                  />
-
-                  {/* Massages erros */}
-                  <div
-                    className="flex items-end relative space-x-8"
-                    aria-live="polite"
-                    aria-atomic="true"
-                  >
-                    {estadox?.message && estadox?.message !== "usuario" && estadox?.message === "Database Error: Error al crear consulta." && (
-                      <>
-                        <ExclamationCircleIcon className="absolute top-4 h-5 w-5 text-red-500" />
-                        <p className="pt-4 text-sm text-red-500">{estadox?.message}</p>
-                      </>
-                    )}
-                  </div>
-
-                  {/* button submit */}
-                  <div className="mt-2 text-sm sm:mt-4">
-                    <ButtonA
-                      className={`h-8 text-[13px] w-max ml-auto`}
-                      onClick={ () => {
-                        emailValid && name && setTimeout(() => setOpen(!open), 200) 
-                        emailValid && name && sessionStorage.setItem('name', `${name}`);
-                        emailValid && name && sessionStorage.setItem('email', `${email}`);
-                        // sessionStorage.removeItem("nombre")
-                        handleClickButtonRegistro()
-                      }}
-                    >
-                      Registrar
-                    </ButtonA>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </Frente>
-        ) : (
-          <Frente className="p-2 mt-2 text-small-regular sm:p-4 !bg-[#e0e6e1] ">
-            <div className={`w-full text-start text-[13px] text-[#020b1dde] transition-[opacity] duration-300  sm:text-sm `}>
-              <span className="font-semibold text-sm sm:text-[15px] ">{ /* !estadox.message ? "" : */ name }</span>  Para enviarte el presupuesto se registró el e-mail  <span className="font-semibold  mx-1 text-sm sm:text-[15px]">{email}</span>
-            </div>
-          </Frente> 
-        ) 
-      )}
-
-      {estado?.message === "tramiteIniciado" && (
-        <Frente className="!p-2 mt-2 !bg-[#d7e5d9] sm:!p-4 ">
-          <div className={`w-full text-start text-sm text-[#020b1ddd] transition-[opacity] duration-300 sm:text-[15px] `}>
-            Recibimos el pedido. Te enviaremos el presupuesto a la brevedad.
+            {isEmailVisitor ? (
+              <p><b>{ user.name }</b>, enviame un e-mail para mandarte el presupuesto<span className="text-[15px] text-[#ff0000]  [text-shadow:_1px_1px_#fff9,_-1px_-1px_#fff9,_1px_1px_#fff9,_-1px_1px_#fff9] ml-1.5">*</span>
+              </p>
+            ) : (
+              <p className='leading-[1.1] sm:leading-normal'>Envíame un Email para que pueda mandarte el presupuesto<span className="text-[15px] text-[#ff0000]  [text-shadow:_1px_1px_#fff9,_-1px_-1px_#fff9,_1px_1px_#fff9,_-1px_1px_#fff9] ml-1.5">*</span>
+              </p>
+            )}
           </div>
-        </Frente> 
-      )}
+
+          <div className='flex items-center gap-3'>
+            {/* button submit */}
+            <ButtonB
+              className={`group ${!open && "hidden"} ${email && name && "!bg-[#ffffff]" } w-max h-[28px] !rounded-md text-[13px] !text-[#020b1daa] ml-auto !opacity-100 disabled:!opacity-85  disabled:hover:!opacity-85 hover:!text-[#020b1dee] `}
+              onClick={() => { 
+                handleCreateUser()
+                setTimeout(handleClickButtonAuth, 200)
+                setTimeout(notifyVerifyTramite, 2000)
+              }}
+              disabled= { (name || user?.name) && email && isEmailValid(`${email}`)  ? false : true}
+            >
+              <IconCambio fill="#548eff" className={`${(isPendingx || isPendingAuth) && "animate-spin"} fill-[#fff0] stroke-[#548eff36] mr-2 w-[26px] h-[26px] opacity-70  group-hover:opacity-100`} />{/*  */}
+
+              <p className="w-full" >Enviar</p>
+            </ButtonB>
+
+            <ButtonB
+              className={`h-[28px] text-[13px] !rounded-md w-max !opacity-100 !bg-[#ffffffcc] hover:!bg-[#ffffff] active:!opacity-70 `}
+              onClick={() => { 
+                setOpen(!open); 
+                setEmail(""); 
+                setName("");
+              }}
+              data-testid="edit-button"
+              data-active={open}
+            >
+              {open ? "Cancelar" :  <div className="text-[13px] overflow-auto whitespace-nowrap">Email</div>  }
+            </ButtonB>
+          </div>
+        </div>
+        
+        <div
+          className={clsx(
+            "transition-[max-height,opacity] duration-300 ease-in-out overflow-visible",
+            {
+              "max-h-[1000px] opacity-100 pb-1.5": open,
+              "max-h-0 opacity-0": !open,
+            }
+          )}
+        >
+          <div className={`pt-1.5 ${!open && "invisible"} `}> 
+            <fieldset className={` grid grid-cols-1 items-center gap-2 md:grid-cols-2 md:flex-row md:gap-4`}>
+              <InputCnp
+                className={`${email ? "bg-[#ffffff]" : "bg-[#ffffffcc]"} text-sm h-[30px] pb-[3px] !opacity-100 hover:!bg-[#ffffff] focus:!bg-[#ffffff]`}
+                id="email"
+                type="email"
+                name="email"
+                minLength={3}
+                maxLength={100}
+                value={email}
+                placeholder= "Email"
+                required
+                disabled={ !open }
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                }} 
+                >
+                <div className="absolute rounded-l-[4px] h-[32px] w-[32px] left-0 top-0 bg-[#548eff26]" >
+                </div>
+                <IconEmail2  className="absolute w-[14px] left-[9px] top-[7px] " color="#39507fcc" />
+              </InputCnp>
+              
+              <div className={` ${isEmailVisitor && "hidden"}`}>
+                <InputCnp
+                  className={`${name ? "!bg-[#ffffff]" : "!bg-[#ffffffcc]"} text-sm h-[30px] pb-[3px] !opacity-100 hover:!bg-[#ffffff] focus:!bg-[#ffffff]`}
+                  id="name"
+                  type="text"
+                  name="name"
+                  minLength={2}
+                  maxLength={100}
+                  value={ name /* ? name : nameVisitor ? nameVisitor : "" */ }
+                  placeholder= "Nombre"
+                  required
+                  disabled={ !open }
+                  onChange={(e) => {
+                    setName(e.target.value);
+                  }} >
+                  <div className="absolute rounded-l-[4px] h-[32px] w-[32px] left-0 top-0 bg-[#548eff26]" >
+                  </div>
+                  <IconCuenta  className="absolute w-[14px] left-[9px] top-[7px] " color="#39507fcc" />
+                </InputCnp>
+              </div>
+            </fieldset>
+
+            {/* Massages erros */}
+            <div
+              className="flex items-end relative space-x-8"
+              aria-live="polite"
+              aria-atomic="true"
+            >
+              {estadox?.message && estadox.message !== "usuario" && (
+                <>
+                  <ExclamationCircleIcon className="absolute top-4 h-5 w-5 text-red-500" />
+                  <p className="pt-4 text-sm text-red-500">{estadox?.message}</p>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      </Frente>
+
 
       {/* Massages error tramite */}
-      <div
-        className="my-1.5 flex items-end space-x-1 sm:my-3"
-        aria-live="polite"
-        aria-atomic="true"
-      >
-        {estado?.message && estado?.message !== "tramiteIniciado" && (
-          <>
-            <ExclamationCircleIcon className="h-5 w-5 text-red-500" />
-            <p className="text-sm text-red-500">{estado?.message}</p>
-          </>
-        )}
+      {estado?.message && estado?.message !== "tramiteIniciado" && (
+        <div 
+          className="py-3 px-2 flex items-end space-x-1 sm:px-4"
+          aria-live="polite"
+          aria-atomic="true">
+          <ExclamationCircleIcon className="h-5 w-5 text-red-500" />
+          <p className="text-sm text-red-500">{estado?.message}</p>
+        </div>
+      )}
+
+      {/* Boton Enviar tramite */}
+      <div className="mt-3 w-full flex justify-between items-start">
+        
+        <p className={`text-xs mt-1 mb-14 ${tramite && user?.email && !isEmailVisitor && (images.length === documentos?.length || tramiteMd?.slug === "x-Otros") && "opacity-0" } sm:text-[13px]`}><span className=" text-[#ff0000]">*</span> Requeridos</p>
+
+        {/* <div className="flex gap-4"> */}
+        {estado?.message !== "tramiteIniciado" ? (
+          <form 
+            onSubmit={ images.length === 0 ? uploadToServer1 : uploadToServer2 } >
+            <div className="group relative w-full flex justify-between items-center">
+
+              <div className={`w-[188px] absolute bottom-8 pt-3  `}>
+
+                <span className={` items-center hidden text-[13px] text-[#020b1dcc] absolute h-8 w-max -bottom-[32px] right-[200px] bg-[#ffffff] py-auto pl-2 pr-3 rounded-lg duration-150 shadow-[0_20px_25px_-5px_rgb(0_0_0_/_0.2),_0_8px_10px_-6px_rgb(0_0_0_/_0.2),_0px_-5px_10px_#00000012] ${user && tramite && (images.length === documentos?.length || tramiteMd?.slug === "x-Otros") ? "bottom-9" : "duration-300 group-hover:opacity-100 " } sm:text-[13px] group-hover:flex`}><span className=" text-[#ff0000] mx-1">* </span>Completar requeridos</span>
+                
+              </div>{/* group-hover:visible  */}
+
+              <ButtonA
+                className={`h-8 w-max !px-3 text-[13px] !justify-start disabled:!opacity-100`}
+                type="submit"
+                disabled={ tramite && user?.email && !isEmailVisitor && (images.length === documentos?.length || tramiteMd?.slug === "x-Otros") ? false : true }
+                onClick={() => {
+                  setSpin(true);
+                  user?.role === "member" && handleClickButtonVerification()
+                  user?.role === "member" && handleClickButtonPedido()
+                  limpiarNotificaciones()
+                  wait().then(() => {
+                  notifyVerifyTramite()
+                })
+                }}
+              >
+                <IconCambio
+                className={`${(spin || isPending || isPendingxx ) && "animate-spin"} fill-[#fff0] stroke-[#ffffff55] mr-1.5 w-[22px] h-[22px]`}
+              />
+                <p className="w-full text-start" >Pedir presupuesto</p>
+              </ButtonA>
+            </div>
+          </form>
+          ) : (
+          <div className="flex justify-end items-center gap-4">
+            <ButtonA
+              className="h-8 text-sm !justify-start"
+              type="button"
+              onClick={() => {
+                location.reload()
+              }}
+            >
+              Nuevo pedido Presupuesto 
+            </ButtonA>
+          </div>
+          )
+        }
       </div>
+      {/* </div> */}
+
+      <ToastContainer  className={ !isVerified  ? "foo" : "foo2" } autoClose={false} />
+
+
+      {/* authentication */}
+      <form action={formActionAuth} className="">
+        <input
+          type="hidden"
+          name="email"
+          value={email}
+          readOnly
+        />
+        <input
+          type="hidden"
+          name="password"
+          value= "72cf0550-3f64-474d-b150-aa813c6b4b67" 
+          readOnly
+        />
+        <input type="hidden" name="redirectTo" value={pathname} readOnly/>
+        <button
+          type="submit" 
+          ref={buttonRefAuth}
+          className="hidden"
+        >
+          Continuar
+        </button>
+      </form>
       
       {/* crear tramite */}
       <form action={formAction} className="flex flex-col ">
-        {/* archivos Adjuntos */}
         <input
           type="hidden"
-          id="documentos_url"
           name="documentos_url"
-          value={imageUrl}
+          value={imageUrl ? imageUrl : ""}
           readOnly
         />
-        {/* tramite */}
         <input
           type="hidden"
-          id="tramite"
           name="tramite"
           value= {tramite}
           readOnly
         />
-        {/* email */}
         <input
           type="hidden"
-          id="email_id"
           name="email_id"
-          value= {!email ? user?.email : email }
+          value={user?.email ? user.email : email}
           readOnly
         />
-        {/* informacion */}
         <input
           type="hidden"
-          id="informacion"
           name="informacion"
           value={ info }
           readOnly
         />
-
         <button
           type="submit"
           ref={buttonyRef}
@@ -645,257 +814,155 @@ export default function IniciarTramite( {
         </button>
       </form>
 
-
-      {/* Enviar tramite */}
-      <div className=" w-full flex justify-between items-center gap-4">
-        <p className={`text-xs ml-2 text-[#020b1dcc] ${tramite && (images.length === documentos?.length || tramiteMd.slug === "x-Otros") && /* infos.length === lengthInformations && */ (emailSession || user )  && "opacity-0" } sm:text-[13px]`}><span className=" text-[#d400aa]">*</span> Requeridos</p>
-
-        <div className="flex">
-          <div className={`mr-2 text-[#020b1dbb] rounded-md ${!emailSession && "hidden"} bg-[#020b1d0d] duration-150 hover:bg-[#020b1d17] hover:text-[#020b1d] sm:mr-4`} >
-            <button
-              type="button"
-              className={` py-1 px-3 sm:px-5`}
-              // onClick={() => logout({ returnTo: window.location.origin })}
-              onClick={() => {
-                sessionStorage.removeItem("email")
-                sessionStorage.removeItem("name")
-                location.reload()
-              }}
-            >
-              Salir
-            </button> 
-          </div>
-
-          {estado?.message !== "tramiteIniciado" ? (
-            <form 
-              // onSubmit={ uploadToServer2 } 
-              onSubmit={ images.length === 0 ? uploadToServer1 : uploadToServer2 } 
-              className="w-full" >
-              <div className="group relative w-full flex justify-between">
-                <span className={`opacity-0 invisible text-xs text-[#020b1d] absolute bottom-[150%] bg-[#ffffff] pt-[3px] pb-[5px] pl-1.5 pr-3 rounded-xl duration-150 shadow-[0_20px_25px_-5px_rgb(0_0_0_/_0.2),_0_8px_10px_-6px_rgb(0_0_0_/_0.2),_0px_-5px_10px_#00000012] ${images.length === documentos?.length  && /* infos.length === lengthInformations && */ sessionStorage.getItem('email') ? "" : "group-hover:opacity-100"} sm:text-[13px] group-hover:visible`}><span className="text-base text-[#ff0000]">* </span>Completar requeridos</span>
-                <ButtonA
-                  className={`h-7 !px-2 text-sm !justify-start sm:h-8 sm:!px-4 disabled:!opacity-60`}
-                  type="submit"
-                  disabled={ tramite && (images.length === documentos?.length || tramiteMd.slug === "x-Otros") && /* infos.length === lengthInformations && */ (emailSession || user ) ? false : true }
-                  onClick={() => {
-                    setSpin(true);
-                    handleClickButtonPedido()
-                  }}
-                >
-                  <IconCambio
-                    className={`${spin && "animate-spin"} mr-2 w-[20px] h-[20px] sm:w-[22px] sm:h-[22px] `}
-                  />
-                  <p className="w-full" >Pedir presupuesto</p>
-                </ButtonA>
-              </div>
-            </form>
-            ) : (
-            <div className="flex justify-end items-center gap-4">
-              <Link href={"/dashboard/tramites"}>
-                <ButtonA
-                  className={`h-8 text-sm !justify-start ${!user && "hidden"}`}
-                >
-                  Ver Trámites
-                </ButtonA>
-              </Link>
-
-              <ButtonA
-                className="h-8 text-sm !justify-start"
-                type="button"
-                onClick={() => {
-                  location.reload()
-                }}
-              >
-                Nuevo pedido
-              </ButtonA>
-            </div>
-            )
-          }
-        </div>
-      </div>
-
-      {/* Envio e-mail confirmar registro */}
-      <Frente className={`hidden !bg-[#1d021513] mt-6 py-4 mb-4 px-4 text-sm sm:px-4 `} >
-        <div className="w-full items-start flex gap-3 justify-end sm:items-center sm:mb-0">
-          <div className={`flex items-center gap-4 w-full text-[15px] sm:text-base`}>
-            <IconEnvioEmail  className="w-9 h-4 fill-[#50073aaa]" size={32} />
-            <p>Confirmacion de recepcion e-mail</p>
-          </div>
-
-          <Button
-            className="relative h-[30px] rounded-md border border-[#e9dae9] min-h-[24px] w-[72px] justify-center bg-[#ffffffaa] !px-2.5 py-1 text-[13px] !font-normal text-[#1d0215aa] hover:bg-[#ffffff] hover:text-[#1d0215dd] hover:border-[#d8c0d7] active:!bg-[#eee]"
-            onClick={() => { setEstadoRegistrar(!estadoRegistrar)}}
-            data-testid="edit-button"
-            // data-active={state}
-            type='button'
-          >
-            {estadoRegistrar ? "Cerrar" :  <div><span className="text-[12px] uppercase">Ver</span></div> }
-          </Button>
-        </div>
-        <div
-          className={clsx(
-            "transition-[max-height,opacity] duration-300 ease-in-out overflow-visible",
-            {
-              "max-h-[1000px] opacity-100 pt-4": estadoRegistrar,
-              "max-h-0 opacity-0": !estadoRegistrar,
-              "invisible": !estadoRegistrar,
-            }
-          )}
+      {/* crear verificationToken */}
+      <form action={formActionxx}>
+        <input
+          type="hidden"
+          name="identifier"
+          value={user?.email}
+          readOnly
+        />
+        <input
+          type="hidden"
+          name="token"
+          value={token}
+          readOnly
+        />
+        <input
+          type="hidden"
+          name="expires"
+          value={`${new Date(Date.now() + 1000 * 60 * 60 * 24)}`}
+          readOnly
+        />
+        <input
+          type="hidden"
+          name="pathname"
+          value= {pathname}
+          readOnly
+        />
+        <button
+          type="submit"
+          ref={buttonRefVerification }
+          className= "hidden " 
         >
-          <form action={handleFormRegistro} /* method="POST" */  className="rounded-lg w-full p-4 ">
-            <div className="flex items-start w-full mb-4 gap-3">
-              <p className="mt-2 leading-none text-[13px]">
-                Para
-              </p>
-              <div className="flex flex-col gap-1 w-full">
-                <InputCnp 
-                  type="text" 
-                  name="to_name" 
-                  placeholder="Nombre" 
-                  className="h-8 !text-sm "
-                  value={name}
-                  autoFocus
-                  required
-                  readOnly
-                  >
-                  <div className="absolute rounded-l-[4px] h-[32px] w-[28px] left-0 top-0 bg-[#00000007]" >
-                    <span className={`absolute w-3 font-semibold left-[9px] top-1.5 opacity-40 text-[#1d021599]  `}>
-                    </span>
-                    <IconCuenta 
-                      color="#50073a50"
-                      className="w-5 absolute top-[7px] left-[5px]"
-                    />
-                  </div>
-                </InputCnp>
-                
-                <InputCnp 
-                  type="email" 
-                  name="to_email" 
-                  placeholder="Email" 
-                  className="h-8 !text-sm " 
-                  defaultValue= /*{email}*/ "agrotecnicog@gmail.com"
-                  required
-                  readOnly
-                  >
-                  <div className="absolute rounded-l-[4px] h-[32px] w-[28px] left-0 top-0 bg-[#00000007]" >
-                    <span className={`absolute w-3 font-semibold left-[9px] top-1.5 opacity-40 text-[#1d021599] `}>
-                    </span>
-                    <IconEmail2 
-                      color="#50073a50"
-                      className="w-4 absolute top-[9px] left-1.5"
-                      />
-                  </div>
-                </InputCnp>
-              </div>
-            </div>
+          Crear VerificationToken
+        </button>
+      </form>
 
-            <div className="flex flex-col gap-1 mb-4">
-              <fieldset className="flex flex-col">
-                <label
-                  className="text-start text-[13px] "
-                  htmlFor="title"
-                >
-                  Asunto
-                </label>
-                <TextareaCnp 
-                  name="title" 
-                  className="!pl-4 !text-sm"
-                  rows={1}
-                  value="Registro e-mail"
-                  required
-                  readOnly
-                  >
-                  <div className="w-0" >
-                  </div>
-                </TextareaCnp>
-              </fieldset>
-
-              <fieldset>
-                <label
-                  className="text-start text-[13px] "
-                  htmlFor="content"
-                >
-                  Mensaje
-                </label>
-                <TextareaCnp
-                  name="content" 
-                  placeholder="Mensaje de confirmación" 
-                  className=" !pl-4 !text-sm"
-                  value={`Para mandarte el Presupuesto por tu Trámite se registró el e-mail: ${email}`}
-                  rows={3}
-                  required
-                  readOnly
-                />
-              </fieldset>
-            </div>
-
-            <button 
-              type="submit" 
-              ref={buttonRefRegistro}
-              className="hidden py-1">
-              Enviar
-            </button>
-          </form>
-        </div>
-      </Frente>
-
-      {/* Envio e-mail confirmar pedido */}
-      <form action={handleFormPedido}  className="hidden rounded-lg bg-[#50073a66] w-full border border-gray-700 m-4 p-4 ">
-        <div className="flex items-start w-full mb-4 gap-3">
-          <p className="mt-2 leading-none text-[13px]">
-            Para
-          </p>
-          <div className="flex flex-col gap-1 w-full">
-            <input 
-              type="text" 
-              name="to_name" 
-              placeholder="Nombre" 
-              value={name}
-              required
-              readOnly
-              />
-            
-            <input
-              type="email" 
-              name="to_email" 
-              placeholder="Email" 
-              value= /*{email}*/ "agrotecnicog@gmail.com"
-              required
-              readOnly
-              />
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-1 mb-4">
-          <fieldset className="flex flex-col">
-            <label htmlFor="title">Asunto</label>
-            <textarea
-              name="title" 
-              rows={1}
-              value="Recepción Pedido Presupuesto"
-              required
-              readOnly
-              />
-          </fieldset> 
-
-          <fieldset className="flex flex-col">
-            <label htmlFor="content">Mensaje</label>
-            <textarea
-              name="content" 
-              placeholder="Mensaje de confirmación" 
-              value={`Recibimos tu Pedido de Presupuesto por el trámite: "${tramite}"`}
-              rows={3}
-              required
-              readOnly
-            />
-          </fieldset>
-        </div>
-
+      {/* Envio e-mail verificacion email */}
+      <form action={handleFormPedido}>
+        <input 
+          type="hidden"
+          name="to_name" 
+          value={user?.name}
+          readOnly
+        />
+        <input
+          type="hidden"
+          name="to_email" 
+          value= "agrotecnicog@gmail.com"
+          // value= {email}
+          readOnly
+        />
+        <input
+          type="hidden"
+          name="content" 
+          value={pathname}
+          readOnly
+        />
+        <input
+          type="hidden"
+          id="token"
+          name="token"
+          value={token}
+          readOnly
+        />
         <button 
           type="submit" 
           ref={buttonRefPedido}
-          className="bg-slate-600 text-white p-2">
+          className="hidden">
           Enviar
+        </button>
+      </form>
+
+      {/*update comment email */}
+      <form action={formActionxxxx}>
+        <input
+          type="hidden"
+          name="email_id"
+          value={ email }
+          readOnly
+        />
+        <input
+          type="hidden"
+          name="pathname"
+          value= {pathname}
+          readOnly
+        />
+        <button
+          type="submit"
+          ref={buttonRefxxxx}
+          className= "hidden " 
+        >
+          Enviar Consulta
+        </button>
+      </form>
+
+      {/*update user email */}
+      <form action={formActionxxx}>
+        <input
+          type="hidden"
+          name="email"
+          value={ email }
+          readOnly
+        />
+        <input
+          type="hidden"
+          name="pathname"
+          value= {pathname}
+          readOnly
+        />
+        <button
+          type="submit"
+          ref={buttonRefxxx}
+          className= "hidden " 
+        >
+          Enviar Consulta
+        </button>
+      </form>
+
+      {/*create user */}
+      <form action={formActionx}>
+        <input
+          type="hidden"
+          name="email"
+          value={ email }
+          readOnly
+        />
+        <input
+          type="hidden"
+          name="name"
+          value={ name }
+          readOnly
+        />
+        <input
+          type="hidden"
+          name="image"
+          value={ "" }
+          readOnly
+        />
+        <input
+          type="hidden"
+          name="token"
+          value= {token }
+          readOnly
+        />
+        <button
+          type="submit"
+          ref={refCreateUser}
+          className= "hidden " 
+        >
+          Enviar Consulta
         </button>
       </form>
     </>
