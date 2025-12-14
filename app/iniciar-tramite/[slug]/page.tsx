@@ -22,9 +22,11 @@ export default async function Page({ params }: Params) {
   const session = await auth();
   const user = await fetchUserById(session?.user?.email)
 
-  const tramiteMd = getTramiteBySlug(params.slug);
+  const { slug } = await params
+  const tramiteMd = await getTramiteBySlug(slug);
 
-  const content = await markdownToHtml(tramiteMd.content || '');
+
+  const content = await markdownToHtml(tramiteMd?.content || '');
 
 
   return (

@@ -2,7 +2,7 @@ import { auth } from "auth"
 import { SessionProvider } from "next-auth/react"
 
 import CNPMandataria from '@/app/CNP-mandataria';
-import { getAllPosts } from '@/app/lib/getPost';
+import { getPosts } from '@/app/lib/getPost';
 import { fetchUserById } from '@/app/lib/data'; 
 import type { Metadata } from "next"
 
@@ -15,9 +15,9 @@ export const metadata: Metadata = {
 
 
 
-const allPosts = getAllPosts();
+const allPosts = await getPosts();
 
-const linkDatos= allPosts.map((linkdato) => {
+const linkDatos= allPosts.map( (linkdato) => {
   return {slug: `${linkdato.slug}`, excerpt: `${linkdato.excerpt}`}
 })
 

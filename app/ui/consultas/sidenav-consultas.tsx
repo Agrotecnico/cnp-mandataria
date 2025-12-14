@@ -3,14 +3,14 @@ import { auth } from 'auth';
 
 import NavLinksConsultas from '@/app/ui/consultas/nav-links-consultas';
 import { Frente, Fondo } from '@/app/ui/marcos';
-import { getAllPosts } from '@/app/lib/getPost';
+import { getPosts } from '@/app/lib/getPost';
 import IconPresupuesto from '@/app/ui/logosIconos/icon-presupuesto';
 import IconConsulta from '@/app/ui/logosIconos/icon-consulta';
 
 
 export default async function SideNavConsultas() {
   const session = await auth();
-  const allPosts = getAllPosts();
+  const allPosts = await getPosts();
   return (
     <div className="hidden h-max flex-col lg:flex lg:fixed">
       <Fondo className=" p-3 lg:w-72">

@@ -40,7 +40,7 @@ export default function IniciarTramite( {
   content,
   user
 }: {
-  tramiteMd: TramiteMd;
+  tramiteMd: TramiteMd | null;
   content: string;
   user: User | undefined;
 } ) {
@@ -73,9 +73,9 @@ export default function IniciarTramite( {
     return regex.test(email);
   }
 
-  const documentacions: string[] | undefined = tramiteMd.documentacion?.split(", ")
+  const documentacions: string[] | undefined = tramiteMd?.documentacion?.split(", ")
 
-  const documentos:string[] | undefined= tramiteMd.documentos?.split(", ")
+  const documentos:string[] | undefined= tramiteMd?.documentos?.split(", ")
 
   const maxNumber = documentos?.length;
 
@@ -258,7 +258,7 @@ export default function IniciarTramite( {
   }
 
   useEffect(() => {
-    !tramite && tramiteMd.slug !== "x-Otros" && setTramite(`${tramiteMd.tramite}`);
+    !tramite && tramiteMd?.slug !== "x-Otros" && setTramite(`${tramiteMd?.tramite}`);
     user?.email && setEmail(`${user.email}`)  
     user?.name ? setName(`${user.name}`) : setName(`${sessionStorage.getItem('nameVisitor')}`)
     sessionStorage.getItem('nameVisitor') && setNameVisitor(`${sessionStorage.getItem('nameVisitor')}`)
@@ -331,7 +331,7 @@ export default function IniciarTramite( {
           className="opacity-80 mb-[3px] h-3 w-3 mr-2.5 sm:h-3.5 sm:w-3.5"
         />
         <h1 className=" text-start text-[17px] text-[#39507fcc] font-semibold leading-tight tracking-tighter sm:text-[19px] md:leading-none ">
-          {tramiteMd.tramite}
+          {tramiteMd?.tramite}
         </h1>
       </div>
 
@@ -348,7 +348,7 @@ export default function IniciarTramite( {
               className="flex bg-[#ffffff66] mt-[1px] flex-1 duration-150 cursor-pointer select-none items-center justify-center py-3 px-2.5 leading-none  text-[#020b1d77] outline-none hover:text-[#020b1daa] data-[state=active]:bg-[#f1eef000] data-[state=active]:cursor-default data-[state=active]:text-[#020b1dcc]"
               value="tab1"
             >
-              Descripción<span className={`ml-1 font-semibold text-xs text-[#ff0000] ${tramiteMd.slug === "x-Otros" && tramite !== "" && "text-transparent"} ${tramiteMd.slug !== "x-Otros" && "text-transparent" } `}>*</span>
+              Descripción<span className={`ml-1 font-semibold text-xs text-[#ff0000] ${tramiteMd?.slug === "x-Otros" && tramite !== "" && "text-transparent"} ${tramiteMd?.slug !== "x-Otros" && "text-transparent" } `}>*</span>
             </Tabs.Trigger>
 
             <Tabs.Trigger
@@ -357,7 +357,7 @@ export default function IniciarTramite( {
             >
               <div className='flex flex-wrap justify-center '>
                 Adjuntar
-                <span className='ml-1'>Comprobantes<span className={`ml-1 font-semibold text-xs text-[#ff0000] ${images.length === maxNumber  && "text-transparent"}  ${tramiteMd.slug === "x-Otros" && "text-transparent" } `}>*</span></span>
+                <span className='ml-1'>Comprobantes<span className={`ml-1 font-semibold text-xs text-[#ff0000] ${images.length === maxNumber  && "text-transparent"}  ${tramiteMd?.slug === "x-Otros" && "text-transparent" } `}>*</span></span>
               </div>
             </Tabs.Trigger>
 
@@ -376,11 +376,11 @@ export default function IniciarTramite( {
             <div className="flex flex-col justify-between min-h-[288px]">
               <div className="flex flex-col">
                 <p className="mb-3 mt-1 sm:mt-0 ">
-                  {tramiteMd.slug === "x-Otros" ? "Describí el trámite" : "Descripción general del trámite" }  
+                  {tramiteMd?.slug === "x-Otros" ? "Describí el trámite" : "Descripción general del trámite" }  
                 </p>
 
                 <div className=" duration-300 rounded-[4px] leading-[1.2]">
-                  {tramiteMd.slug === "x-Otros" ? (
+                  {tramiteMd?.slug === "x-Otros" ? (
                     <div className="flex flex-col gap-y-1">
                       <TextareaCnp
                         className=""
@@ -420,7 +420,7 @@ export default function IniciarTramite( {
               
               <div className="flex items-center mt-3 text-[13px] opacity-90 md:text-[13.5px]">
                 <ArrowPathIcon className="h-4 w-4 mr-2.5 text-[#39507f9d] stroke-2 " />
-                <p className="text-[#39507f7d] font-medium ">{tramiteMd.date !== "actual" ? tramiteMd.date : date }</p>
+                <p className="text-[#39507f7d] font-medium ">{tramiteMd?.date !== "actual" ? tramiteMd?.date : date }</p>
               </div>
             </div>
           </Tabs.Content>
@@ -430,14 +430,14 @@ export default function IniciarTramite( {
             value="tab2"
           >
             <p className="mb-3 mt-1 sm:mt-0 text-[13px] sm:text-[15px] ">
-               {tramiteMd.slug === "x-Otros" ? "Podés cargar dos comprobantes:" : "Cargá los siguientes comprobantes:" }  
+               {tramiteMd?.slug === "x-Otros" ? "Podés cargar dos comprobantes:" : "Cargá los siguientes comprobantes:" }  
             </p>
 
             <div className="py-2 px-3 mb-3 text-[12px] sm:text-sm rounded-sm bg-[#ffffffaa]">
               <ul className="list-none" >
                   {documentos?.map((documento, index) => (
                     <li key={index} className=" leading-[1.2] ">
-                      {documento} <span className={`font-semibold text-xs text-[#ff0000] ${tramiteMd.slug === "x-Otros"  && "hidden"} ${index + 1 <= images.length && "text-transparent"}`}>*</span>
+                      {documento} <span className={`font-semibold text-xs text-[#ff0000] ${tramiteMd?.slug === "x-Otros"  && "hidden"} ${index + 1 <= images.length && "text-transparent"}`}>*</span>
                     </li>
                   ))}
               </ul>
@@ -700,56 +700,56 @@ export default function IniciarTramite( {
       {/* Boton Enviar tramite */}
       <div className="mt-3 w-full flex justify-between items-start">
         
-        <p className={`text-xs mt-1 mb-14 ${tramite && user?.email && !isEmailVisitor && (images.length === documentos?.length || tramiteMd.slug === "x-Otros") && "opacity-0" } sm:text-[13px]`}><span className=" text-[#ff0000]">*</span> Requeridos</p>
+        <p className={`text-xs mt-1 mb-14 ${tramite && user?.email && !isEmailVisitor && (images.length === documentos?.length || tramiteMd?.slug === "x-Otros") && "opacity-0" } sm:text-[13px]`}><span className=" text-[#ff0000]">*</span> Requeridos</p>
 
         {/* <div className="flex gap-4"> */}
-          {estado?.message !== "tramiteIniciado" ? (
-            <form 
-              onSubmit={ images.length === 0 ? uploadToServer1 : uploadToServer2 } >
-              <div className="group relative w-full flex justify-between items-center">
+        {estado?.message !== "tramiteIniciado" ? (
+          <form 
+            onSubmit={ images.length === 0 ? uploadToServer1 : uploadToServer2 } >
+            <div className="group relative w-full flex justify-between items-center">
 
-                <div className={`w-[188px] absolute bottom-8 pt-3  `}>
+              <div className={`w-[188px] absolute bottom-8 pt-3  `}>
 
-                  <span className={` items-center hidden text-[13px] text-[#020b1dcc] absolute h-8 w-max -bottom-[32px] right-[200px] bg-[#ffffff] py-auto pl-2 pr-3 rounded-lg duration-150 shadow-[0_20px_25px_-5px_rgb(0_0_0_/_0.2),_0_8px_10px_-6px_rgb(0_0_0_/_0.2),_0px_-5px_10px_#00000012] ${user && tramite && (images.length === documentos?.length || tramiteMd.slug === "x-Otros") ? "bottom-9" : "duration-300 group-hover:opacity-100 " } sm:text-[13px] group-hover:flex`}><span className=" text-[#ff0000] mx-1">* </span>Completar requeridos</span>
-                  
-                </div>{/* group-hover:visible  */}
+                <span className={` items-center hidden text-[13px] text-[#020b1dcc] absolute h-8 w-max -bottom-[32px] right-[200px] bg-[#ffffff] py-auto pl-2 pr-3 rounded-lg duration-150 shadow-[0_20px_25px_-5px_rgb(0_0_0_/_0.2),_0_8px_10px_-6px_rgb(0_0_0_/_0.2),_0px_-5px_10px_#00000012] ${user && tramite && (images.length === documentos?.length || tramiteMd?.slug === "x-Otros") ? "bottom-9" : "duration-300 group-hover:opacity-100 " } sm:text-[13px] group-hover:flex`}><span className=" text-[#ff0000] mx-1">* </span>Completar requeridos</span>
+                
+              </div>{/* group-hover:visible  */}
 
-                <ButtonA
-                  className={`h-8 w-max !px-3 text-[13px] !justify-start disabled:!opacity-100`}
-                  type="submit"
-                  disabled={ tramite && user?.email && !isEmailVisitor && (images.length === documentos?.length || tramiteMd.slug === "x-Otros") ? false : true }
-                  onClick={() => {
-                    setSpin(true);
-                    user?.role === "member" && handleClickButtonVerification()
-                    user?.role === "member" && handleClickButtonPedido()
-                    limpiarNotificaciones()
-                    wait().then(() => {
-                    notifyVerifyTramite()
-                  })
-                  }}
-                >
-                  <IconCambio
-                  className={`${(spin || isPending || isPendingxx ) && "animate-spin"} fill-[#fff0] stroke-[#ffffff55] mr-1.5 w-[22px] h-[22px]`}
-                />
-                  <p className="w-full text-start" >Pedir presupuesto</p>
-                </ButtonA>
-              </div>
-            </form>
-            ) : (
-            <div className="flex justify-end items-center gap-4">
               <ButtonA
-                className="h-8 text-sm !justify-start"
-                type="button"
+                className={`h-8 w-max !px-3 text-[13px] !justify-start disabled:!opacity-100`}
+                type="submit"
+                disabled={ tramite && user?.email && !isEmailVisitor && (images.length === documentos?.length || tramiteMd?.slug === "x-Otros") ? false : true }
                 onClick={() => {
-                  location.reload()
+                  setSpin(true);
+                  user?.role === "member" && handleClickButtonVerification()
+                  user?.role === "member" && handleClickButtonPedido()
+                  limpiarNotificaciones()
+                  wait().then(() => {
+                  notifyVerifyTramite()
+                })
                 }}
               >
-                Nuevo pedido Presupuesto 
+                <IconCambio
+                className={`${(spin || isPending || isPendingxx ) && "animate-spin"} fill-[#fff0] stroke-[#ffffff55] mr-1.5 w-[22px] h-[22px]`}
+              />
+                <p className="w-full text-start" >Pedir presupuesto</p>
               </ButtonA>
             </div>
-            )
-          }
-        </div>
+          </form>
+          ) : (
+          <div className="flex justify-end items-center gap-4">
+            <ButtonA
+              className="h-8 text-sm !justify-start"
+              type="button"
+              onClick={() => {
+                location.reload()
+              }}
+            >
+              Nuevo pedido Presupuesto 
+            </ButtonA>
+          </div>
+          )
+        }
+      </div>
       {/* </div> */}
 
       <ToastContainer  className={ !isVerified  ? "foo" : "foo2" } autoClose={false} />

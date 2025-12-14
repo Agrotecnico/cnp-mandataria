@@ -28,7 +28,7 @@ export default function NotifyVerify({
     <>
      { consulta  ? (
         <Frente className=" w-full !bg-[#548effe2] ">
-          <div className=" flex items-start gap-3 pl-4 pb-1.5 pt-2 pr-7 text-sm text-[#ffffff] sm-gap-4 sm:text-[15px] sm:pr-7 sm:gap-5">
+          <div className=" flex items-start gap-3 pl-4 pb-1.5 pt-2 pr-7 text-sm text-[#ffffff] sm-gap-4 sm:text-[15px] sm:pr-2 sm:gap-1.5">
             <div>
               <IconCheck color="#ffffffcc" className=" w-[14px] mt-0.5 mb-auto sm:w-4" />
             </div>

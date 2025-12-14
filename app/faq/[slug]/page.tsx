@@ -3,7 +3,6 @@ import { notFound } from 'next/navigation';
 import { auth } from 'auth';
 import Image from 'next/image'
 import Link from 'next/link';
-import { SessionProvider } from "next-auth/react"
 
 import { getPostBySlug } from '@/app/lib/getPost';
 import markdownToHtml from '@/app/lib/markdownToHtml';
@@ -18,40 +17,34 @@ import { fetchFilteredComments } from '@/app/lib/data';
 import { fetchUserByEmail } from "@/app/lib/data";
 
 
-type Params = {
-  params: {
-    slug: string;
-  };
-};
-
-export default async function PostPage({ params }: Params) {
+export default async function PostPage({ params }: { params: { slug: string } }) {
   const session = await auth();
   const user = await fetchUserByEmail(`${session?.user.email}`)
 
-  const post = getPostBySlug(params.slug);
+  const { slug } = await params
+  const post = await getPostBySlug(slug);
 
-  const slug= post.slug!
-  const comments= await fetchFilteredComments(slug)
+  const slugx= post?.slug
+  const comments= await fetchFilteredComments(slugx!)
 
   const commentLast = await fetchCommentLast()
 
   if (!post) {
     return notFound();
   }
-  const content = await markdownToHtml(post.content || '');
-
+  const content = await markdownToHtml((post?.content || ''));
 
   return (
     <>
       <Fondo className="!rounded-lg ">
         <article className="px-3 pb-6 pt-6 md:px-6">
           <h1 className="mb-3 text-xl font-bold sm:mb-6 md:text-2xl">
-            {post.excerpt}
+            {post?.excerpt}
           </h1>
 
           <div className="hidden md:mb-2 md:block">
             <div className="flex items-center">
-              {post.avatar ? (
+              {post?.avatar ? (
                 <Image
                   src={`${post.avatar}`}
                   alt="my desk"
@@ -61,9 +54,9 @@ export default async function PostPage({ params }: Params) {
                 />
               ) : null}
               <div className="flex flex-col">
-                <div className="text-base font-semibold">{post.autor}</div>
+                <div className="text-base font-semibold">{post?.autor}</div>
                 <time className="flex text-[13px] leading-[1] text-[#020b1d66] ">
-                  {distanceToNow(new Date(`${post.date}`))}
+                  {distanceToNow(new Date(`${post?.date}`))}
                 </time>
               </div>
             </div>
@@ -71,7 +64,7 @@ export default async function PostPage({ params }: Params) {
 
           <div className="mx-auto mb-2 max-w-max rounded p-[1px] [box-shadow:inset_0_1px_0_#ffffff,inset_0_-1px_0_#00000055] md:mb-4 ">
             <div className="sm:mx-0">
-              {post.image ? (
+              {post?.image ? (
                 <Image
                   src={`${post.image}`}
                   alt="my desk"
@@ -91,9 +84,9 @@ export default async function PostPage({ params }: Params) {
             />
           </div>
           <div className="mx-auto text-sm max-w-2xl sm:text-[15px]">
-            {/* <SessionProvider basePath={"/auth"} session={session}> */}
+
               <ListComment post={post} comments={comments} commentLast={commentLast} user={user}  />
-            {/* </SessionProvider> */}
+
           </div>
         </article>
       </Fondo>

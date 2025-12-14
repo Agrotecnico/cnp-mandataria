@@ -7,13 +7,13 @@ import UserButtonMenuIni from '@/app/ui/user-button-menu-ini';
 import LogoCnpColor from '@/app/ui/logosIconos/logo-cnp-color';
 import LogoCnpColorV from '@/app/ui/logosIconos/logo-cnp-color-v';
 import { fetchUserById } from '@/app/lib/data'; 
-import { getAllPosts } from '@/app/lib/getPost';
+import { getPosts } from '@/app/lib/getPost';
 
 
 export default async function Header( ) {
   const session = await auth()
   const user = await fetchUserById(session?.user?.email)
-  const allPosts = getAllPosts();
+  const allPosts = await getPosts();
 
   return (
     <header className="fixed left-0 z-10 flex h-[68px] w-[100vw] items-center justify-center bg-[#39507f] sm:h-20 ">

@@ -35,7 +35,7 @@ export default function ListComment({
   }: {
   comments: CommentsPost[]
   commentLast: Comment
-  post: Post
+  post: Post | null
   user: User | undefined
   }) {
 
@@ -536,7 +536,7 @@ export default function ListComment({
                           <p className="font-semibold mr-2">{ comment.name }</p>
                         
                           <time className="text-[#020b1d66] text-[13px]">
-                            {distanceToNow(new Date(`${comment.created_at}`))}
+                            {/* {distanceToNow(new Date(`${comment.created_at}`))} */}
                           </time>
                         </div>
                         <div className='relative flex items-center gap-0'>
@@ -647,7 +647,7 @@ export default function ListComment({
           <input
             type="hidden"
             name="post_slug"
-            value= {post.slug}
+            value= {post?.slug}
             readOnly
           />
           <input
