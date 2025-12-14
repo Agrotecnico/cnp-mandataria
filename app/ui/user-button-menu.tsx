@@ -6,7 +6,7 @@ import clsx from 'clsx';
 
 import IconMenu from '@/app/ui/logosIconos/icon-menu';
 import { useSession } from 'next-auth/react';
-import { links, linkMembers } from '@/app/constant';
+import { links } from '@/app/constant';
 import Dropdown from '@/app/ui/Dropdown';
 
 

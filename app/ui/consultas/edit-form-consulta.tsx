@@ -148,7 +148,7 @@ export default function EditConsultaForm({
         <Frente className="p-3 mb-2 text-sm sm:p-4" >
           <div className="w-full items-center flex gap-3 justify-end sm:mb-0">
             <div className="flex gap-4 w-full">
-              <IconConsulta  className="w-5 h-5" color="#39507fcc" color2="#ffffff" />
+              <IconConsulta  className="w-5 h-5 fill-[#39507fcc]" />
               <p className={`font-medium text-[14px] text-[#39507fdd]`}>
                 CONSULTA 
                 <span className="text-[13px]" > - {formatDateToLocal(consulta.created_at)}</span>

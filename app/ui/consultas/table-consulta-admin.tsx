@@ -69,7 +69,7 @@ export default async function TableConsultaAdmin({
 
                 <div className="flex flex-col w-full text-[#020b1dbb] py-2 gap-2 border-t border-[#020b1d14]">
                   <div className={`flex items-center `}>
-                    <IconConsulta color="#39507fcc"  color2="#ffffff" size="17"  className="mr-2"/>
+                    <IconConsulta size="17"  className="mr-2 fill-[#39507f]"/>
                     <div className={``}>
                       Consulta realizada 
 
