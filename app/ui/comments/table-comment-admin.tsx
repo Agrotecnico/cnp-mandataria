@@ -70,7 +70,7 @@ export default async function TableCommentAdmin({
 
                 <div className="flex flex-col w-full  py-2 gap-2 border-y border-[#020b1d14]">
                   <div className={`flex items-center `}>
-                    <IconConsulta color="#39507fcc"  color2="#ffffff" size="17"  className="mr-2"/>
+                    <IconConsulta  size="17"  className="mr-2 fill-[#39507fcc]"/>
                     <div className={``}>
                       Consulta realizada 
 
