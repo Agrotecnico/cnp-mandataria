@@ -45,7 +45,7 @@ export default async function Page({
       return (
         <main>
           <h1 className={` mb-4 mt-2 text-xl lg:text-2xl`}>
-            Trámites admin abierto
+            Trámites
           </h1>
 
           <div className="mb-6 flex items-center justify-between gap-2">
@@ -66,7 +66,7 @@ export default async function Page({
     return (
       <main>
         <h1 className={` mb-4 mt-2 text-xl lg:text-2xl`}>
-          Trámites admin abierto
+          Trámites
         </h1>
 
         <div className="mb-6 flex items-center justify-between gap-2">
@@ -91,7 +91,7 @@ export default async function Page({
       return (
         <main>
           <h1 className={`mb-[22px] mt-1.5 text-xl lg:text-2xl`}>
-            Mis Trámites memberAccouny abierto
+            Mis Trámites
           </h1>
         
           {tramitesMember.length ? (
@@ -116,7 +116,7 @@ export default async function Page({
     return (
       <main>
         <h1 className={`mb-[22px] mt-1.5 text-xl lg:text-2xl`}>
-          Mis Trámites  memberAccouny cerrado
+          Mis Trámites
         </h1>
       
         {tramitesMember.length ? (
@@ -144,7 +144,7 @@ export default async function Page({
     return (
       <main>
         <h1 className={`mb-[22px] mt-1.5 text-xl lg:text-2xl`}>
-          Mis Trámites  memberVerified
+          Mis Trámites
         </h1>
       
         {tramitesMember.length ? (

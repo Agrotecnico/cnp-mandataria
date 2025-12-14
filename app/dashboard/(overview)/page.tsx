@@ -53,7 +53,7 @@ export default async function Page({
       return (
         <main>
           <h1 className={`mb-4 mt-2 text-xl lg:text-2xl`}>
-            Comentarios admin abierto
+            Comentarios
           </h1>
 
           <div className="mt-4 mb-6 flex items-center justify-between gap-2">
@@ -138,7 +138,7 @@ export default async function Page({
       <>
         <main>
           <h1 className={`mb-4 mt-2 text-xl lg:text-2xl`}>
-            Comentarios admin cerrrado
+            Comentarios
           </h1>
 
           <div className="mt-4 mb-6 flex items-center justify-between gap-2">
@@ -227,7 +227,7 @@ export default async function Page({
     if (user?.account === "abierto") {
       <main>
         <h1 className={`mb-[22px] mt-1.5 text-xl lg:mb-[22px] lg:text-2xl`}>
-          Mis Comentarios memberAccount abierto
+          Mis Comentarios
         </h1>
         
         {commentsMember.length ? (
@@ -283,7 +283,7 @@ export default async function Page({
     return (
       <main>
         <h1 className={`mb-[22px] mt-1.5 text-xl lg:mb-[22px] lg:text-2xl`}>
-          Mis Comentarios memberAccount cerrado
+          Mis Comentarios
         </h1>
         
         {commentsMember.length ? (
@@ -342,7 +342,7 @@ export default async function Page({
     return (
       <main>
         <h1 className={`mb-[22px] mt-1.5 text-xl lg:mb-[22px] lg:text-2xl`}>
-          Mis Comentarios memberVerified
+          Mis Comentarios
         </h1>
         
         {commentsMember.length ? (

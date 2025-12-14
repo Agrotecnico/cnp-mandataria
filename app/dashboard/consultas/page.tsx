@@ -43,7 +43,7 @@ export default async function Page({
       return (
       <main>
         <h1 className={` mb-4 mt-2 text-xl lg:text-2xl`}>
-          Consultas admin abierto
+          Consultas
         </h1>
 
         <TableConsultaAdmin query={query} currentPage={currentPage} />
@@ -56,7 +56,7 @@ export default async function Page({
     return (
       <main>
         <h1 className={` mb-4 mt-2 text-xl lg:text-2xl`}>
-          Mis Consultas admin cerrado
+          Mis Consultas
         </h1>
 
         <TableConsultaAdmin query={query} currentPage={currentPage} />
@@ -72,7 +72,7 @@ export default async function Page({
       if (user?.account === "abierto") {
         <main>
           <h1 className={`mb-[22px] mt-1.5 text-xl lg:text-2xl`}>
-            Mis Consultas memberAccount abierto
+            Mis Consultas
           </h1>
           
           {consultas.length ? (
@@ -98,7 +98,7 @@ export default async function Page({
       return (
         <main>
           <h1 className={`mb-[22px] mt-1.5 text-xl lg:text-2xl`}>
-            Mis Consultas memberAccount cerrado
+            Mis Consultas
           </h1>
           
           {consultas.length ? (
@@ -127,7 +127,7 @@ export default async function Page({
     return (
       <main>
         <h1 className={`mb-[22px] mt-1.5 text-xl lg:text-2xl`}>
-          Mis Consultas memberVerified
+          Mis Consultas
         </h1>
         
         {consultas.length ? (

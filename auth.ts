@@ -61,21 +61,23 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         // verificar si existe el usuario en la base de datos
         const { email, password, conConsulta } = parsedCredentials.data;
-
         const user = await fetchUserById(email);
+
+
 
         
 
-
         if (password !== "xxxxxx") {
-
           const isValid = await bcrypt.compare(password, `${user?.password}`);
-
-          if (!isValid)  throw new Error("Contraseña incorrecta");
-
-          return user
+          if (!isValid)  
+          throw new Error("Contraseña incorrecta");
         }
 
+        // if (password !== "xxxxxx") {
+        //   const isValid = await bcrypt.compare(password, `${user?.password}`);
+        //   if (!isValid)  throw new Error("Contraseña incorrecta");
+        //   return user
+        // }
 
 
 
