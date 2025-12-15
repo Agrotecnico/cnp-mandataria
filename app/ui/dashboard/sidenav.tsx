@@ -27,18 +27,8 @@ export default /* async */ function SideNav({user}: {user: User |undefined}) {
 
   return (
     <>
-      {/* <Frente className={`${user?.account === "abierto" ? "!bg-[#39507f]" : "!bg-[#548effdd]"} text-[#ffffff] ![box-shadow:_inset_0_2px_#ffffff,inset_0_-2px_#00000022]`}>
-        <div className="text-sm [text-shadow:_1px_1px_#3d61ad] flex flex-col justify-center items-center text-center p-2.5 md:mb-2 ">
-
-          {user?.role === "admin" ? <p>Panel <span className='text-base font-semibold'>ADMIN </span></p> : user?.role === "memberAccount" && user.account === "abierto" ? <p>Panel <span className='text-base font-semibold'>CUENTA </span></p> : <p>Panel <span className='text-base font-semibold'>INFO </span></p> } 
-
-          <p>
-            <span className='text-[13px] text-[#ffffffdd] '>{user?.email && `${user.email}`}</span>
-          </p>
-        </div>
-      </Frente> */}
-
       <Fondo className="flex h-[calc(100%_-_68px)] flex-col p-2 md:pt-3">
+        
         <div className="flex grow flex-row justify-between gap-2 md:gap-2 md:flex-col">
           <div className="flex flex-col w-full md:gap-0">
             <NavAccountAdmin user={user} />

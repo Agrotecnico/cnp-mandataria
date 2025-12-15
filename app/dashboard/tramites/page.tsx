@@ -58,7 +58,7 @@ export default async function Page({
             </div>
           ))}
 
-          <div className="my-5 flex w-full justify-center">
+          <div className="my-5 -z-10 flex w-full justify-center">
             <Pagination totalPages={totalPages} />
           </div>
         </main>
@@ -79,7 +79,7 @@ export default async function Page({
           </div>
         ))}
 
-        <div className="my-5 flex w-full justify-center">
+        <div className="my-5 -z-10 flex w-full justify-center">
           <Pagination totalPages={totalPages} />
         </div>
       </main>
@@ -102,7 +102,7 @@ export default async function Page({
                 </div>
               ))}
 
-              <div className="z-[5] my-5 flex w-full justify-center">
+              <div className=" my-5 -z-10 flex w-full justify-center">
                 <Pagination totalPages={totalPagesMember} />
               </div>
             </div>
@@ -127,7 +127,7 @@ export default async function Page({
               </div>
             ))}
 
-            <div className="z-[5] my-5 flex w-full justify-center">
+            <div className=" my-5 -z-10 flex w-full justify-center">
               <Pagination totalPages={totalPagesMember} />
             </div>
           </div>
@@ -155,7 +155,7 @@ export default async function Page({
               </div>
             ))}
 
-            <div className="z-[5] my-5 flex w-full justify-center">
+            <div className="my-5 -z-10 flex w-full justify-center">
               <Pagination totalPages={totalPagesMember} />
             </div>
           </div>

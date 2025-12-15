@@ -48,7 +48,7 @@ export default async function Page({
 
         <TableConsultaAdmin query={query} currentPage={currentPage} />
 
-        <div className="mt-2 my-5 flex w-full justify-center">
+        <div className="-z-10 mt-2 my-5 flex w-full justify-center">
           <Pagination totalPages={totalPages} />
         </div>
       </main>
@@ -61,7 +61,7 @@ export default async function Page({
 
         <TableConsultaAdmin query={query} currentPage={currentPage} />
 
-        <div className="mt-2 my-5 flex w-full justify-center">
+        <div className="-z-10 mt-2 my-5 flex w-full justify-center">
           <Pagination totalPages={totalPages} />
         </div>
       </main>
@@ -84,7 +84,7 @@ export default async function Page({
                   </Providers>
                 </div>
               ))}
-              <div className="z-10 my-5 flex w-full justify-center">
+              <div className="-z-10 my-5 flex w-full justify-center">
                 <Pagination totalPages={totalPagesMember} />
               </div>
             </div>
@@ -110,7 +110,7 @@ export default async function Page({
                   </Providers>
                 </div>
               ))}
-              <div className="z-10 my-5 flex w-full justify-center">
+              <div className="-z-10 my-5 flex w-full justify-center">
                 <Pagination totalPages={totalPagesMember} />
               </div>
             </div>
@@ -139,7 +139,7 @@ export default async function Page({
                 </Providers>
               </div>
             ))}
-            <div className="z-10 my-5 flex w-full justify-center">
+            <div className="-z-10 my-5 flex w-full justify-center">
               <Pagination totalPages={totalPagesMember} />
             </div>
           </div>

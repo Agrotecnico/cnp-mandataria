@@ -575,6 +575,7 @@ export default function IniciarTramite( {
             <div className="mt-[3px] mb-auto sm:mt-[3px] ">
               <IconRegistro className=" w-[16px] ml-1.5 sm:w-[22px] sm:ml-3" />
             </div>
+
             {isEmailVisitor ? (
               <p><b>{ user.name }</b>, enviame un e-mail para mandarte el presupuesto<span className="text-[15px] text-[#ff0000]  [text-shadow:_1px_1px_#fff9,_-1px_-1px_#fff9,_1px_1px_#fff9,_-1px_1px_#fff9] ml-1.5">*</span>
               </p>
@@ -710,9 +711,9 @@ export default function IniciarTramite( {
 
               <div className={`w-[188px] absolute bottom-8 pt-3  `}>
 
-                <span className={` items-center hidden text-[13px] text-[#020b1dcc] absolute h-8 w-max -bottom-[32px] right-[200px] bg-[#ffffff] py-auto pl-2 pr-3 rounded-lg duration-150 shadow-[0_20px_25px_-5px_rgb(0_0_0_/_0.2),_0_8px_10px_-6px_rgb(0_0_0_/_0.2),_0px_-5px_10px_#00000012] ${user && tramite && (images.length === documentos?.length || tramiteMd?.slug === "x-Otros") ? "bottom-9" : "duration-300 group-hover:opacity-100 " } sm:text-[13px] group-hover:flex`}><span className=" text-[#ff0000] mx-1">* </span>Completar requeridos</span>
+                <span className={` items-center hidden text-[13px] text-[#020b1dcc] absolute h-8 w-max -bottom-[32px] right-[200px] bg-[#ffffff] py-auto pl-2 pr-3 rounded-lg duration-150 shadow-[0_20px_25px_-5px_rgb(0_0_0_/_0.2),_0_8px_10px_-6px_rgb(0_0_0_/_0.2),_0px_-5px_10px_#00000012] ${user && tramite && (images.length === documentos?.length || tramiteMd?.slug === "x-Otros") ? "bottom-9" : "duration-300  group-hover:flex " } sm:text-[13px]`}><span className=" text-[#ff0000] mx-1">* </span>Completar requeridos</span>
                 
-              </div>{/* group-hover:visible  */}
+              </div>{/* group-hover:visible group-hover:opacity-100 */}
 
               <ButtonA
                 className={`h-8 w-max !px-3 text-[13px] !justify-start disabled:!opacity-100`}
