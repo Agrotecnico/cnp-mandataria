@@ -538,10 +538,10 @@ export default function CNPMandataria({
             </SwiperSlide>
           </Swiper>
 
-          <div className="flex flex-col text-sm rounded-lg shadow-[0_10px_20px_#020b1d33] sm:text-[15px] sm:flex-row">
+          <div className="flex text-sm rounded-lg shadow-[0_10px_20px_#020b1d33] sm:text-[15px] sm:flex-row">
             <Link 
               href={session?.user.role === "admin" ? '/dashboard/tramites' : '/iniciar-tramite/cambio-de-radicacion'} 
-              className="group h-7 flex items-center rounded-t-lg px-3 bg-[#548eff0b] duration-150 justify-start sm:rounded-tr-none sm:rounded-l-lg sm:h-8 opacity-90 group-hover:opacity-100 hover:bg-white active:opacity-80">
+              className="group h-7 flex items-center rounded-l-md px-3 bg-[#548eff0b] duration-150 justify-start sm:h-8 opacity-90 group-hover:opacity-100 hover:bg-white active:opacity-80">
               <IconPresupuesto 
                 className="mr-2 w-[16px] h-[16px] fill-[#548eff] duration-150 sm:w-[17px] sm:h-[17px]"
                 />
@@ -549,7 +549,7 @@ export default function CNPMandataria({
             </Link>
             <Link 
               href={session?.user.role === "admin" ? '/dashboard/consultas' : '/realizar-consulta'} 
-              className="group h-7 flex items-center rounded-b-lg px-3 bg-[#548eff0b] duration-150 justify-start sm:rounded-bl-none sm:rounded-r-lg sm:h-8 opacity-90 group-hover:opacity-100 hover:bg-white active:opacity-80">
+              className="group h-7 flex items-center rounded-r-md px-3 bg-[#548eff0b] duration-150 justify-start sm:h-8 opacity-90 group-hover:opacity-100 hover:bg-white active:opacity-80">
               <IconConsulta 
                 className="mr-2 w-[16px] h-[16px] fill-[#548eff] duration-150 sm:w-[17px] sm:h-[17px]"
                 />
@@ -592,17 +592,17 @@ export default function CNPMandataria({
             </div>
           </Fondo>
 
-          <div className="flex flex-col text-sm rounded-lg shadow-[0_10px_20px_#2b4c8d47] sm:text-[15px] sm:mt-12 sm:flex-row">
+          <div className="flex text-sm rounded-lg shadow-[0_10px_20px_#2b4c8d47] sm:text-[15px] sm:mt-12 sm:flex-row">{/*  flex-col */}
             <Link 
               href={session?.user.role === "admin" ? '/dashboard/tramites' : '/iniciar-tramite/cambio-de-radicacion'} 
-              className="group h-7 flex items-center rounded-t-lg px-3 bg-[#548effdd] duration-150 justify-start sm:rounded-tr-none sm:rounded-l-lg sm:h-8 opacity-100 group-hover:opacity-100 hover:bg-[#3c76e9d1] active:opacity-80">
+              className="group h-7 flex items-center px-3 bg-[#548effdd] rounded-l-md duration-150 justify-start  sm:h-8 opacity-100 group-hover:opacity-100 hover:bg-[#3c76e9d1] active:opacity-80">{/* sm:rounded-tr-none sm:rounded-l-lg  */}
               <IconPresupuesto className="mr-2 w-4 h-4 fill-[#ffffff] duration-150 sm:w-[17px] sm:h-[17px]"
                 />
               <p className="text-[#ffffff]  [text-shadow:_1px_1px_#3d61ad] duration-150 group-hover:text-[#ffffff]">{session?.user.role === "admin" ? 'Ver trámites' : 'Pedí presupuesto'}</p>
             </Link>
             <Link 
               href={session?.user.role === "admin" ? '/dashboard/consultas' : '/realizar-consulta'} 
-              className="group h-7 flex items-center rounded-b-lg px-3 bg-[#548effdd] duration-150 justify-start sm:rounded-bl-none sm:rounded-r-lg sm:h-8 opacity-100 group-hover:opacity-100 hover:bg-[#3c76e9d1] active:opacity-80">
+              className="group h-7 flex items-center px-3 bg-[#548effdd] rounded-r-md duration-150 justify-start  sm:h-8 opacity-100 group-hover:opacity-100 hover:bg-[#3c76e9d1] active:opacity-80">{/* sm:rounded-bl-none sm:rounded-r-lg  */}
               <IconConsulta
                 className="mr-2 w-4 h-4 fill-[#ffffff] duration-150 sm:w-[17px] sm:h-[17px]"
                 />

@@ -24,7 +24,7 @@ export default async function Layout({ children }: { children: React.ReactNode }
       <div className="mx-auto flex min-h-screen w-full max-w-[1072px] flex-col ">
         <Header />
         <div className="flex flex-col min-h-screen px-3 md:px-6 md:flex-row md:overflow-hidden">
-          <div className="w-full flex-none mb-4 mt-[76px] static h-max min-h-auto md:h-[50%] md:min-h-[calc(100vh_-_110px)] md:fixed md:mt-[102px] md:w-64">{/*  md:mt-[104px] */}
+          <div className="w-full flex-none mb-2 mt-[76px] static h-max min-h-auto md:h-[50%] md:min-h-[calc(100vh_-_110px)] md:fixed md:mt-[102px] md:w-64">{/*  md:mt-[104px] */}
             <Frente className={`${user?.account === "abierto" ? "!bg-[#39507f]" : "!bg-[#548effdd]"} text-[#ffffff] ![box-shadow:_inset_0_2px_#ffffff,inset_0_-2px_#00000022]`}>
               <div className="text-sm [text-shadow:_1px_1px_#3d61ad] flex flex-col justify-center items-center text-center px-2.5 py-1.5 md:mb-2 ">
 
